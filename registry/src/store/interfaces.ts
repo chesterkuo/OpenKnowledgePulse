@@ -147,6 +147,79 @@ export interface SopStore {
   getByDomain(domain: string): Promise<StoredSOP[]>;
 }
 
+// ── Marketplace Types ─────────────────────────────────
+
+export interface CreditTransaction {
+  id: string;
+  agent_id: string;
+  amount: number;
+  type: "purchase" | "earned" | "spent" | "payout" | "refill";
+  description: string;
+  related_listing_id?: string;
+  created_at: string;
+}
+
+export interface MarketplaceListing {
+  id: string;
+  knowledge_unit_id: string;
+  contributor_id: string;
+  price_credits: number;
+  access_model: "free" | "org" | "subscription";
+  domain: string;
+  title: string;
+  description: string;
+  purchases: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreditStore {
+  getBalance(agentId: string): Promise<number>;
+  addCredits(agentId: string, amount: number, reason: string): Promise<void>;
+  deductCredits(agentId: string, amount: number, reason: string): Promise<boolean>;
+  getTransactions(agentId: string, pagination: PaginationOpts): Promise<PaginatedResult<CreditTransaction>>;
+  getLastRefill(agentId: string): Promise<string | undefined>;
+  setLastRefill(agentId: string, date: string): Promise<void>;
+}
+
+export interface MarketplaceStore {
+  createListing(listing: MarketplaceListing): Promise<MarketplaceListing>;
+  getListing(id: string): Promise<MarketplaceListing | undefined>;
+  search(opts: {
+    domain?: string;
+    access_model?: string;
+    query?: string;
+    pagination?: PaginationOpts;
+  }): Promise<PaginatedResult<MarketplaceListing>>;
+  recordPurchase(listingId: string, buyerId: string): Promise<void>;
+  getByContributor(contributorId: string): Promise<MarketplaceListing[]>;
+}
+
+// ── Badge Types ───────────────────────────────────────
+
+export type BadgeLevel = "bronze" | "silver" | "gold" | "authority";
+
+export interface DomainBadge {
+  badge_id: string;
+  agent_id: string;
+  domain: string;
+  level: BadgeLevel;
+  granted_at: string;
+  granted_by: string; // "system" for auto, agent_id for admin/vote
+}
+
+export interface CertificationProposal {
+  proposal_id: string;
+  agent_id: string;
+  domain: string;
+  target_level: "gold" | "authority";
+  proposed_by: string;
+  votes: Array<{ voter_id: string; approve: boolean; weight: number }>;
+  status: "open" | "approved" | "rejected";
+  created_at: string;
+  closes_at: string;
+}
+
 // ── Audit Logging ─────────────────────────────────────
 
 export type AuditAction = "create" | "read" | "update" | "delete" | "export" | "validate";
@@ -194,6 +267,8 @@ export interface AllStores {
   reputation: ReputationStore;
   apiKeys: ApiKeyStore;
   sop: SopStore;
+  credits: CreditStore;
+  marketplace: MarketplaceStore;
   rateLimit: RateLimitStore;
   auditLog: AuditLogStore;
 }
