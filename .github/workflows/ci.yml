@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same branch/PR
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bunx biome check .
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      # SDK must be built first so other packages can resolve its type exports
+      - run: bun run build
+      - name: Typecheck SDK
+        run: bunx tsc --noEmit -p packages/sdk/tsconfig.json
+      - name: Typecheck MCP Server
+        run: bunx tsc --noEmit -p packages/mcp-server/tsconfig.json
+      - name: Typecheck CLI
+        run: bunx tsc --noEmit -p packages/cli/tsconfig.json
+      - name: Typecheck Registry
+        run: bunx tsc --noEmit -p registry/tsconfig.json
+      - name: Typecheck SOP Studio
+        run: bunx tsc --noEmit -p packages/sop-studio/tsconfig.json
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      # SDK must be built first — other packages import from its dist
+      - run: bun run build
+      - run: bun test --recursive
+        env:
+          KP_STORE_BACKEND: memory
+
+  codegen:
+    name: Codegen Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      # SDK must be built first — codegen imports from SDK source
+      - run: bun run build
+      - run: bun run codegen
+      # Fail if codegen produced output different from what is committed
+      - run: git diff --exit-code specs/
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run build
