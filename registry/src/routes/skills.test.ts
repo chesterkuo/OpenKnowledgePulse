@@ -388,6 +388,77 @@ describe("Skills Routes", () => {
       expect(body.data.visibility).toBe("org");
     });
 
+    test("non-admin POST ignores quality_score field (gets 0.5)", async () => {
+      const apiKey = await registerAndGetKey(app);
+
+      const res = await app.request("/v1/skills", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ skill_md_content: VALID_SKILL_MD, quality_score: 0.9 }),
+      });
+      expect(res.status).toBe(201);
+
+      const body = (await res.json()) as { data: { quality_score: number } };
+      expect(body.data.quality_score).toBe(0.5);
+    });
+
+    test("admin POST with quality_score sets custom value", async () => {
+      const registerRes = await app.request("/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agent_id: "kp:agent:admin-qs",
+          scopes: ["read", "write", "admin"],
+          tier: "free",
+        }),
+      });
+      const registerBody = (await registerRes.json()) as { data: { api_key: string } };
+      const apiKey = registerBody.data.api_key;
+
+      const res = await app.request("/v1/skills", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ skill_md_content: VALID_SKILL_MD, quality_score: 0.85 }),
+      });
+      expect(res.status).toBe(201);
+
+      const body = (await res.json()) as { data: { quality_score: number } };
+      expect(body.data.quality_score).toBe(0.85);
+    });
+
+    test("admin POST with quality_score > 1 gets clamped to 1", async () => {
+      const registerRes = await app.request("/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agent_id: "kp:agent:admin-clamp",
+          scopes: ["read", "write", "admin"],
+          tier: "free",
+        }),
+      });
+      const registerBody = (await registerRes.json()) as { data: { api_key: string } };
+      const apiKey = registerBody.data.api_key;
+
+      const res = await app.request("/v1/skills", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ skill_md_content: VALID_SKILL_MD, quality_score: 1.5 }),
+      });
+      expect(res.status).toBe(201);
+
+      const body = (await res.json()) as { data: { quality_score: number } };
+      expect(body.data.quality_score).toBe(1);
+    });
+
     test("should award reputation to the contributing agent", async () => {
       const agentId = "kp:agent:rep-test";
       const apiKey = await registerAndGetKey(app, agentId);

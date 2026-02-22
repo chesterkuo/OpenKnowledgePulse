@@ -73,7 +73,9 @@ export function skillRoutes(stores: AllStores) {
       tags: parsed.frontmatter.tags ?? [],
       content: skill_md_content,
       visibility,
-      quality_score: 0.5, // initial score
+      quality_score: (auth.apiKey?.scopes.includes("admin") && typeof body.quality_score === "number")
+        ? Math.min(1, Math.max(0, body.quality_score))
+        : 0.5,
       created_at: now,
       updated_at: now,
     };
