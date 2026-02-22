@@ -13,6 +13,7 @@ import {
 } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import "@xyflow/react/dist/style.css";
 
 import PropertyPanel from "../components/PropertyPanel";
@@ -100,11 +101,13 @@ function EditorInner() {
   const [loading, setLoading] = useState(!isNew);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+
+  const [dirty, setDirty] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
 
   // Load SOP from API
   useEffect(() => {
@@ -114,6 +117,7 @@ function EditorInner() {
       const { nodes: n, edges: e } = sopToFlow(blank.sop.decision_tree);
       setNodes(n);
       setEdges(e);
+      setInitialLoaded(true);
       return;
     }
 
@@ -129,6 +133,7 @@ function EditorInner() {
         const { nodes: n, edges: e } = sopToFlow(data.sop.decision_tree || []);
         setNodes(n);
         setEdges(e);
+        setInitialLoaded(true);
       })
       .catch((err: Error) => {
         setError(err.message || "Failed to load SOP");
@@ -180,11 +185,23 @@ function EditorInner() {
     [setNodes],
   );
 
-  // Show a temporary status message
-  const showStatus = useCallback((msg: string) => {
-    setStatusMessage(msg);
-    setTimeout(() => setStatusMessage(null), 3000);
-  }, []);
+  // Track dirty state after initial load
+  useEffect(() => {
+    if (initialLoaded) {
+      setDirty(true);
+    }
+  }, [nodes, edges, initialLoaded]);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (dirty) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [dirty]);
 
   // Save SOP
   const handleSave = useCallback(async () => {
@@ -205,26 +222,28 @@ function EditorInner() {
           data: StoredSOP;
         };
         setStoredSOP(result.data);
-        showStatus("SOP created successfully");
+        setDirty(false);
+        toast.success("SOP created successfully");
         navigate(`/editor/${result.data.id}`, { replace: true });
       } else {
         const result = (await api.updateSOP(storedSOP.id, updatedSOP)) as {
           data: StoredSOP;
         };
         setStoredSOP(result.data);
-        showStatus("SOP saved successfully");
+        setDirty(false);
+        toast.success("SOP saved successfully");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save SOP");
+      toast.error(err instanceof Error ? err.message : "Failed to save SOP");
     } finally {
       setSaving(false);
     }
-  }, [storedSOP, nodes, edges, isNew, navigate, showStatus]);
+  }, [storedSOP, nodes, edges, isNew, navigate]);
 
   // Export SKILL.md
   const handleExport = useCallback(async () => {
     if (!storedSOP?.id || isNew) {
-      setError("Save the SOP first before exporting");
+      toast.error("Save the SOP first before exporting");
       return;
     }
 
@@ -242,16 +261,16 @@ function EditorInner() {
       a.download = `${storedSOP.sop.name || "sop"}.SKILL.md`;
       a.click();
       URL.revokeObjectURL(url);
-      showStatus("SKILL.md exported");
+      toast.success("SKILL.md exported");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to export SKILL.md");
+      toast.error(err instanceof Error ? err.message : "Failed to export SKILL.md");
     }
-  }, [storedSOP, isNew, showStatus]);
+  }, [storedSOP, isNew]);
 
   // Submit for review
   const handleSubmitReview = useCallback(async () => {
     if (!storedSOP?.id || isNew) {
-      setError("Save the SOP first before submitting for review");
+      toast.error("Save the SOP first before submitting for review");
       return;
     }
 
@@ -261,11 +280,11 @@ function EditorInner() {
         status: "pending_review",
       })) as { data: StoredSOP };
       setStoredSOP(result.data);
-      showStatus("Submitted for review");
+      toast.success("Submitted for review");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit for review");
+      toast.error(err instanceof Error ? err.message : "Failed to submit for review");
     }
-  }, [storedSOP, isNew, showStatus]);
+  }, [storedSOP, isNew]);
 
   // Delete SOP
   const handleDelete = useCallback(async () => {
@@ -280,12 +299,12 @@ function EditorInner() {
 
     try {
       await api.deleteSOP(storedSOP.id);
-      showStatus("SOP deleted");
+      toast.success("SOP deleted");
       navigate("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete SOP");
+      toast.error(err instanceof Error ? err.message : "Failed to delete SOP");
     }
-  }, [storedSOP, isNew, navigate, showStatus]);
+  }, [storedSOP, isNew, navigate]);
 
   // Add a new step node
   const handleAddStep = useCallback(() => {
@@ -336,6 +355,37 @@ function EditorInner() {
     };
     setNodes((nds) => [...nds, newNode]);
   }, [nodes, setNodes]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + S: Save
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+      // Delete/Backspace: Delete selected node
+      if ((e.key === "Delete" || e.key === "Backspace") && selectedNode) {
+        // Don't delete if user is typing in an input/textarea
+        const tag = (e.target as HTMLElement).tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        e.preventDefault();
+        setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
+        setEdges((eds) =>
+          eds.filter(
+            (edge) =>
+              edge.source !== selectedNode.id &&
+              edge.target !== selectedNode.id,
+          ),
+        );
+        setSelectedNode(null);
+        toast.info("Node deleted");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleSave, selectedNode, setNodes, setEdges]);
 
   const miniMapNodeColor = useCallback((node: Node) => {
     switch (node.type) {
@@ -396,6 +446,9 @@ function EditorInner() {
           <h1 className="text-lg font-semibold text-kp-heading truncate max-w-md">
             {storedSOP?.sop.name || "Untitled SOP"}
           </h1>
+          {dirty && (
+            <span className="inline-block w-2 h-2 rounded-full bg-kp-orange" title="Unsaved changes" />
+          )}
           {storedSOP?.status && (
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -411,10 +464,6 @@ function EditorInner() {
               {storedSOP.status.replace("_", " ")}
             </span>
           )}
-          {statusMessage && (
-            <span className="text-xs text-kp-green font-medium">{statusMessage}</span>
-          )}
-          {error && <span className="text-xs text-kp-error font-medium">{error}</span>}
         </div>
         <div className="flex items-center gap-2">
           {/* Add node buttons */}
