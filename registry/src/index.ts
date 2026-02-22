@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { loadConfig } from "./config.js";
+import { auditMiddleware } from "./middleware/audit.js";
 import { authMiddleware } from "./middleware/auth.js";
 import { rateLimitMiddleware } from "./middleware/rate-limit.js";
 import { sanitizerMiddleware } from "./middleware/sanitizer.js";
@@ -22,6 +23,7 @@ app.use("*", cors());
 app.use("*", authMiddleware(stores.apiKeys));
 app.use("*", rateLimitMiddleware(stores.rateLimit, stores.apiKeys));
 app.use("*", schemaVersionMiddleware());
+app.use("*", auditMiddleware(stores.auditLog));
 app.use("/v1/skills/*", sanitizerMiddleware());
 
 // Health check

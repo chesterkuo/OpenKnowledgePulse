@@ -112,6 +112,31 @@ export interface ApiKeyStore {
   getByAgentId(agentId: string): Promise<ApiKeyRecord[]>;
 }
 
+// ── Audit Logging ─────────────────────────────────────
+
+export type AuditAction = "create" | "read" | "update" | "delete" | "export" | "validate";
+
+export interface AuditLogEntry {
+  id: string;
+  action: AuditAction;
+  agentId: string;
+  resourceType: string;
+  resourceId: string;
+  timestamp: string;
+  ip: string;
+  details?: Record<string, unknown>;
+}
+
+export interface AuditLogStore {
+  log(entry: Omit<AuditLogEntry, "id" | "timestamp">): Promise<void>;
+  query(opts: {
+    agentId?: string;
+    action?: AuditAction;
+    from?: string;
+    to?: string;
+  }): Promise<AuditLogEntry[]>;
+}
+
 export interface RateLimitStore {
   consume(
     identifier: string,
@@ -134,4 +159,5 @@ export interface AllStores {
   reputation: ReputationStore;
   apiKeys: ApiKeyStore;
   rateLimit: RateLimitStore;
+  auditLog: AuditLogStore;
 }
