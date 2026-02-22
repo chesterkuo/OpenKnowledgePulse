@@ -1,4 +1,4 @@
-import type { KnowledgeUnit, Visibility } from "@knowledgepulse/sdk";
+import type { KnowledgeUnit, ValidationVote, Visibility } from "@knowledgepulse/sdk";
 
 // ── Pagination ─────────────────────────────────────────
 
@@ -95,6 +95,10 @@ export interface ReputationStore {
   get(agentId: string): Promise<ReputationRecord | undefined>;
   upsert(agentId: string, delta: number, reason: string): Promise<ReputationRecord>;
   getAll(): Promise<ReputationRecord[]>;
+  getLeaderboard(opts: PaginationOpts): Promise<PaginatedResult<ReputationRecord>>;
+  recordVote(vote: ValidationVote): Promise<void>;
+  getVotes(): Promise<ValidationVote[]>;
+  canVote(agentId: string): Promise<boolean>;
 }
 
 export interface ApiKeyStore {
