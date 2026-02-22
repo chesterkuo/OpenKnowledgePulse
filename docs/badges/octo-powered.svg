@@ -1,0 +1,38 @@
+<svg width="160" height="28" viewBox="0 0 160 28" xmlns="http://www.w3.org/2000/svg">
+  <!-- pill bg -->
+  <rect width="160" height="28" rx="14" fill="#0D1E30"/>
+  <!-- Octo mini -->
+  <g transform="translate(7,4)">
+    <!-- arms -->
+    <path d="M10,14 C7,16 4,15 2,18 C1,19.5 2,21 1.5,22.5" stroke="#0D4878" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M10,14 C7,16 4,15 2,18 C1,19.5 2,21 1.5,22.5" stroke="#1E7EC8" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity=".9"/>
+    <path d="M12,15 C10,17 8,18 6,20 C5,21.5 5,23 4.5,24.5" stroke="#0A5850" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M12,15 C10,17 8,18 6,20 C5,21.5 5,23 4.5,24.5" stroke="#12B5A8" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity=".9"/>
+    <path d="M14.5,16 C14,18 13.5,19.5 13,21.5 C12.5,23 12,24 11.5,25.5" stroke="#0A4A30" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M14.5,16 C14,18 13.5,19.5 13,21.5 C12.5,23 12,24 11.5,25.5" stroke="#18A06A" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity=".9"/>
+    <path d="M17,16.5 C17,18.5 17,20 17,22 C17,23.5 16.5,24.5 16.5,26" stroke="#5A3008" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M17,16.5 C17,18.5 17,20 17,22 C17,23.5 16.5,24.5 16.5,26" stroke="#E07A20" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity=".9"/>
+    <path d="M19.5,16.5 C19.5,18.5 19.5,20 19.5,22 C19.5,23.5 20,24.5 20,26" stroke="#0D4878" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M19.5,16.5 C19.5,18.5 19.5,20 19.5,22 C19.5,23.5 20,24.5 20,26" stroke="#1E7EC8" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity=".9"/>
+    <path d="M22,15 C24,17 26,18 28,20 C29,21.5 29,23 29.5,24.5" stroke="#0A4A30" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M22,15 C24,17 26,18 28,20 C29,21.5 29,23 29.5,24.5" stroke="#18A06A" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity=".9"/>
+    <path d="M24,14 C27,16 30,15 32,18 C33,19.5 32,21 32.5,22.5" stroke="#5A3008" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M24,14 C27,16 30,15 32,18 C33,19.5 32,21 32.5,22.5" stroke="#E07A20" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity=".9"/>
+    <!-- body -->
+    <ellipse cx="17" cy="11" rx="8.5" ry="9.5" fill="#0D2438"/>
+    <ellipse cx="17" cy="11" rx="8" ry="9" fill="#1A3C58" opacity=".6"/>
+    <ellipse cx="14.5" cy="9.5" rx="2.8" ry="3.2" fill="#040C18"/>
+    <ellipse cx="19.5" cy="9.5" rx="2.8" ry="3.2" fill="#040C18"/>
+    <circle cx="14.5" cy="9.5" r="2" fill="#4ADEFF"/>
+    <circle cx="19.5" cy="9.5" r="2" fill="#4ADEFF"/>
+    <ellipse cx="14.5" cy="9.5" rx=".9" ry="1.5" fill="#020810"/>
+    <ellipse cx="19.5" cy="9.5" rx=".9" ry="1.5" fill="#020810"/>
+    <circle cx="13.8" cy="9" r=".7" fill="white" opacity=".8"/>
+    <circle cx="18.8" cy="9" r=".7" fill="white" opacity=".8"/>
+  </g>
+  <!-- divider -->
+  <line x1="42" y1="6" x2="42" y2="22" stroke="#1A3A58" stroke-width="1"/>
+  <!-- text -->
+  <text x="54" y="10" font-family="monospace" font-size="7" fill="#4A7FA5" letter-spacing=".5">POWERED BY</text>
+  <text x="54" y="21" font-family="monospace" font-size="10" fill="#C8DDF0" font-weight="bold" letter-spacing=".5">KnowledgePulse</text>
+</svg>
