@@ -138,5 +138,97 @@ export function createDatabase(path = ":memory:"): Database {
     )
   `);
 
+  // ── Credit Balances table ────────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS credit_balances (
+      agent_id TEXT PRIMARY KEY,
+      balance REAL NOT NULL DEFAULT 0,
+      last_refill TEXT
+    )
+  `);
+
+  // ── Credit Transactions table ────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS credit_transactions (
+      id TEXT PRIMARY KEY,
+      agent_id TEXT NOT NULL,
+      amount REAL NOT NULL,
+      type TEXT NOT NULL,
+      description TEXT NOT NULL,
+      related_listing_id TEXT,
+      created_at TEXT NOT NULL
+    )
+  `);
+
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_credit_transactions_agent ON credit_transactions (agent_id)
+  `);
+
+  // ── Marketplace Listings table ───────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS marketplace_listings (
+      id TEXT PRIMARY KEY,
+      knowledge_unit_id TEXT NOT NULL,
+      contributor_id TEXT NOT NULL,
+      price_credits REAL NOT NULL DEFAULT 0,
+      access_model TEXT NOT NULL DEFAULT 'free',
+      domain TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      purchases INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `);
+
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_marketplace_domain ON marketplace_listings (domain)
+  `);
+
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_marketplace_contributor ON marketplace_listings (contributor_id)
+  `);
+
+  // ── Badges table ─────────────────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS badges (
+      badge_id TEXT PRIMARY KEY,
+      agent_id TEXT NOT NULL,
+      domain TEXT NOT NULL,
+      level TEXT NOT NULL,
+      granted_at TEXT NOT NULL,
+      granted_by TEXT NOT NULL
+    )
+  `);
+
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_badges_agent ON badges (agent_id)
+  `);
+
+  // ── Certification Proposals table ────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS certification_proposals (
+      proposal_id TEXT PRIMARY KEY,
+      agent_id TEXT NOT NULL,
+      domain TEXT NOT NULL,
+      target_level TEXT NOT NULL,
+      proposed_by TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'open',
+      created_at TEXT NOT NULL,
+      closes_at TEXT NOT NULL
+    )
+  `);
+
+  // ── Proposal Votes table ─────────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS proposal_votes (
+      proposal_id TEXT NOT NULL,
+      voter_id TEXT NOT NULL,
+      approve INTEGER NOT NULL,
+      weight REAL NOT NULL,
+      PRIMARY KEY (proposal_id, voter_id)
+    )
+  `);
+
   return db;
 }
