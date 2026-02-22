@@ -6,6 +6,7 @@
     "packages/mcp-server",
     "packages/cli",
     "packages/sop-studio",
+    "packages/ui",
     "registry"
   ],
   "scripts": {

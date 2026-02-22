@@ -1,1 +1,57 @@
 @import "tailwindcss";
+
+/* Octo Design Tokens */
+@theme {
+  --color-kp-blue: #1E7EC8;
+  --color-kp-green: #18A06A;
+  --color-kp-teal: #12B5A8;
+  --color-kp-orange: #E07A20;
+  --color-kp-cyan: #4ADEFF;
+  --color-kp-dark: #050D16;
+  --color-kp-navy: #081828;
+  --color-kp-panel: #0C1A28;
+  --color-kp-border: #163248;
+  --color-kp-text: #C8DDF0;
+  --color-kp-muted: #4A7FA5;
+  --color-kp-heading: #EEF6FF;
+  --color-kp-body-hi: #1A3C58;
+  --color-kp-body-mid: #0D2438;
+  --color-kp-body-lo: #060E18;
+  --color-kp-success: #18A06A;
+  --color-kp-warning: #E07A20;
+  --color-kp-error: #DC2626;
+  --color-kp-info: #1E7EC8;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+}
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Base styles */
+body {
+  background-color: var(--color-kp-dark);
+  color: var(--color-kp-text);
+  font-family: var(--font-display);
+}
+
+/* React Flow dark theme overrides */
+.react-flow__background {
+  background-color: var(--color-kp-dark) !important;
+}
+.react-flow__minimap {
+  background-color: var(--color-kp-navy) !important;
+}
+.react-flow__controls button {
+  background-color: var(--color-kp-panel) !important;
+  border-color: var(--color-kp-border) !important;
+  color: var(--color-kp-text) !important;
+  fill: var(--color-kp-text) !important;
+}
+.react-flow__edge-path {
+  stroke: var(--color-kp-muted) !important;
+}
