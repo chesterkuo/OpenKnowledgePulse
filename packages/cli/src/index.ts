@@ -2,6 +2,7 @@
 import { Command } from "commander";
 import { authCommand } from "./commands/auth.js";
 import { contributeCommand } from "./commands/contribute.js";
+import { importCommand } from "./commands/import.js";
 import { installCommand } from "./commands/install.js";
 import { listCommand } from "./commands/list.js";
 import { searchCommand } from "./commands/search.js";
@@ -22,5 +23,6 @@ program.addCommand(validateCommand);
 program.addCommand(contributeCommand);
 program.addCommand(authCommand);
 program.addCommand(securityCommand);
+program.addCommand(importCommand);
 
 program.parse();

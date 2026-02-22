@@ -76,6 +76,6 @@ export async function parseNotion(pageId: string, token: string): Promise<ParseR
   } while (cursor);
 
   const result = parseNotionBlocks(blocks);
-  result.metadata = { ...result.metadata, pageId };
+  (result.metadata as Record<string, unknown>).pageId = pageId;
   return result;
 }

@@ -70,6 +70,7 @@ export async function parseConfluence(
   const data = await res.json() as { body: { atlas_doc_format: { value: string } }; title: string };
   const adf = JSON.parse(data.body.atlas_doc_format.value) as AdfNode;
   const result = parseConfluenceAdf(adf);
-  result.metadata = { ...result.metadata, pageId, title: data.title };
+  (result.metadata as Record<string, unknown>).pageId = pageId;
+  (result.metadata as Record<string, unknown>).title = data.title;
   return result;
 }
