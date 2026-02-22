@@ -1,5 +1,6 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import Editor from "./pages/Editor";
 
 function Placeholder({ name }: { name: string }) {
   return (
@@ -39,8 +40,8 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/editor/:id" element={<Placeholder name="Editor" />} />
-          <Route path="/editor/new" element={<Placeholder name="New SOP" />} />
+          <Route path="/editor/new" element={<Editor />} />
+          <Route path="/editor/:id" element={<Editor />} />
           <Route path="/import" element={<Placeholder name="Import" />} />
           <Route path="/test/:id" element={<Placeholder name="Test Sandbox" />} />
           <Route path="/settings" element={<Placeholder name="Settings" />} />
