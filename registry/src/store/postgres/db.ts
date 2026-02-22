@@ -221,6 +221,60 @@ CREATE INDEX IF NOT EXISTS idx_audit_action
   ON audit_log (action);
 CREATE INDEX IF NOT EXISTS idx_audit_timestamp
   ON audit_log (timestamp);
+
+-- ── Full-Text Search ──────────────────────────────────
+
+-- Skills: tsvector column + GIN index + trigger
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS search_vector tsvector;
+
+CREATE INDEX IF NOT EXISTS idx_skills_search ON skills USING GIN(search_vector);
+
+CREATE OR REPLACE FUNCTION skills_search_trigger() RETURNS trigger AS $$
+BEGIN
+  NEW.search_vector :=
+    setweight(to_tsvector('english', COALESCE(NEW.name, '')), 'A') ||
+    setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'B');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS skills_search_update ON skills;
+CREATE TRIGGER skills_search_update
+  BEFORE INSERT OR UPDATE ON skills
+  FOR EACH ROW EXECUTE FUNCTION skills_search_trigger();
+
+-- Backfill existing rows
+UPDATE skills SET search_vector =
+  setweight(to_tsvector('english', COALESCE(name, '')), 'A') ||
+  setweight(to_tsvector('english', COALESCE(description, '')), 'B')
+WHERE search_vector IS NULL;
+
+-- Knowledge Units: tsvector column + GIN index + trigger
+ALTER TABLE knowledge_units ADD COLUMN IF NOT EXISTS search_vector tsvector;
+
+CREATE INDEX IF NOT EXISTS idx_ku_search ON knowledge_units USING GIN(search_vector);
+
+CREATE OR REPLACE FUNCTION ku_search_trigger() RETURNS trigger AS $$
+BEGIN
+  NEW.search_vector :=
+    setweight(to_tsvector('english', COALESCE(NEW.unit_json->>'@type', '')), 'A') ||
+    setweight(to_tsvector('english', COALESCE(NEW.unit_json->'metadata'->>'task_domain', '')), 'A') ||
+    setweight(to_tsvector('english', COALESCE(NEW.unit_json->'task'->>'objective', '')), 'B');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS ku_search_update ON knowledge_units;
+CREATE TRIGGER ku_search_update
+  BEFORE INSERT OR UPDATE ON knowledge_units
+  FOR EACH ROW EXECUTE FUNCTION ku_search_trigger();
+
+-- Backfill existing rows
+UPDATE knowledge_units SET search_vector =
+  setweight(to_tsvector('english', COALESCE(unit_json->>'@type', '')), 'A') ||
+  setweight(to_tsvector('english', COALESCE(unit_json->'metadata'->>'task_domain', '')), 'A') ||
+  setweight(to_tsvector('english', COALESCE(unit_json->'task'->>'objective', '')), 'B')
+WHERE search_vector IS NULL;
 `;
 
 /**

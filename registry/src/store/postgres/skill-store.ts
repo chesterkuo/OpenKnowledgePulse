@@ -52,12 +52,24 @@ export class PgSkillStore implements SkillStore {
     const conditions: string[] = [];
     const params: unknown[] = [];
     let paramIndex = 1;
+    let useFullText = false;
+    let queryParamIndex = -1;
 
     if (opts.query) {
-      const pattern = `%${opts.query}%`;
-      conditions.push(`(name ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`);
-      params.push(pattern);
-      paramIndex++;
+      if (opts.query.length < 2) {
+        // Short queries: fall back to ILIKE
+        const pattern = `%${opts.query}%`;
+        conditions.push(`(name ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`);
+        params.push(pattern);
+        paramIndex++;
+      } else {
+        // Full-text search using tsvector/tsquery
+        useFullText = true;
+        queryParamIndex = paramIndex;
+        conditions.push(`search_vector @@ plainto_tsquery('english', $${paramIndex})`);
+        params.push(opts.query);
+        paramIndex++;
+      }
     }
 
     if (opts.tags?.length) {
@@ -86,7 +98,18 @@ export class PgSkillStore implements SkillStore {
     const offset = opts.pagination?.offset ?? 0;
     const limit = opts.pagination?.limit ?? 20;
 
-    const dataQuery = `SELECT * FROM skills ${whereClause} ORDER BY quality_score DESC OFFSET $${paramIndex} LIMIT $${paramIndex + 1}`;
+    // When full-text search is active, order by ts_rank relevance; otherwise by quality_score
+    let selectClause: string;
+    let orderClause: string;
+    if (useFullText) {
+      selectClause = `SELECT *, ts_rank(search_vector, plainto_tsquery('english', $${queryParamIndex})) AS rank`;
+      orderClause = `ORDER BY rank DESC`;
+    } else {
+      selectClause = `SELECT *`;
+      orderClause = `ORDER BY quality_score DESC`;
+    }
+
+    const dataQuery = `${selectClause} FROM skills ${whereClause} ${orderClause} OFFSET $${paramIndex} LIMIT $${paramIndex + 1}`;
     const dataParams = [...params, offset, limit];
     const { rows } = await this.pool.query(dataQuery, dataParams);
 

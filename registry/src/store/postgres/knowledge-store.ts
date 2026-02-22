@@ -66,13 +66,26 @@ export class PgKnowledgeStore implements KnowledgeStore {
       paramIndex++;
     }
 
+    let useFullText = false;
+    let queryParamIndex = -1;
+
     if (opts.query) {
-      const pattern = `%${opts.query}%`;
-      conditions.push(
-        `(unit_json->>'@type' ILIKE $${paramIndex} OR unit_json->'metadata'->>'task_domain' ILIKE $${paramIndex})`,
-      );
-      params.push(pattern);
-      paramIndex++;
+      if (opts.query.length < 2) {
+        // Short queries: fall back to ILIKE
+        const pattern = `%${opts.query}%`;
+        conditions.push(
+          `(unit_json->>'@type' ILIKE $${paramIndex} OR unit_json->'metadata'->>'task_domain' ILIKE $${paramIndex})`,
+        );
+        params.push(pattern);
+        paramIndex++;
+      } else {
+        // Full-text search using tsvector/tsquery
+        useFullText = true;
+        queryParamIndex = paramIndex;
+        conditions.push(`search_vector @@ plainto_tsquery('english', $${paramIndex})`);
+        params.push(opts.query);
+        paramIndex++;
+      }
     }
 
     const whereClause =
@@ -89,8 +102,19 @@ export class PgKnowledgeStore implements KnowledgeStore {
     const offset = opts.pagination?.offset ?? 0;
     const limit = opts.pagination?.limit ?? 20;
 
-    const dataQuery = `SELECT * FROM knowledge_units ${whereClause}
-      ORDER BY (unit_json->'metadata'->>'quality_score')::real DESC
+    // When full-text search is active, order by ts_rank relevance; otherwise by quality_score
+    let selectClause: string;
+    let orderClause: string;
+    if (useFullText) {
+      selectClause = `SELECT *, ts_rank(search_vector, plainto_tsquery('english', $${queryParamIndex})) AS rank`;
+      orderClause = `ORDER BY rank DESC`;
+    } else {
+      selectClause = `SELECT *`;
+      orderClause = `ORDER BY (unit_json->'metadata'->>'quality_score')::real DESC`;
+    }
+
+    const dataQuery = `${selectClause} FROM knowledge_units ${whereClause}
+      ${orderClause}
       OFFSET $${paramIndex} LIMIT $${paramIndex + 1}`;
     const { rows } = await this.pool.query(dataQuery, [
       ...params,
