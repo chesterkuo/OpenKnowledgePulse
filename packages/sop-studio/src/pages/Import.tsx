@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 
@@ -80,8 +80,7 @@ export default function Import() {
       reader.readAsText(file);
     } else if (file.name.endsWith(".docx") || file.name.endsWith(".pdf")) {
       setFileError(
-        `Direct .${file.name.split(".").pop()} parsing is not available in the browser. ` +
-        "Please copy and paste your document text into the text area below."
+        `Direct .${file.name.split(".").pop()} parsing is not available in the browser. Please copy and paste your document text into the text area below.`,
       );
     } else {
       // Try reading as text for other file types
@@ -103,7 +102,7 @@ export default function Import() {
       const file = e.dataTransfer.files[0];
       if (file) handleFileRead(file);
     },
-    [handleFileRead]
+    [handleFileRead],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -121,19 +120,16 @@ export default function Import() {
       const file = e.target.files?.[0];
       if (file) handleFileRead(file);
     },
-    [handleFileRead]
+    [handleFileRead],
   );
 
-  const handleLLMConfigChange = useCallback(
-    (field: keyof LLMConfig, value: string) => {
-      setLlmConfig((prev) => {
-        const next = { ...prev, [field]: value };
-        saveLLMConfig(next);
-        return next;
-      });
-    },
-    []
-  );
+  const handleLLMConfigChange = useCallback((field: keyof LLMConfig, value: string) => {
+    setLlmConfig((prev) => {
+      const next = { ...prev, [field]: value };
+      saveLLMConfig(next);
+      return next;
+    });
+  }, []);
 
   const handleExtract = useCallback(async () => {
     if (!documentText.trim()) {
@@ -151,7 +147,8 @@ export default function Import() {
     setExtractedJson("");
 
     try {
-      const model = llmConfig.model || DEFAULT_MODELS[llmConfig.provider] || DEFAULT_MODELS.anthropic;
+      const model =
+        llmConfig.model || DEFAULT_MODELS[llmConfig.provider] || DEFAULT_MODELS.anthropic;
 
       let responseText: string;
 
@@ -175,10 +172,10 @@ export default function Import() {
           const errData = await res.json().catch(() => ({}));
           throw new Error(
             (errData as { error?: { message?: string } }).error?.message ||
-            `OpenAI API error: ${res.status}`
+              `OpenAI API error: ${res.status}`,
           );
         }
-        const data = await res.json() as {
+        const data = (await res.json()) as {
           choices: Array<{ message: { content: string } }>;
         };
         responseText = data.choices[0]?.message?.content || "";
@@ -207,10 +204,10 @@ export default function Import() {
           const errData = await res.json().catch(() => ({}));
           throw new Error(
             (errData as { error?: { message?: string } }).error?.message ||
-            `Anthropic API error: ${res.status}`
+              `Anthropic API error: ${res.status}`,
           );
         }
-        const data = await res.json() as {
+        const data = (await res.json()) as {
           content: Array<{ type: string; text: string }>;
         };
         const textBlock = data.content.find((b) => b.type === "text");
@@ -232,9 +229,7 @@ export default function Import() {
       setExtractedTree(parsed);
       setExtractedJson(JSON.stringify(parsed, null, 2));
     } catch (err) {
-      setExtractError(
-        err instanceof Error ? err.message : "Extraction failed"
-      );
+      setExtractError(err instanceof Error ? err.message : "Extraction failed");
     } finally {
       setExtracting(false);
     }
@@ -279,9 +274,7 @@ export default function Import() {
       };
       navigate(`/editor/${result.data.id}`);
     } catch (err) {
-      setSaveError(
-        err instanceof Error ? err.message : "Failed to save SOP"
-      );
+      setSaveError(err instanceof Error ? err.message : "Failed to save SOP");
     } finally {
       setSaving(false);
     }
@@ -338,9 +331,7 @@ export default function Import() {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragActive
-              ? "border-indigo-400 bg-indigo-50"
-              : "border-gray-300 hover:border-gray-400"
+            dragActive ? "border-indigo-400 bg-indigo-50" : "border-gray-300 hover:border-gray-400"
           }`}
         >
           <svg
@@ -492,18 +483,14 @@ export default function Import() {
           )}
         </button>
 
-        {extractError && (
-          <p className="text-sm text-red-600">{extractError}</p>
-        )}
+        {extractError && <p className="text-sm text-red-600">{extractError}</p>}
       </div>
 
       {/* Extracted Decision Tree Preview */}
       {extractedJson && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Extracted Decision Tree
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">Extracted Decision Tree</h2>
             <span className="text-sm text-gray-500">
               {extractedTree?.length || 0} step{(extractedTree?.length || 0) !== 1 ? "s" : ""}
             </span>
@@ -534,9 +521,7 @@ export default function Import() {
             >
               {saving ? "Saving..." : "Save as Draft"}
             </button>
-            {saveError && (
-              <p className="text-sm text-red-600">{saveError}</p>
-            )}
+            {saveError && <p className="text-sm text-red-600">{saveError}</p>}
             {!sopName.trim() && extractedTree && (
               <p className="text-sm text-yellow-600">
                 Please enter an SOP name above before saving.

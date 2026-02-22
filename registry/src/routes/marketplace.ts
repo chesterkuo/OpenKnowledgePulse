@@ -63,10 +63,7 @@ export function marketplaceRoutes(stores: AllStores) {
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
-    if (
-      !auth.apiKey?.scopes.includes("write") &&
-      !auth.apiKey?.scopes.includes("admin")
-    ) {
+    if (!auth.apiKey?.scopes.includes("write") && !auth.apiKey?.scopes.includes("admin")) {
       return c.json({ error: "Write or admin scope required" }, 403);
     }
 
@@ -135,9 +132,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
     // Revenue share
     const revenueShare = getRevenueShare();
-    const contributorPayout = Math.floor(
-      listing.price_credits * revenueShare,
-    );
+    const contributorPayout = Math.floor(listing.price_credits * revenueShare);
     const platformFee = listing.price_credits - contributorPayout;
 
     // Credit contributor
@@ -176,11 +171,7 @@ export function marketplaceRoutes(stores: AllStores) {
     if (!lastRefill) {
       // Never refilled — do initial refill
       const amount = REFILL_AMOUNTS[tier] ?? REFILL_AMOUNTS.free;
-      await stores.credits.addCredits(
-        agentId,
-        amount,
-        `Initial credit refill (${tier} tier)`,
-      );
+      await stores.credits.addCredits(agentId, amount, `Initial credit refill (${tier} tier)`);
       await stores.credits.setLastRefill(agentId, now.toISOString());
       refilled = true;
     } else {
@@ -188,11 +179,7 @@ export function marketplaceRoutes(stores: AllStores) {
       const elapsed = now.getTime() - lastRefillDate.getTime();
       if (elapsed > REFILL_INTERVAL_MS) {
         const amount = REFILL_AMOUNTS[tier] ?? REFILL_AMOUNTS.free;
-        await stores.credits.addCredits(
-          agentId,
-          amount,
-          `Monthly credit refill (${tier} tier)`,
-        );
+        await stores.credits.addCredits(agentId, amount, `Monthly credit refill (${tier} tier)`);
         await stores.credits.setLastRefill(agentId, now.toISOString());
         refilled = true;
       }
@@ -223,9 +210,7 @@ export function marketplaceRoutes(stores: AllStores) {
     });
 
     // Filter to payout/earned transactions
-    const payouts = transactions.data.filter(
-      (tx) => tx.type === "earned" || tx.type === "payout",
-    );
+    const payouts = transactions.data.filter((tx) => tx.type === "earned" || tx.type === "payout");
 
     const totalEarnings = payouts.reduce((sum, tx) => sum + tx.amount, 0);
 
@@ -250,10 +235,7 @@ export function marketplaceRoutes(stores: AllStores) {
     const { agent_id, amount, reason } = body;
 
     if (!agent_id || typeof amount !== "number" || !reason) {
-      return c.json(
-        { error: "Missing required fields: agent_id, amount, reason" },
-        400,
-      );
+      return c.json({ error: "Missing required fields: agent_id, amount, reason" }, 400);
     }
 
     await stores.credits.addCredits(agent_id, amount, reason);

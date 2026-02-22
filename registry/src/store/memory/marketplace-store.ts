@@ -8,9 +8,7 @@ import type {
 export class MemoryMarketplaceStore implements MarketplaceStore {
   private listings = new Map<string, MarketplaceListing>();
 
-  async createListing(
-    listing: MarketplaceListing,
-  ): Promise<MarketplaceListing> {
+  async createListing(listing: MarketplaceListing): Promise<MarketplaceListing> {
     this.listings.set(listing.id, listing);
     return listing;
   }
@@ -39,9 +37,7 @@ export class MemoryMarketplaceStore implements MarketplaceStore {
     if (opts.query) {
       const q = opts.query.toLowerCase();
       results = results.filter(
-        (l) =>
-          l.title.toLowerCase().includes(q) ||
-          l.description.toLowerCase().includes(q),
+        (l) => l.title.toLowerCase().includes(q) || l.description.toLowerCase().includes(q),
       );
     }
 
@@ -53,7 +49,7 @@ export class MemoryMarketplaceStore implements MarketplaceStore {
     return { data, total, offset, limit };
   }
 
-  async recordPurchase(listingId: string, buyerId: string): Promise<void> {
+  async recordPurchase(listingId: string, _buyerId: string): Promise<void> {
     const listing = this.listings.get(listingId);
     if (listing) {
       listing.purchases += 1;
@@ -62,8 +58,6 @@ export class MemoryMarketplaceStore implements MarketplaceStore {
   }
 
   async getByContributor(contributorId: string): Promise<MarketplaceListing[]> {
-    return Array.from(this.listings.values()).filter(
-      (l) => l.contributor_id === contributorId,
-    );
+    return Array.from(this.listings.values()).filter((l) => l.contributor_id === contributorId);
   }
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 interface RegistryConfig {
   url: string;
@@ -64,7 +64,7 @@ export default function Settings() {
         setTestMessage(
           data
             ? `Connected successfully. Status: ${(data as { status?: string }).status || "ok"}`
-            : "Connected successfully."
+            : "Connected successfully.",
         );
       } else {
         setTestStatus("error");
@@ -72,9 +72,7 @@ export default function Settings() {
       }
     } catch (err) {
       setTestStatus("error");
-      setTestMessage(
-        `Connection failed: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
+      setTestMessage(`Connection failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   }, [registry]);
 
@@ -98,16 +96,11 @@ export default function Settings() {
 
       {/* Registry Connection */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Registry Connection
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Registry Connection</h2>
 
         <div className="space-y-4">
           <div>
-            <label
-              htmlFor="registry-url"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="registry-url" className="block text-sm font-medium text-gray-700 mb-1">
               Registry URL
             </label>
             <input
@@ -181,11 +174,7 @@ export default function Settings() {
                 "Test Connection"
               )}
             </button>
-            {registrySaved && (
-              <span className="text-sm text-green-600 font-medium">
-                Saved
-              </span>
-            )}
+            {registrySaved && <span className="text-sm text-green-600 font-medium">Saved</span>}
           </div>
 
           {/* Test result */}
@@ -242,19 +231,14 @@ export default function Settings() {
 
       {/* LLM Configuration */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          LLM Configuration
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">LLM Configuration</h2>
         <p className="text-sm text-gray-500 mb-4">
           Configure the LLM provider used for document extraction on the Import page.
         </p>
 
         <div className="space-y-4">
           <div>
-            <label
-              htmlFor="llm-provider"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="llm-provider" className="block text-sm font-medium text-gray-700 mb-1">
               Provider
             </label>
             <select
@@ -269,10 +253,7 @@ export default function Settings() {
           </div>
 
           <div>
-            <label
-              htmlFor="llm-api-key"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="llm-api-key" className="block text-sm font-medium text-gray-700 mb-1">
               API Key
             </label>
             <input
@@ -286,10 +267,7 @@ export default function Settings() {
           </div>
 
           <div>
-            <label
-              htmlFor="llm-model"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="llm-model" className="block text-sm font-medium text-gray-700 mb-1">
               Model Override
             </label>
             <input
@@ -317,25 +295,17 @@ export default function Settings() {
             >
               Save
             </button>
-            {llmSaved && (
-              <span className="text-sm text-green-600 font-medium">
-                Saved
-              </span>
-            )}
+            {llmSaved && <span className="text-sm text-green-600 font-medium">Saved</span>}
           </div>
         </div>
       </div>
 
       {/* Danger Zone */}
       <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
-        <h2 className="text-lg font-semibold text-red-900 mb-4">
-          Danger Zone
-        </h2>
+        <h2 className="text-lg font-semibold text-red-900 mb-4">Danger Zone</h2>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900">
-              Clear all settings
-            </p>
+            <p className="text-sm font-medium text-gray-900">Clear all settings</p>
             <p className="text-xs text-gray-500">
               Remove all stored configuration from localStorage.
             </p>
@@ -345,7 +315,7 @@ export default function Settings() {
             onClick={() => {
               if (
                 window.confirm(
-                  "Are you sure you want to clear all settings? This cannot be undone."
+                  "Are you sure you want to clear all settings? This cannot be undone.",
                 )
               ) {
                 localStorage.removeItem("kp_registry_url");

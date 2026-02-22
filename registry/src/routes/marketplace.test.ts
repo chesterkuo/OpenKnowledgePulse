@@ -6,10 +6,7 @@ import { marketplaceRoutes } from "./marketplace.js";
 
 // ── Test helpers ─────────────────────────────────────────
 
-function createTestApp(
-  stores: AllStores,
-  authOverrides: Record<string, unknown> = {},
-) {
+function createTestApp(stores: AllStores, authOverrides: Record<string, unknown> = {}) {
   const app = new Hono();
   app.use("*", async (c, next) => {
     c.set("auth", {
@@ -77,10 +74,7 @@ function makeListing(overrides: Partial<MarketplaceListing> = {}) {
   };
 }
 
-async function postListing(
-  app: Hono,
-  body: Record<string, unknown> = makeListing(),
-) {
+async function postListing(app: Hono, body: Record<string, unknown> = makeListing()) {
   const res = await app.request("/v1/marketplace/listings", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -106,7 +100,7 @@ describe("Marketplace Routes", () => {
 
   afterEach(() => {
     if (savedEnv === undefined) {
-      delete process.env.KP_MARKETPLACE_REVENUE_SHARE;
+      process.env.KP_MARKETPLACE_REVENUE_SHARE = undefined;
     } else {
       process.env.KP_MARKETPLACE_REVENUE_SHARE = savedEnv;
     }
@@ -186,9 +180,7 @@ describe("Marketplace Routes", () => {
       await postListing(app, makeListing({ domain: "devops" }));
       await postListing(app, makeListing({ domain: "security" }));
 
-      const res = await app.request(
-        "/v1/marketplace/listings?domain=devops",
-      );
+      const res = await app.request("/v1/marketplace/listings?domain=devops");
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -200,18 +192,10 @@ describe("Marketplace Routes", () => {
     });
 
     test("should filter by access_model", async () => {
-      await postListing(
-        app,
-        makeListing({ access_model: "free", title: "Free Guide" }),
-      );
-      await postListing(
-        app,
-        makeListing({ access_model: "org", title: "Org Guide" }),
-      );
+      await postListing(app, makeListing({ access_model: "free", title: "Free Guide" }));
+      await postListing(app, makeListing({ access_model: "org", title: "Org Guide" }));
 
-      const res = await app.request(
-        "/v1/marketplace/listings?access_model=free",
-      );
+      const res = await app.request("/v1/marketplace/listings?access_model=free");
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -223,10 +207,7 @@ describe("Marketplace Routes", () => {
     });
 
     test("should search by query text", async () => {
-      await postListing(
-        app,
-        makeListing({ title: "Kubernetes Guide", description: "K8s stuff" }),
-      );
+      await postListing(app, makeListing({ title: "Kubernetes Guide", description: "K8s stuff" }));
       await postListing(
         app,
         makeListing({
@@ -251,9 +232,7 @@ describe("Marketplace Routes", () => {
       await postListing(app, makeListing({ title: "Guide 2" }));
       await postListing(app, makeListing({ title: "Guide 3" }));
 
-      const res = await app.request(
-        "/v1/marketplace/listings?limit=2&offset=0",
-      );
+      const res = await app.request("/v1/marketplace/listings?limit=2&offset=0");
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -274,9 +253,7 @@ describe("Marketplace Routes", () => {
   describe("GET /v1/marketplace/listings/:id", () => {
     test("should return a listing by ID", async () => {
       const { body: created } = await postListing(app);
-      const res = await app.request(
-        `/v1/marketplace/listings/${created.data.id}`,
-      );
+      const res = await app.request(`/v1/marketplace/listings/${created.data.id}`);
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as { data: MarketplaceListing };
@@ -285,9 +262,7 @@ describe("Marketplace Routes", () => {
     });
 
     test("should return 404 for non-existent listing", async () => {
-      const res = await app.request(
-        "/v1/marketplace/listings/kp:listing:nonexistent",
-      );
+      const res = await app.request("/v1/marketplace/listings/kp:listing:nonexistent");
       expect(res.status).toBe(404);
 
       const body = (await res.json()) as { error: string };
@@ -305,10 +280,7 @@ describe("Marketplace Routes", () => {
       const { body: created } = await postListing(app);
       const listingId = created.data.id;
 
-      const res = await app.request(
-        `/v1/marketplace/purchase/${listingId}`,
-        { method: "POST" },
-      );
+      const res = await app.request(`/v1/marketplace/purchase/${listingId}`, { method: "POST" });
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -327,15 +299,11 @@ describe("Marketplace Routes", () => {
     test("should apply correct 70/30 revenue split", async () => {
       await stores.credits.addCredits("agent-1", 1000, "seed");
 
-      const { body: created } = await postListing(
-        app,
-        makeListing({ price_credits: 100 }),
-      );
+      const { body: created } = await postListing(app, makeListing({ price_credits: 100 }));
 
-      const res = await app.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -352,15 +320,11 @@ describe("Marketplace Routes", () => {
       process.env.KP_MARKETPLACE_REVENUE_SHARE = "0.80";
       await stores.credits.addCredits("agent-1", 1000, "seed");
 
-      const { body: created } = await postListing(
-        app,
-        makeListing({ price_credits: 100 }),
-      );
+      const { body: created } = await postListing(app, makeListing({ price_credits: 100 }));
 
-      const res = await app.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -375,10 +339,9 @@ describe("Marketplace Routes", () => {
       // Don't seed credits — balance is 0
       const { body: created } = await postListing(app);
 
-      const res = await app.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(402);
 
       const body = (await res.json()) as {
@@ -397,10 +360,9 @@ describe("Marketplace Routes", () => {
         makeListing({ access_model: "free", price_credits: 0 }),
       );
 
-      const res = await app.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -420,10 +382,9 @@ describe("Marketplace Routes", () => {
         makeListing({ access_model: "free", price_credits: 50 }),
       );
 
-      const res = await app.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(200);
 
       const body = (await res.json()) as {
@@ -435,10 +396,9 @@ describe("Marketplace Routes", () => {
     });
 
     test("should return 404 for non-existent listing on purchase", async () => {
-      const res = await app.request(
-        "/v1/marketplace/purchase/kp:listing:nonexistent",
-        { method: "POST" },
-      );
+      const res = await app.request("/v1/marketplace/purchase/kp:listing:nonexistent", {
+        method: "POST",
+      });
       expect(res.status).toBe(404);
 
       const body = (await res.json()) as { error: string };
@@ -449,10 +409,9 @@ describe("Marketplace Routes", () => {
       const unauthApp = createUnauthApp(stores);
       const { body: created } = await postListing(app);
 
-      const res = await unauthApp.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      const res = await unauthApp.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(401);
     });
 
@@ -460,10 +419,7 @@ describe("Marketplace Routes", () => {
       await stores.credits.addCredits("agent-1", 500, "seed");
       const { body: created } = await postListing(app);
 
-      await app.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      await app.request(`/v1/marketplace/purchase/${created.data.id}`, { method: "POST" });
 
       const listing = await stores.marketplace.getListing(created.data.id);
       expect(listing!.purchases).toBe(1);
@@ -473,10 +429,7 @@ describe("Marketplace Routes", () => {
       await stores.credits.addCredits("agent-1", 500, "seed");
 
       // Create listing by agent-1 (contributor)
-      const { body: created } = await postListing(
-        app,
-        makeListing({ price_credits: 100 }),
-      );
+      const { body: created } = await postListing(app, makeListing({ price_credits: 100 }));
 
       // Purchase by a different agent
       const buyerApp = createTestApp(stores, {
@@ -485,10 +438,7 @@ describe("Marketplace Routes", () => {
       });
       await stores.credits.addCredits("buyer-1", 500, "seed");
 
-      await buyerApp.request(
-        `/v1/marketplace/purchase/${created.data.id}`,
-        { method: "POST" },
-      );
+      await buyerApp.request(`/v1/marketplace/purchase/${created.data.id}`, { method: "POST" });
 
       // Contributor (agent-1) should have received 70% payout
       const contributorBalance = await stores.credits.getBalance("agent-1");
@@ -556,10 +506,7 @@ describe("Marketplace Routes", () => {
       // Set last refill to 31 days ago
       const thirtyOneDaysAgo = new Date();
       thirtyOneDaysAgo.setDate(thirtyOneDaysAgo.getDate() - 31);
-      await stores.credits.setLastRefill(
-        "agent-1",
-        thirtyOneDaysAgo.toISOString(),
-      );
+      await stores.credits.setLastRefill("agent-1", thirtyOneDaysAgo.toISOString());
 
       const res = await app.request("/v1/marketplace/balance");
       expect(res.status).toBe(200);
@@ -598,16 +545,8 @@ describe("Marketplace Routes", () => {
 
     test("should return earnings after receiving payouts", async () => {
       // Simulate payouts by adding credits
-      await stores.credits.addCredits(
-        "agent-1",
-        70,
-        "Payout for listing: Guide",
-      );
-      await stores.credits.addCredits(
-        "agent-1",
-        35,
-        "Payout for listing: Tutorial",
-      );
+      await stores.credits.addCredits("agent-1", 70, "Payout for listing: Guide");
+      await stores.credits.addCredits("agent-1", 35, "Payout for listing: Tutorial");
 
       const res = await app.request("/v1/marketplace/earnings");
       expect(res.status).toBe(200);

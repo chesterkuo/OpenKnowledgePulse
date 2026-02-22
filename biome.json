@@ -26,6 +26,14 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", "dist", "*.gen.*", "*.json", "website/build", "website/.docusaurus"]
+    "ignore": [
+      "node_modules",
+      "dist",
+      "*.gen.*",
+      "*.json",
+      "website/build",
+      "website/.docusaurus",
+      "packages/sop-studio"
+    ]
   }
 }

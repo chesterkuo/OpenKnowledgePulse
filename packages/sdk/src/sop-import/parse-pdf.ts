@@ -27,8 +27,7 @@ export async function parsePdf(buffer: ArrayBuffer): Promise<ParseResult> {
     // Heuristic: lines that are all caps or start with a number followed by period
     if (
       trimmed &&
-      ((trimmed === trimmed.toUpperCase() && trimmed.length > 3) ||
-        /^\d+\.\s/.test(trimmed))
+      ((trimmed === trimmed.toUpperCase() && trimmed.length > 3) || /^\d+\.\s/.test(trimmed))
     ) {
       if (currentHeading) {
         sections.push({

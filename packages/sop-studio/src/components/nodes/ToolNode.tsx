@@ -1,25 +1,16 @@
-import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
+import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import type { ToolNodeData } from "../../lib/sop-to-flow";
 
 export type ToolNodeType = Node<ToolNodeData, "toolNode">;
 
-export default function ToolNode({
-  data,
-  selected,
-}: NodeProps<ToolNodeType>) {
+export default function ToolNode({ data, selected }: NodeProps<ToolNodeType>) {
   return (
     <div
       className={`rounded-lg shadow-md border-2 bg-white min-w-[200px] max-w-[280px] ${
-        selected
-          ? "border-green-600 ring-2 ring-green-300"
-          : "border-green-400"
+        selected ? "border-green-600 ring-2 ring-green-300" : "border-green-400"
       }`}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="!bg-green-500 !w-3 !h-3"
-      />
+      <Handle type="target" position={Position.Top} className="!bg-green-500 !w-3 !h-3" />
       <div className="bg-green-500 text-white px-4 py-2 rounded-t-md">
         <div className="font-semibold text-sm flex items-center gap-1.5">
           <svg
@@ -44,12 +35,8 @@ export default function ToolNode({
         </div>
       </div>
       <div className="px-4 py-3">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-          When
-        </div>
-        <p className="text-gray-700 text-xs leading-relaxed">
-          {data.when || "No trigger defined"}
-        </p>
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">When</div>
+        <p className="text-gray-700 text-xs leading-relaxed">{data.when || "No trigger defined"}</p>
       </div>
       {/* Tool nodes are endpoints - no source handle */}
     </div>

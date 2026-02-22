@@ -28,10 +28,7 @@ interface StoredSOP {
   updated_at: string;
 }
 
-const STATUS_STYLES: Record<
-  StoredSOP["status"],
-  { bg: string; text: string; label: string }
-> = {
+const STATUS_STYLES: Record<StoredSOP["status"], { bg: string; text: string; label: string }> = {
   draft: { bg: "bg-gray-100", text: "text-gray-700", label: "Draft" },
   pending_review: {
     bg: "bg-yellow-100",
@@ -52,9 +49,7 @@ function QualityScoreIndicator({ score }: { score: number }) {
   if (percentage >= 80) color = "text-green-600";
   else if (percentage >= 60) color = "text-yellow-600";
 
-  return (
-    <span className={`text-sm font-semibold ${color}`}>{percentage}%</span>
-  );
+  return <span className={`text-sm font-semibold ${color}`}>{percentage}%</span>;
 }
 
 interface SOPCardProps {
@@ -72,9 +67,7 @@ export default function SOPCard({ sop }: SOPCardProps) {
       className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer text-left w-full"
     >
       <div className="flex items-start justify-between mb-3">
-        <h3 className="text-lg font-semibold text-gray-900 truncate pr-3">
-          {sop.sop.name}
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 truncate pr-3">{sop.sop.name}</h3>
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${statusStyle.bg} ${statusStyle.text}`}
         >
@@ -91,14 +84,10 @@ export default function SOPCard({ sop }: SOPCardProps) {
 
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center space-x-4">
-            <span className="text-gray-500">
-              v{sop.version}
-            </span>
+            <span className="text-gray-500">v{sop.version}</span>
             <div className="flex items-center space-x-1">
               <span className="text-gray-500">Quality:</span>
-              <QualityScoreIndicator
-                score={sop.sop.metadata.quality_score}
-              />
+              <QualityScoreIndicator score={sop.sop.metadata.quality_score} />
             </div>
           </div>
         </div>

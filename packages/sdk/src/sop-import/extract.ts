@@ -29,9 +29,7 @@ export async function extractDecisionTree(
 ): Promise<ExtractionResult> {
   const text =
     parseResult.sections.length > 0
-      ? parseResult.sections
-          .map((s) => `## ${s.heading}\n${s.content}`)
-          .join("\n\n")
+      ? parseResult.sections.map((s) => `## ${s.heading}\n${s.content}`).join("\n\n")
       : parseResult.text;
 
   const prompt = EXTRACTION_PROMPT + text;
@@ -80,10 +78,7 @@ export async function extractDecisionTree(
   }
 
   // Parse JSON from response (handle markdown code blocks)
-  const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/) ?? [
-    null,
-    responseText,
-  ];
+  const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/) ?? [null, responseText];
   const parsed = JSON.parse(
     (jsonMatch[1] as string | undefined) ?? responseText,
   ) as ExtractionResult;

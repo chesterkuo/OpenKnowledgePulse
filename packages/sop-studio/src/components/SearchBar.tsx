@@ -1,4 +1,4 @@
-import { type ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 
 const DOMAINS = [
   { value: "", label: "All Domains" },
@@ -42,18 +42,14 @@ export default function SearchBar({
             type="text"
             placeholder="Search SOPs..."
             value={query}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              onQueryChange(e.target.value)
-            }
+            onChange={(e: ChangeEvent<HTMLInputElement>) => onQueryChange(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
           />
         </div>
         <div>
           <select
             value={domain}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              onDomainChange(e.target.value)
-            }
+            onChange={(e: ChangeEvent<HTMLSelectElement>) => onDomainChange(e.target.value)}
             className="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
           >
             {DOMAINS.map((d) => (

@@ -1,4 +1,4 @@
-import type { Node, Edge } from "@xyflow/react";
+import type { Edge, Node } from "@xyflow/react";
 
 /**
  * Shape of each step in an ExpertSOP.decision_tree
@@ -92,10 +92,7 @@ export function sopToFlow(decisionTree: DecisionTreeStep[]): {
     }
 
     // Create condition node if step has criteria/conditions
-    if (
-      entry.conditions &&
-      Object.keys(entry.conditions).length > 0
-    ) {
+    if (entry.conditions && Object.keys(entry.conditions).length > 0) {
       const conditionId = `condition-${index}`;
       nodes.push({
         id: conditionId,
@@ -118,21 +115,19 @@ export function sopToFlow(decisionTree: DecisionTreeStep[]): {
       });
 
       // Edges from condition to target steps
-      Object.entries(entry.conditions).forEach(
-        ([condKey, condValue]) => {
-          const targetStepId = stepNameToId.get(condValue.action);
-          if (targetStepId) {
-            edges.push({
-              id: `edge-${conditionId}-to-${targetStepId}-${condKey}`,
-              source: conditionId,
-              sourceHandle: `condition-${condKey}`,
-              target: targetStepId,
-              type: "smoothstep",
-              label: condKey,
-            });
-          }
+      Object.entries(entry.conditions).forEach(([condKey, condValue]) => {
+        const targetStepId = stepNameToId.get(condValue.action);
+        if (targetStepId) {
+          edges.push({
+            id: `edge-${conditionId}-to-${targetStepId}-${condKey}`,
+            source: conditionId,
+            sourceHandle: `condition-${condKey}`,
+            target: targetStepId,
+            type: "smoothstep",
+            label: condKey,
+          });
         }
-      );
+      });
     }
 
     // Create tool nodes

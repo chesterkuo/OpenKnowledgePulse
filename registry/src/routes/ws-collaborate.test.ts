@@ -302,7 +302,11 @@ describe("wsCollaborateRoutes", () => {
       const res = await app.request("/v1/sop/sop-1/collaborate/presence");
       expect(res.status).toBe(200);
 
-      const body = (await res.json()) as { sopId: string; peers: Array<{ agentId: string }>; count: number };
+      const body = (await res.json()) as {
+        sopId: string;
+        peers: Array<{ agentId: string }>;
+        count: number;
+      };
       expect(body.count).toBe(2);
       expect(body.peers).toHaveLength(2);
 

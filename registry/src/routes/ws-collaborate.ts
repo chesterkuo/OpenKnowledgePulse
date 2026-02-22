@@ -218,11 +218,7 @@ export function createWebSocketHandler(manager: CollaborationManager = collabora
         ) as CollaborationMessage;
 
         // Relay update/sync/cursor messages to room peers
-        if (
-          parsed.type === "update" ||
-          parsed.type === "sync" ||
-          parsed.type === "cursor"
-        ) {
+        if (parsed.type === "update" || parsed.type === "sync" || parsed.type === "cursor") {
           const outgoing: CollaborationMessage = {
             ...parsed,
             sopId: meta.sopId,
@@ -305,10 +301,7 @@ export function wsCollaborateRoutes(manager: CollaborationManager = collaboratio
     // For WebSocket upgrade requests in Bun, the upgrade is handled
     // at the Bun.serve level, not within Hono routes.
     // Return 426 if somehow reached without proper upgrade handling.
-    return c.json(
-      { error: "WebSocket upgrade must be handled by the server runtime" },
-      426,
-    );
+    return c.json({ error: "WebSocket upgrade must be handled by the server runtime" }, 426);
   });
 
   /**

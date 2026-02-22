@@ -185,7 +185,10 @@ export interface CreditStore {
   getBalance(agentId: string): Promise<number>;
   addCredits(agentId: string, amount: number, reason: string): Promise<void>;
   deductCredits(agentId: string, amount: number, reason: string): Promise<boolean>;
-  getTransactions(agentId: string, pagination: PaginationOpts): Promise<PaginatedResult<CreditTransaction>>;
+  getTransactions(
+    agentId: string,
+    pagination: PaginationOpts,
+  ): Promise<PaginatedResult<CreditTransaction>>;
   getLastRefill(agentId: string): Promise<string | undefined>;
   setLastRefill(agentId: string, date: string): Promise<void>;
 }

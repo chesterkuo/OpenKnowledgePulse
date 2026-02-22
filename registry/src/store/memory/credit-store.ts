@@ -14,11 +14,7 @@ export class MemoryCreditStore implements CreditStore {
     return this.balances.get(agentId) ?? 0;
   }
 
-  async addCredits(
-    agentId: string,
-    amount: number,
-    reason: string,
-  ): Promise<void> {
+  async addCredits(agentId: string, amount: number, reason: string): Promise<void> {
     const current = this.balances.get(agentId) ?? 0;
     this.balances.set(agentId, current + amount);
 
@@ -39,11 +35,7 @@ export class MemoryCreditStore implements CreditStore {
     }
   }
 
-  async deductCredits(
-    agentId: string,
-    amount: number,
-    reason: string,
-  ): Promise<boolean> {
+  async deductCredits(agentId: string, amount: number, reason: string): Promise<boolean> {
     const current = this.balances.get(agentId) ?? 0;
     if (current < amount) {
       return false;

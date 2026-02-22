@@ -1,4 +1,4 @@
-import { ExpertSOPSchema, generateSkillId, generateSkillMd, generateSopId } from "@knowledgepulse/sdk";
+import { ExpertSOPSchema, generateSkillId, generateSkillMd } from "@knowledgepulse/sdk";
 import { Hono } from "hono";
 import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores, StoredSOP, StoredSkill } from "../store/interfaces.js";
@@ -20,10 +20,7 @@ export function sopRoutes(stores: AllStores) {
     if (auth.agentId) {
       const rep = await stores.reputation.get(auth.agentId);
       if (!rep || rep.score < 0.3) {
-        return c.json(
-          { error: "Minimum KP-REP score of 0.3 required to create SOPs" },
-          403,
-        );
+        return c.json({ error: "Minimum KP-REP score of 0.3 required to create SOPs" }, 403);
       }
     }
 
@@ -231,7 +228,9 @@ export function sopRoutes(stores: AllStores) {
       if (node.conditions) {
         bodyLines.push("**Conditions:**", "");
         for (const [key, val] of Object.entries(node.conditions)) {
-          bodyLines.push(`- ${key}: ${val.action}${val.sla_min ? ` (SLA: ${val.sla_min} min)` : ""}`);
+          bodyLines.push(
+            `- ${key}: ${val.action}${val.sla_min ? ` (SLA: ${val.sla_min} min)` : ""}`,
+          );
         }
         bodyLines.push("");
       }

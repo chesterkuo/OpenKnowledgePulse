@@ -37,9 +37,7 @@ function makeExpertSOP(overrides: Partial<ExpertSOP> = {}): ExpertSOP {
           critical: { action: "Page on-call immediately", sla_min: 5 },
           normal: { action: "Create ticket and triage", sla_min: 60 },
         },
-        tool_suggestions: [
-          { name: "PagerDuty", when: "Critical severity detected" },
-        ],
+        tool_suggestions: [{ name: "PagerDuty", when: "Critical severity detected" }],
       },
       {
         step: "Investigate root cause",
@@ -98,7 +96,10 @@ async function seedReputation(stores: AllStores, agentId: string, score: number)
   await stores.reputation.upsert(agentId, score, "Initial reputation seed");
 }
 
-async function createSOP(app: Hono, sop?: ExpertSOP): Promise<{ res: Response; body: { data: StoredSOP } }> {
+async function createSOP(
+  app: Hono,
+  sop?: ExpertSOP,
+): Promise<{ res: Response; body: { data: StoredSOP } }> {
   const sopData = sop ?? makeExpertSOP();
   const res = await app.request("/v1/sop", {
     method: "POST",
@@ -273,7 +274,12 @@ describe("SOP Routes", () => {
       const res = await app.request("/v1/sop?limit=2&offset=0");
       expect(res.status).toBe(200);
 
-      const body = (await res.json()) as { data: StoredSOP[]; total: number; limit: number; offset: number };
+      const body = (await res.json()) as {
+        data: StoredSOP[];
+        total: number;
+        limit: number;
+        offset: number;
+      };
       expect(body.data).toHaveLength(2);
       expect(body.total).toBe(3);
       expect(body.limit).toBe(2);

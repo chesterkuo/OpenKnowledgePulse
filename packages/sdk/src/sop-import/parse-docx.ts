@@ -26,9 +26,7 @@ export async function parseDocx(buffer: ArrayBuffer): Promise<ParseResult> {
   const htmlParts = result.value.split(headingRegex);
   for (let i = 1; i < htmlParts.length; i += 2) {
     const heading = (htmlParts[i] as string).replace(/<[^>]+>/g, "").trim();
-    const content = ((htmlParts[i + 1] as string | undefined) ?? "")
-      .replace(/<[^>]+>/g, "")
-      .trim();
+    const content = ((htmlParts[i + 1] as string | undefined) ?? "").replace(/<[^>]+>/g, "").trim();
     sections.push({ heading, content });
   }
 

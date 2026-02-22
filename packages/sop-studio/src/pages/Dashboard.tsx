@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
 import SOPCard from "../components/SOPCard";
 import type { StoredSOP } from "../components/SOPCard";
+import SearchBar from "../components/SearchBar";
 import { api } from "../lib/api";
 
 interface SOPListResponse {
@@ -32,12 +32,11 @@ export default function Dashboard() {
       if (domain) params.domain = domain;
       if (status) params.status = status;
 
-      const result = await api.searchSOPs(params) as SOPListResponse;
+      const result = (await api.searchSOPs(params)) as SOPListResponse;
       setSOPs(result.data);
       setTotal(result.total);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to fetch SOPs";
+      const message = err instanceof Error ? err.message : "Failed to fetch SOPs";
       setError(message);
       setSOPs([]);
       setTotal(0);
@@ -59,9 +58,7 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="mt-1 text-sm text-gray-500">
-            {loading
-              ? "Loading SOPs..."
-              : `${total} SOP${total !== 1 ? "s" : ""} found`}
+            {loading ? "Loading SOPs..." : `${total} SOP${total !== 1 ? "s" : ""} found`}
           </p>
         </div>
         <button
@@ -69,18 +66,8 @@ export default function Dashboard() {
           onClick={() => navigate("/editor/new")}
           className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
         >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           New SOP
         </button>
@@ -159,9 +146,7 @@ export default function Dashboard() {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">
-            No SOPs found
-          </h3>
+          <h3 className="mt-4 text-lg font-medium text-gray-900">No SOPs found</h3>
           <p className="mt-1 text-sm text-gray-500">
             {query || domain || status
               ? "Try adjusting your search filters."

@@ -46,9 +46,7 @@ export class MemorySopStore implements SopStore {
         if (s.sop.domain.toLowerCase().includes(q)) return true;
         if (
           s.sop.decision_tree.some(
-            (dt) =>
-              dt.step.toLowerCase().includes(q) ||
-              dt.instruction.toLowerCase().includes(q),
+            (dt) => dt.step.toLowerCase().includes(q) || dt.instruction.toLowerCase().includes(q),
           )
         )
           return true;
@@ -57,9 +55,7 @@ export class MemorySopStore implements SopStore {
     }
 
     // Sort by quality_score descending
-    results.sort(
-      (a, b) => b.sop.metadata.quality_score - a.sop.metadata.quality_score,
-    );
+    results.sort((a, b) => b.sop.metadata.quality_score - a.sop.metadata.quality_score);
 
     const total = results.length;
     const offset = opts.pagination?.offset ?? 0;
@@ -69,10 +65,7 @@ export class MemorySopStore implements SopStore {
     return { data, total, offset, limit };
   }
 
-  async update(
-    id: string,
-    updates: Partial<StoredSOP>,
-  ): Promise<StoredSOP | undefined> {
+  async update(id: string, updates: Partial<StoredSOP>): Promise<StoredSOP | undefined> {
     const existing = this.sops.get(id);
     if (!existing) return undefined;
 
@@ -100,8 +93,6 @@ export class MemorySopStore implements SopStore {
 
   async getByDomain(domain: string): Promise<StoredSOP[]> {
     const d = domain.toLowerCase();
-    return Array.from(this.sops.values()).filter(
-      (s) => s.sop.domain.toLowerCase() === d,
-    );
+    return Array.from(this.sops.values()).filter((s) => s.sop.domain.toLowerCase() === d);
   }
 }

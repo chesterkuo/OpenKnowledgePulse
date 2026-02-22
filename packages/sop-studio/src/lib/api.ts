@@ -23,7 +23,8 @@ export const api = {
     request(`/v1/sop?${new URLSearchParams(params || {})}`),
   getSOP: (id: string) => request(`/v1/sop/${id}`),
   createSOP: (data: unknown) => request("/v1/sop", { method: "POST", body: JSON.stringify(data) }),
-  updateSOP: (id: string, data: unknown) => request(`/v1/sop/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  updateSOP: (id: string, data: unknown) =>
+    request(`/v1/sop/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteSOP: (id: string) => request(`/v1/sop/${id}`, { method: "DELETE" }),
   approveSOP: (id: string) => request(`/v1/sop/${id}/approve`, { method: "POST" }),
   exportSkill: (id: string) => request(`/v1/sop/${id}/export-skill`, { method: "POST" }),

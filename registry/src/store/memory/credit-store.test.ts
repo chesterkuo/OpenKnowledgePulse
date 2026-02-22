@@ -178,12 +178,8 @@ describe("MemoryCreditStore", () => {
       await store.setLastRefill("agent-1", "2026-01-01T00:00:00.000Z");
       await store.setLastRefill("agent-2", "2026-02-01T00:00:00.000Z");
 
-      expect(await store.getLastRefill("agent-1")).toBe(
-        "2026-01-01T00:00:00.000Z",
-      );
-      expect(await store.getLastRefill("agent-2")).toBe(
-        "2026-02-01T00:00:00.000Z",
-      );
+      expect(await store.getLastRefill("agent-1")).toBe("2026-01-01T00:00:00.000Z");
+      expect(await store.getLastRefill("agent-2")).toBe("2026-02-01T00:00:00.000Z");
     });
 
     test("deducting from one agent should not affect another", async () => {

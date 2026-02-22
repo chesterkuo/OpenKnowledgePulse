@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -292,25 +292,19 @@ export function useCollaboration(
     [sopId, resolvedAgentId],
   );
 
-  const onUpdate = useCallback(
-    (handler: (message: CollaborationMessage) => void): (() => void) => {
-      updateHandlersRef.current.add(handler);
-      return () => {
-        updateHandlersRef.current.delete(handler);
-      };
-    },
-    [],
-  );
+  const onUpdate = useCallback((handler: (message: CollaborationMessage) => void): (() => void) => {
+    updateHandlersRef.current.add(handler);
+    return () => {
+      updateHandlersRef.current.delete(handler);
+    };
+  }, []);
 
-  const onCursor = useCallback(
-    (handler: (message: CollaborationMessage) => void): (() => void) => {
-      cursorHandlersRef.current.add(handler);
-      return () => {
-        cursorHandlersRef.current.delete(handler);
-      };
-    },
-    [],
-  );
+  const onCursor = useCallback((handler: (message: CollaborationMessage) => void): (() => void) => {
+    cursorHandlersRef.current.add(handler);
+    return () => {
+      cursorHandlersRef.current.delete(handler);
+    };
+  }, []);
 
   // Connect on mount, disconnect on unmount
   useEffect(() => {

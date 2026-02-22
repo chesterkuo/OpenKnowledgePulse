@@ -9,14 +9,14 @@ import { schemaVersionMiddleware } from "./middleware/schema-version.js";
 import { authRoutes } from "./routes/auth.js";
 import { exportRoutes } from "./routes/export.js";
 import { knowledgeRoutes } from "./routes/knowledge.js";
+import { marketplaceRoutes } from "./routes/marketplace.js";
 import { reputationRoutes } from "./routes/reputation.js";
 import { skillRoutes } from "./routes/skills.js";
-import { marketplaceRoutes } from "./routes/marketplace.js";
 import { sopRoutes } from "./routes/sop.js";
 import {
-  wsCollaborateRoutes,
   collaborationManager,
   createWebSocketHandler,
+  wsCollaborateRoutes,
 } from "./routes/ws-collaborate.js";
 import { createMemoryStore } from "./store/memory/index.js";
 

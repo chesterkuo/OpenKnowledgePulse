@@ -25,9 +25,7 @@ const MOCK_EXTRACTION: ExtractionResult = {
   ],
 };
 
-function makeMockParseResult(
-  overrides: Partial<ParseResult> = {},
-): ParseResult {
+function makeMockParseResult(overrides: Partial<ParseResult> = {}): ParseResult {
   return {
     text: "This is a standard operating procedure for handling customer escalations.",
     sections: [
@@ -37,8 +35,7 @@ function makeMockParseResult(
       },
       {
         heading: "Escalation",
-        content:
-          "If unresolved within SLA, escalate to tier 2 support immediately.",
+        content: "If unresolved within SLA, escalate to tier 2 support immediately.",
       },
     ],
     metadata: { format: "docx" },
@@ -46,9 +43,7 @@ function makeMockParseResult(
   };
 }
 
-function makeAnthropicConfig(
-  overrides: Partial<LLMConfig> = {},
-): LLMConfig {
+function makeAnthropicConfig(overrides: Partial<LLMConfig> = {}): LLMConfig {
   return {
     provider: "anthropic",
     apiKey: "test-api-key-anthropic",
@@ -117,10 +112,7 @@ describe("extractDecisionTree — Anthropic provider", () => {
       });
     };
 
-    const result = await extractDecisionTree(
-      makeMockParseResult(),
-      makeAnthropicConfig(),
-    );
+    const result = await extractDecisionTree(makeMockParseResult(), makeAnthropicConfig());
 
     expect(calls.length).toBe(1);
     expect(calls[0]!.url).toContain("api.anthropic.com/v1/messages");
@@ -134,19 +126,13 @@ describe("extractDecisionTree — Anthropic provider", () => {
   test("uses default model claude-sonnet-4-20250514 when not specified", async () => {
     let capturedBody: Record<string, unknown> = {};
     globalThis.fetch = async (_input, init) => {
-      capturedBody = JSON.parse(init?.body as string) as Record<
-        string,
-        unknown
-      >;
+      capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
       return createMockResponse({
         content: [{ text: JSON.stringify(MOCK_EXTRACTION) }],
       });
     };
 
-    await extractDecisionTree(
-      makeMockParseResult(),
-      makeAnthropicConfig(),
-    );
+    await extractDecisionTree(makeMockParseResult(), makeAnthropicConfig());
 
     expect(capturedBody.model).toBe("claude-sonnet-4-20250514");
   });
@@ -161,10 +147,7 @@ describe("extractDecisionTree — Anthropic provider", () => {
       });
     };
 
-    await extractDecisionTree(
-      makeMockParseResult(),
-      makeAnthropicConfig(),
-    );
+    await extractDecisionTree(makeMockParseResult(), makeAnthropicConfig());
 
     expect(capturedHeaders["x-api-key"]).toBe("test-api-key-anthropic");
     expect(capturedHeaders["anthropic-version"]).toBe("2023-06-01");
@@ -179,16 +162,11 @@ describe("extractDecisionTree — OpenAI provider", () => {
       const url = typeof input === "string" ? input : (input as Request).url;
       calls.push({ url, body: JSON.parse(init?.body as string) });
       return createMockResponse({
-        choices: [
-          { message: { content: JSON.stringify(MOCK_EXTRACTION) } },
-        ],
+        choices: [{ message: { content: JSON.stringify(MOCK_EXTRACTION) } }],
       });
     };
 
-    const result = await extractDecisionTree(
-      makeMockParseResult(),
-      makeOpenAIConfig(),
-    );
+    const result = await extractDecisionTree(makeMockParseResult(), makeOpenAIConfig());
 
     expect(calls.length).toBe(1);
     expect(calls[0]!.url).toContain("api.openai.com/v1/chat/completions");
@@ -201,21 +179,13 @@ describe("extractDecisionTree — OpenAI provider", () => {
   test("uses default model gpt-4o when not specified", async () => {
     let capturedBody: Record<string, unknown> = {};
     globalThis.fetch = async (_input, init) => {
-      capturedBody = JSON.parse(init?.body as string) as Record<
-        string,
-        unknown
-      >;
+      capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
       return createMockResponse({
-        choices: [
-          { message: { content: JSON.stringify(MOCK_EXTRACTION) } },
-        ],
+        choices: [{ message: { content: JSON.stringify(MOCK_EXTRACTION) } }],
       });
     };
 
-    await extractDecisionTree(
-      makeMockParseResult(),
-      makeOpenAIConfig(),
-    );
+    await extractDecisionTree(makeMockParseResult(), makeOpenAIConfig());
 
     expect(capturedBody.model).toBe("gpt-4o");
   });
@@ -226,16 +196,11 @@ describe("extractDecisionTree — OpenAI provider", () => {
       const headers = init?.headers as Record<string, string>;
       capturedHeaders = headers;
       return createMockResponse({
-        choices: [
-          { message: { content: JSON.stringify(MOCK_EXTRACTION) } },
-        ],
+        choices: [{ message: { content: JSON.stringify(MOCK_EXTRACTION) } }],
       });
     };
 
-    await extractDecisionTree(
-      makeMockParseResult(),
-      makeOpenAIConfig(),
-    );
+    await extractDecisionTree(makeMockParseResult(), makeOpenAIConfig());
 
     expect(capturedHeaders.Authorization).toBe("Bearer test-api-key-openai");
   });
@@ -243,21 +208,13 @@ describe("extractDecisionTree — OpenAI provider", () => {
   test("requests json_object response format for OpenAI", async () => {
     let capturedBody: Record<string, unknown> = {};
     globalThis.fetch = async (_input, init) => {
-      capturedBody = JSON.parse(init?.body as string) as Record<
-        string,
-        unknown
-      >;
+      capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
       return createMockResponse({
-        choices: [
-          { message: { content: JSON.stringify(MOCK_EXTRACTION) } },
-        ],
+        choices: [{ message: { content: JSON.stringify(MOCK_EXTRACTION) } }],
       });
     };
 
-    await extractDecisionTree(
-      makeMockParseResult(),
-      makeOpenAIConfig(),
-    );
+    await extractDecisionTree(makeMockParseResult(), makeOpenAIConfig());
 
     expect(capturedBody.response_format).toEqual({ type: "json_object" });
   });
@@ -271,10 +228,7 @@ describe("extractDecisionTree — markdown code block handling", () => {
         content: [{ text: wrappedResponse }],
       });
 
-    const result = await extractDecisionTree(
-      makeMockParseResult(),
-      makeAnthropicConfig(),
-    );
+    const result = await extractDecisionTree(makeMockParseResult(), makeAnthropicConfig());
 
     expect(result.name).toBe("Customer Escalation SOP");
     expect(result.decision_tree).toHaveLength(2);
@@ -287,10 +241,7 @@ describe("extractDecisionTree — markdown code block handling", () => {
         content: [{ text: wrappedResponse }],
       });
 
-    const result = await extractDecisionTree(
-      makeMockParseResult(),
-      makeAnthropicConfig(),
-    );
+    const result = await extractDecisionTree(makeMockParseResult(), makeAnthropicConfig());
 
     expect(result.name).toBe("Customer Escalation SOP");
     expect(result.confidence).toBe(0.92);
@@ -302,10 +253,7 @@ describe("extractDecisionTree — markdown code block handling", () => {
         content: [{ text: JSON.stringify(MOCK_EXTRACTION) }],
       });
 
-    const result = await extractDecisionTree(
-      makeMockParseResult(),
-      makeAnthropicConfig(),
-    );
+    const result = await extractDecisionTree(makeMockParseResult(), makeAnthropicConfig());
 
     expect(result.name).toBe("Customer Escalation SOP");
     expect(result.domain).toBe("customer_service");
@@ -316,10 +264,7 @@ describe("extractDecisionTree — custom configuration", () => {
   test("uses custom model when provided for Anthropic", async () => {
     let capturedBody: Record<string, unknown> = {};
     globalThis.fetch = async (_input, init) => {
-      capturedBody = JSON.parse(init?.body as string) as Record<
-        string,
-        unknown
-      >;
+      capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
       return createMockResponse({
         content: [{ text: JSON.stringify(MOCK_EXTRACTION) }],
       });
@@ -336,21 +281,13 @@ describe("extractDecisionTree — custom configuration", () => {
   test("uses custom model when provided for OpenAI", async () => {
     let capturedBody: Record<string, unknown> = {};
     globalThis.fetch = async (_input, init) => {
-      capturedBody = JSON.parse(init?.body as string) as Record<
-        string,
-        unknown
-      >;
+      capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
       return createMockResponse({
-        choices: [
-          { message: { content: JSON.stringify(MOCK_EXTRACTION) } },
-        ],
+        choices: [{ message: { content: JSON.stringify(MOCK_EXTRACTION) } }],
       });
     };
 
-    await extractDecisionTree(
-      makeMockParseResult(),
-      makeOpenAIConfig({ model: "gpt-4-turbo" }),
-    );
+    await extractDecisionTree(makeMockParseResult(), makeOpenAIConfig({ model: "gpt-4-turbo" }));
 
     expect(capturedBody.model).toBe("gpt-4-turbo");
   });
@@ -358,8 +295,7 @@ describe("extractDecisionTree — custom configuration", () => {
   test("uses custom baseUrl when provided", async () => {
     let capturedUrl = "";
     globalThis.fetch = async (input) => {
-      capturedUrl =
-        typeof input === "string" ? input : (input as Request).url;
+      capturedUrl = typeof input === "string" ? input : (input as Request).url;
       return createMockResponse({
         content: [{ text: JSON.stringify(MOCK_EXTRACTION) }],
       });
@@ -370,9 +306,7 @@ describe("extractDecisionTree — custom configuration", () => {
       makeAnthropicConfig({ baseUrl: "https://custom-proxy.example.com" }),
     );
 
-    expect(capturedUrl).toBe(
-      "https://custom-proxy.example.com/v1/messages",
-    );
+    expect(capturedUrl).toBe("https://custom-proxy.example.com/v1/messages");
   });
 
   test("uses sections text when sections are present", async () => {

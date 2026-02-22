@@ -1,9 +1,9 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Editor from "./pages/Editor";
 import Import from "./pages/Import";
-import TestSandbox from "./pages/TestSandbox";
 import Settings from "./pages/Settings";
+import TestSandbox from "./pages/TestSandbox";
 
 export default function App() {
   return (

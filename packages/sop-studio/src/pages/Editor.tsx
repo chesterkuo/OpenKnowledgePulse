@@ -1,27 +1,27 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import {
-  ReactFlow,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  type Node,
-  type Edge,
-  type Connection,
-  ReactFlowProvider,
   Background,
+  type Connection,
   Controls,
+  type Edge,
   MiniMap,
+  type Node,
+  ReactFlow,
+  ReactFlowProvider,
+  addEdge,
+  useEdgesState,
+  useNodesState,
 } from "@xyflow/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import "@xyflow/react/dist/style.css";
 
-import StepNode from "../components/nodes/StepNode";
-import ConditionNode from "../components/nodes/ConditionNode";
-import ToolNode from "../components/nodes/ToolNode";
 import PropertyPanel from "../components/PropertyPanel";
-import { sopToFlow, type DecisionTreeStep } from "../lib/sop-to-flow";
-import { flowToSop } from "../lib/flow-to-sop";
+import ConditionNode from "../components/nodes/ConditionNode";
+import StepNode from "../components/nodes/StepNode";
+import ToolNode from "../components/nodes/ToolNode";
 import { api } from "../lib/api";
+import { flowToSop } from "../lib/flow-to-sop";
+import { type DecisionTreeStep, sopToFlow } from "../lib/sop-to-flow";
 
 /** API response shape for a single SOP */
 interface StoredSOP {
@@ -126,9 +126,7 @@ function EditorInner() {
       .then((res) => {
         const data = res.data;
         setStoredSOP(data);
-        const { nodes: n, edges: e } = sopToFlow(
-          data.sop.decision_tree || []
-        );
+        const { nodes: n, edges: e } = sopToFlow(data.sop.decision_tree || []);
         setNodes(n);
         setEdges(e);
       })
@@ -156,15 +154,12 @@ function EditorInner() {
     (params: Connection) => {
       setEdges((eds) => addEdge(params, eds));
     },
-    [setEdges]
+    [setEdges],
   );
 
-  const onNodeClick = useCallback(
-    (_event: React.MouseEvent, node: Node) => {
-      setSelectedNode(node);
-    },
-    []
-  );
+  const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+  }, []);
 
   const onPaneClick = useCallback(() => {
     setSelectedNode(null);
@@ -179,10 +174,10 @@ function EditorInner() {
             return { ...n, data: newData };
           }
           return n;
-        })
+        }),
       );
     },
-    [setNodes]
+    [setNodes],
   );
 
   // Show a temporary status message
@@ -220,9 +215,7 @@ function EditorInner() {
         showStatus("SOP saved successfully");
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to save SOP"
-      );
+      setError(err instanceof Error ? err.message : "Failed to save SOP");
     } finally {
       setSaving(false);
     }
@@ -251,9 +244,7 @@ function EditorInner() {
       URL.revokeObjectURL(url);
       showStatus("SKILL.md exported");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to export SKILL.md"
-      );
+      setError(err instanceof Error ? err.message : "Failed to export SKILL.md");
     }
   }, [storedSOP, isNew, showStatus]);
 
@@ -272,11 +263,7 @@ function EditorInner() {
       setStoredSOP(result.data);
       showStatus("Submitted for review");
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to submit for review"
-      );
+      setError(err instanceof Error ? err.message : "Failed to submit for review");
     }
   }, [storedSOP, isNew, showStatus]);
 
@@ -296,18 +283,13 @@ function EditorInner() {
       showStatus("SOP deleted");
       navigate("/");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to delete SOP"
-      );
+      setError(err instanceof Error ? err.message : "Failed to delete SOP");
     }
   }, [storedSOP, isNew, navigate, showStatus]);
 
   // Add a new step node
   const handleAddStep = useCallback(() => {
-    const maxY = nodes.reduce(
-      (max, n) => Math.max(max, n.position.y),
-      0
-    );
+    const maxY = nodes.reduce((max, n) => Math.max(max, n.position.y), 0);
     const newNode: Node = {
       id: `step-${Date.now()}`,
       type: "stepNode",
@@ -323,10 +305,7 @@ function EditorInner() {
 
   // Add a new condition node
   const handleAddCondition = useCallback(() => {
-    const maxY = nodes.reduce(
-      (max, n) => Math.max(max, n.position.y),
-      0
-    );
+    const maxY = nodes.reduce((max, n) => Math.max(max, n.position.y), 0);
     const newNode: Node = {
       id: `condition-${Date.now()}`,
       type: "conditionNode",
@@ -343,10 +322,7 @@ function EditorInner() {
 
   // Add a new tool node
   const handleAddTool = useCallback(() => {
-    const maxY = nodes.reduce(
-      (max, n) => Math.max(max, n.position.y),
-      0
-    );
+    const maxY = nodes.reduce((max, n) => Math.max(max, n.position.y), 0);
     const newNode: Node = {
       id: `tool-${Date.now()}`,
       type: "toolNode",
@@ -436,15 +412,9 @@ function EditorInner() {
             </span>
           )}
           {statusMessage && (
-            <span className="text-xs text-green-600 font-medium">
-              {statusMessage}
-            </span>
+            <span className="text-xs text-green-600 font-medium">{statusMessage}</span>
           )}
-          {error && (
-            <span className="text-xs text-red-600 font-medium">
-              {error}
-            </span>
-          )}
+          {error && <span className="text-xs text-red-600 font-medium">{error}</span>}
         </div>
         <div className="flex items-center gap-2">
           {/* Add node buttons */}
@@ -522,18 +492,10 @@ function EditorInner() {
           >
             <Background />
             <Controls />
-            <MiniMap
-              nodeColor={miniMapNodeColor}
-              nodeStrokeWidth={3}
-              zoomable
-              pannable
-            />
+            <MiniMap nodeColor={miniMapNodeColor} nodeStrokeWidth={3} zoomable pannable />
           </ReactFlow>
         </div>
-        <PropertyPanel
-          selectedNode={selectedNode}
-          onNodeUpdate={handleNodeUpdate}
-        />
+        <PropertyPanel selectedNode={selectedNode} onNodeUpdate={handleNodeUpdate} />
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
-import type { Node, Edge } from "@xyflow/react";
+import type { Edge, Node } from "@xyflow/react";
 import type {
+  ConditionNodeData,
   DecisionTreeStep,
   StepNodeData,
-  ConditionNodeData,
   ToolNodeData,
 } from "./sop-to-flow";
 
@@ -16,8 +16,8 @@ export function flowToSop(nodes: Node[], edges: Edge[]): DecisionTreeStep[] {
     .filter((n) => n.type === "stepNode")
     .sort((a, b) => a.position.y - b.position.y);
 
-  const conditionNodes = nodes.filter((n) => n.type === "conditionNode");
-  const toolNodes = nodes.filter((n) => n.type === "toolNode");
+  const _conditionNodes = nodes.filter((n) => n.type === "conditionNode");
+  const _toolNodes = nodes.filter((n) => n.type === "toolNode");
 
   // Build edge lookup: source -> targets
   const edgesBySource = new Map<string, Edge[]>();
@@ -61,10 +61,7 @@ export function flowToSop(nodes: Node[], edges: Edge[]): DecisionTreeStep[] {
     // Merge criteria/conditions from connected condition nodes
     if (connectedConditionIds.length > 0) {
       const allCriteria: Record<string, string> = {};
-      const allConditions: Record<
-        string,
-        { action: string; sla_min?: number }
-      > = {};
+      const allConditions: Record<string, { action: string; sla_min?: number }> = {};
 
       for (const condId of connectedConditionIds) {
         const condNode = nodeMap.get(condId);
@@ -90,9 +87,7 @@ export function flowToSop(nodes: Node[], edges: Edge[]): DecisionTreeStep[] {
               const origCond = condData.conditions?.[condKey];
               allConditions[condKey] = {
                 action: targetData.step,
-                ...(origCond?.sla_min !== undefined
-                  ? { sla_min: origCond.sla_min }
-                  : {}),
+                ...(origCond?.sla_min !== undefined ? { sla_min: origCond.sla_min } : {}),
               };
             }
           }
@@ -132,9 +127,7 @@ export function flowToSop(nodes: Node[], edges: Edge[]): DecisionTreeStep[] {
           const toolData = toolNode.data as ToolNodeData;
           return { name: toolData.name, when: toolData.when };
         })
-        .filter(
-          (t): t is { name: string; when: string } => t !== null
-        );
+        .filter((t): t is { name: string; when: string } => t !== null);
     }
 
     return result;

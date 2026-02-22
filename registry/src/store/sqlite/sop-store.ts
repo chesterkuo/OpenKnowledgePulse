@@ -31,9 +31,10 @@ export class SqliteSopStore implements SopStore {
   }
 
   async getById(id: string): Promise<StoredSOP | undefined> {
-    const row = this.db
-      .query("SELECT * FROM sops WHERE id = $id")
-      .get({ $id: id }) as Record<string, unknown> | null;
+    const row = this.db.query("SELECT * FROM sops WHERE id = $id").get({ $id: id }) as Record<
+      string,
+      unknown
+    > | null;
     if (!row) return undefined;
     return this.rowToSOP(row);
   }
@@ -66,8 +67,7 @@ export class SqliteSopStore implements SopStore {
       params.$domain = d;
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     const rows = this.db
       .query(`SELECT * FROM sops ${whereClause} ORDER BY updated_at DESC`)
@@ -89,9 +89,7 @@ export class SqliteSopStore implements SopStore {
         if (s.sop.domain.toLowerCase().includes(q)) return true;
         if (
           s.sop.decision_tree.some(
-            (dt) =>
-              dt.step.toLowerCase().includes(q) ||
-              dt.instruction.toLowerCase().includes(q),
+            (dt) => dt.step.toLowerCase().includes(q) || dt.instruction.toLowerCase().includes(q),
           )
         )
           return true;
@@ -100,9 +98,7 @@ export class SqliteSopStore implements SopStore {
     }
 
     // Sort by quality_score descending
-    results.sort(
-      (a, b) => b.sop.metadata.quality_score - a.sop.metadata.quality_score,
-    );
+    results.sort((a, b) => b.sop.metadata.quality_score - a.sop.metadata.quality_score);
 
     const total = results.length;
     const offset = opts.pagination?.offset ?? 0;
@@ -112,10 +108,7 @@ export class SqliteSopStore implements SopStore {
     return { data, total, offset, limit };
   }
 
-  async update(
-    id: string,
-    updates: Partial<StoredSOP>,
-  ): Promise<StoredSOP | undefined> {
+  async update(id: string, updates: Partial<StoredSOP>): Promise<StoredSOP | undefined> {
     const existing = await this.getById(id);
     if (!existing) return undefined;
 
@@ -125,17 +118,13 @@ export class SqliteSopStore implements SopStore {
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = this.db
-      .query("DELETE FROM sops WHERE id = $id")
-      .run({ $id: id });
+    const result = this.db.query("DELETE FROM sops WHERE id = $id").run({ $id: id });
     return result.changes > 0;
   }
 
   async getVersions(id: string): Promise<SOPVersion[]> {
     const rows = this.db
-      .query(
-        "SELECT * FROM sop_versions WHERE sop_id = $sop_id ORDER BY version ASC",
-      )
+      .query("SELECT * FROM sop_versions WHERE sop_id = $sop_id ORDER BY version ASC")
       .all({ $sop_id: id }) as Record<string, unknown>[];
     return rows.map((row) => ({
       sop_id: row.sop_id as string,
@@ -161,9 +150,7 @@ export class SqliteSopStore implements SopStore {
 
   async getByDomain(domain: string): Promise<StoredSOP[]> {
     // Fetch all and filter in JS for exact matching
-    const rows = this.db
-      .query("SELECT * FROM sops")
-      .all() as Record<string, unknown>[];
+    const rows = this.db.query("SELECT * FROM sops").all() as Record<string, unknown>[];
     const all = rows.map((row) => this.rowToSOP(row));
     const d = domain.toLowerCase();
     return all.filter((s) => s.sop.domain.toLowerCase() === d);

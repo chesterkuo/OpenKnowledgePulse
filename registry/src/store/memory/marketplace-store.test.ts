@@ -2,9 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import type { MarketplaceListing } from "../interfaces.js";
 import { MemoryMarketplaceStore } from "./marketplace-store.js";
 
-function makeListing(
-  overrides: Partial<MarketplaceListing> = {},
-): MarketplaceListing {
+function makeListing(overrides: Partial<MarketplaceListing> = {}): MarketplaceListing {
   const now = new Date().toISOString();
   return {
     id: crypto.randomUUID(),

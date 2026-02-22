@@ -1,26 +1,17 @@
-import { type ChangeEvent, useCallback } from "react";
 import type { Node } from "@xyflow/react";
-import type {
-  StepNodeData,
-  ConditionNodeData,
-  ToolNodeData,
-} from "../lib/sop-to-flow";
+import { type ChangeEvent, useCallback } from "react";
+import type { ConditionNodeData, StepNodeData, ToolNodeData } from "../lib/sop-to-flow";
 
 interface PropertyPanelProps {
   selectedNode: Node | null;
   onNodeUpdate: (nodeId: string, data: Record<string, unknown>) => void;
 }
 
-export default function PropertyPanel({
-  selectedNode,
-  onNodeUpdate,
-}: PropertyPanelProps) {
+export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPanelProps) {
   if (!selectedNode) {
     return (
       <div className="w-80 border-l border-gray-200 bg-white p-6 flex items-center justify-center">
-        <p className="text-gray-400 text-sm text-center">
-          Select a node to edit its properties
-        </p>
+        <p className="text-gray-400 text-sm text-center">Select a node to edit its properties</p>
       </div>
     );
   }
@@ -33,22 +24,13 @@ export default function PropertyPanel({
       </div>
       <div className="p-4">
         {selectedNode.type === "stepNode" && (
-          <StepNodeProperties
-            node={selectedNode}
-            onUpdate={onNodeUpdate}
-          />
+          <StepNodeProperties node={selectedNode} onUpdate={onNodeUpdate} />
         )}
         {selectedNode.type === "conditionNode" && (
-          <ConditionNodeProperties
-            node={selectedNode}
-            onUpdate={onNodeUpdate}
-          />
+          <ConditionNodeProperties node={selectedNode} onUpdate={onNodeUpdate} />
         )}
         {selectedNode.type === "toolNode" && (
-          <ToolNodeProperties
-            node={selectedNode}
-            onUpdate={onNodeUpdate}
-          />
+          <ToolNodeProperties node={selectedNode} onUpdate={onNodeUpdate} />
         )}
       </div>
     </div>
@@ -68,7 +50,7 @@ function StepNodeProperties({
     (field: string, value: string) => {
       onUpdate(node.id, { ...data, [field]: value });
     },
-    [node.id, data, onUpdate]
+    [node.id, data, onUpdate],
   );
 
   return (
@@ -78,27 +60,19 @@ function StepNodeProperties({
         <span className="text-sm font-medium text-gray-700">Step Node</span>
       </div>
       <div>
-        <label
-          htmlFor="step-name"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="step-name" className="block text-sm font-medium text-gray-700 mb-1">
           Step Name
         </label>
         <input
           id="step-name"
           type="text"
           value={data.step || ""}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            handleChange("step", e.target.value)
-          }
+          onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange("step", e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
         />
       </div>
       <div>
-        <label
-          htmlFor="step-instruction"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="step-instruction" className="block text-sm font-medium text-gray-700 mb-1">
           Instruction
         </label>
         <textarea
@@ -127,11 +101,7 @@ function ConditionNodeProperties({
   const conditionEntries = Object.entries(data.conditions || {});
 
   const updateCriteria = useCallback(
-    (
-      oldKey: string,
-      newKey: string,
-      value: string
-    ) => {
+    (oldKey: string, newKey: string, value: string) => {
       const newCriteria = { ...data.criteria };
       if (oldKey !== newKey) {
         delete newCriteria[oldKey];
@@ -139,7 +109,7 @@ function ConditionNodeProperties({
       newCriteria[newKey] = value;
       onUpdate(node.id, { ...data, criteria: newCriteria });
     },
-    [node.id, data, onUpdate]
+    [node.id, data, onUpdate],
   );
 
   const removeCriteria = useCallback(
@@ -148,7 +118,7 @@ function ConditionNodeProperties({
       delete newCriteria[key];
       onUpdate(node.id, { ...data, criteria: newCriteria });
     },
-    [node.id, data, onUpdate]
+    [node.id, data, onUpdate],
   );
 
   const addCriteria = useCallback(() => {
@@ -157,12 +127,7 @@ function ConditionNodeProperties({
   }, [node.id, data, onUpdate]);
 
   const updateCondition = useCallback(
-    (
-      oldKey: string,
-      newKey: string,
-      action: string,
-      slaMin?: number
-    ) => {
+    (oldKey: string, newKey: string, action: string, slaMin?: number) => {
       const newConditions = { ...data.conditions };
       if (oldKey !== newKey) {
         delete newConditions[oldKey];
@@ -173,7 +138,7 @@ function ConditionNodeProperties({
       };
       onUpdate(node.id, { ...data, conditions: newConditions });
     },
-    [node.id, data, onUpdate]
+    [node.id, data, onUpdate],
   );
 
   const removeCondition = useCallback(
@@ -182,7 +147,7 @@ function ConditionNodeProperties({
       delete newConditions[key];
       onUpdate(node.id, { ...data, conditions: newConditions });
     },
-    [node.id, data, onUpdate]
+    [node.id, data, onUpdate],
   );
 
   const addCondition = useCallback(() => {
@@ -197,17 +162,13 @@ function ConditionNodeProperties({
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-block w-3 h-3 rounded-full bg-orange-500" />
-        <span className="text-sm font-medium text-gray-700">
-          Condition Node
-        </span>
+        <span className="text-sm font-medium text-gray-700">Condition Node</span>
       </div>
 
       {/* Criteria editor */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Criteria
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Criteria</label>
           <button
             type="button"
             onClick={addCriteria}
@@ -254,9 +215,7 @@ function ConditionNodeProperties({
       {/* Conditions editor */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Conditions
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Conditions</label>
           <button
             type="button"
             onClick={addCondition}
@@ -269,22 +228,14 @@ function ConditionNodeProperties({
           <p className="text-xs text-gray-400">No conditions defined</p>
         )}
         {conditionEntries.map(([key, value], idx) => (
-          <div
-            key={idx}
-            className="border border-gray-200 rounded p-2 mb-2 space-y-1"
-          >
+          <div key={idx} className="border border-gray-200 rounded p-2 mb-2 space-y-1">
             <div className="flex gap-1 items-center">
               <input
                 type="text"
                 placeholder="Condition name"
                 value={key}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  updateCondition(
-                    key,
-                    e.target.value,
-                    value.action,
-                    value.sla_min
-                  )
+                  updateCondition(key, e.target.value, value.action, value.sla_min)
                 }
                 className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
               />
@@ -315,7 +266,7 @@ function ConditionNodeProperties({
                   key,
                   key,
                   value.action,
-                  e.target.value ? Number(e.target.value) : undefined
+                  e.target.value ? Number(e.target.value) : undefined,
                 )
               }
               className="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
@@ -340,7 +291,7 @@ function ToolNodeProperties({
     (field: string, value: string) => {
       onUpdate(node.id, { ...data, [field]: value });
     },
-    [node.id, data, onUpdate]
+    [node.id, data, onUpdate],
   );
 
   return (
@@ -350,36 +301,26 @@ function ToolNodeProperties({
         <span className="text-sm font-medium text-gray-700">Tool Node</span>
       </div>
       <div>
-        <label
-          htmlFor="tool-name"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="tool-name" className="block text-sm font-medium text-gray-700 mb-1">
           Tool Name
         </label>
         <input
           id="tool-name"
           type="text"
           value={data.name || ""}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            handleChange("name", e.target.value)
-          }
+          onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange("name", e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
         />
       </div>
       <div>
-        <label
-          htmlFor="tool-when"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="tool-when" className="block text-sm font-medium text-gray-700 mb-1">
           When (trigger condition)
         </label>
         <textarea
           id="tool-when"
           rows={3}
           value={data.when || ""}
-          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-            handleChange("when", e.target.value)
-          }
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleChange("when", e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y"
         />
       </div>

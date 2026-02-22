@@ -2,17 +2,14 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { Hono } from "hono";
 import type { AllStores } from "../store/interfaces.js";
 import { createMemoryStore } from "../store/memory/index.js";
-import { MemoryReputationStore } from "../store/memory/reputation-store.js";
+import type { MemoryReputationStore } from "../store/memory/reputation-store.js";
 import { reputationRoutes } from "./reputation.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: test helper for JSON response parsing
 type Json = any;
 
 /** Create test app with mock auth middleware */
-function createTestApp(
-  stores: AllStores,
-  authOverrides: Record<string, unknown> = {},
-) {
+function createTestApp(stores: AllStores, authOverrides: Record<string, unknown> = {}) {
   const app = new Hono();
 
   app.use("*", async (c, next) => {
@@ -51,11 +48,7 @@ function createUnauthApp(stores: AllStores) {
  * Helper: set up an agent with a reputation score and a creation date
  * old enough to pass the 30-day canVote check.
  */
-async function seedVotableAgent(
-  stores: AllStores,
-  agentId: string,
-  score: number,
-) {
+async function seedVotableAgent(stores: AllStores, agentId: string, score: number) {
   await stores.reputation.upsert(agentId, score, "Seed reputation");
   // Backdate the created_at by 31 days so canVote passes
   const repStore = stores.reputation as MemoryReputationStore;
@@ -212,14 +205,11 @@ describe("Badge & Certification Routes", () => {
       // Set up agent-1 as votable with score 16 (sqrt = 4)
       await seedVotableAgent(stores, "agent-1", 16);
 
-      const res = await userApp.request(
-        `/v1/reputation/proposals/${proposalId}/vote`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approve: true }),
-        },
-      );
+      const res = await userApp.request(`/v1/reputation/proposals/${proposalId}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approve: true }),
+      });
       expect(res.status).toBe(200);
       const body: Json = await res.json();
       expect(body.data.vote.voter_id).toBe("agent-1");
@@ -241,14 +231,11 @@ describe("Badge & Certification Routes", () => {
           tier: "pro",
         });
 
-        const res = await voterApp.request(
-          `/v1/reputation/proposals/${proposalId}/vote`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ approve: true }),
-          },
-        );
+        const res = await voterApp.request(`/v1/reputation/proposals/${proposalId}/vote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ approve: true }),
+        });
         expect(res.status).toBe(200);
       }
 
@@ -269,14 +256,11 @@ describe("Badge & Certification Routes", () => {
       await stores.reputation.upsert("agent-1", 10, "Seed reputation");
       // Don't backdate — agent is too new, canVote returns false
 
-      const res = await userApp.request(
-        `/v1/reputation/proposals/${proposalId}/vote`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approve: true }),
-        },
-      );
+      const res = await userApp.request(`/v1/reputation/proposals/${proposalId}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approve: true }),
+      });
       expect(res.status).toBe(403);
       const body: Json = await res.json();
       expect(body.error).toContain("30-day");
@@ -296,14 +280,11 @@ describe("Badge & Certification Routes", () => {
 
         const approve = i <= 2; // first 2 approve, last 3 reject
 
-        const res = await voterApp.request(
-          `/v1/reputation/proposals/${proposalId}/vote`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ approve }),
-          },
-        );
+        const res = await voterApp.request(`/v1/reputation/proposals/${proposalId}/vote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ approve }),
+        });
         expect(res.status).toBe(200);
       }
 
@@ -317,28 +298,22 @@ describe("Badge & Certification Routes", () => {
     });
 
     test("rejects unauthenticated vote", async () => {
-      const res = await unauthApp.request(
-        `/v1/reputation/proposals/${proposalId}/vote`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approve: true }),
-        },
-      );
+      const res = await unauthApp.request(`/v1/reputation/proposals/${proposalId}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approve: true }),
+      });
       expect(res.status).toBe(401);
     });
 
     test("returns 404 for non-existent proposal", async () => {
       await seedVotableAgent(stores, "agent-1", 10);
 
-      const res = await userApp.request(
-        "/v1/reputation/proposals/non-existent/vote",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approve: true }),
-        },
-      );
+      const res = await userApp.request("/v1/reputation/proposals/non-existent/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approve: true }),
+      });
       expect(res.status).toBe(404);
     });
   });

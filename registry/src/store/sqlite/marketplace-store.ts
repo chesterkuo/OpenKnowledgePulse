@@ -64,8 +64,7 @@ export class SqliteMarketplaceStore implements MarketplaceStore {
       params.$query = `%${opts.query.toLowerCase()}%`;
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     // Get total count
     const countRow = this.db
@@ -92,7 +91,7 @@ export class SqliteMarketplaceStore implements MarketplaceStore {
     const now = new Date().toISOString();
     this.db
       .query(
-        `UPDATE marketplace_listings SET purchases = purchases + 1, updated_at = $updated_at WHERE id = $id`,
+        "UPDATE marketplace_listings SET purchases = purchases + 1, updated_at = $updated_at WHERE id = $id",
       )
       .run({
         $id: listingId,
