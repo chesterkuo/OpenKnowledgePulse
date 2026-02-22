@@ -11,6 +11,7 @@
     "@knowledgepulse/sdk": "workspace:*",
     "@types/pg": "^8.16.0",
     "hono": "^4.4.0",
+    "ioredis": "^5.9.3",
     "pg": "^8.18.0",
     "zod": "^3.23.0"
   },

@@ -33,6 +33,12 @@ app.use("*", schemaVersionMiddleware());
 app.use("*", auditMiddleware(stores.auditLog));
 app.use("/v1/skills/*", sanitizerMiddleware());
 
+// Wire idempotency middleware if Redis is available
+if (stores._redis) {
+  const { idempotencyMiddleware } = await import("./middleware/idempotency.js");
+  app.use("*", idempotencyMiddleware(stores._redis));
+}
+
 // Health check
 app.get("/health", (c) => c.json({ status: "ok", version: "0.1.0" }));
 
