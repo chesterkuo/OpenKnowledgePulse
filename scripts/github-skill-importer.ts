@@ -74,14 +74,34 @@ function parseCliArgs(): ImportConfig {
     githubToken,
     apiKey: apiKey ?? "",
     registryUrl: values["registry-url"]!,
-    minStars: parseInt(values["min-stars"]!, 10),
-    minQuality: parseFloat(values["min-quality"]!),
-    maxResults: parseInt(values["max-results"]!, 10),
-    concurrency: parseInt(values.concurrency!, 10),
+    minStars: validateInt(values["min-stars"]!, "min-stars"),
+    minQuality: validateFloat(values["min-quality"]!, "min-quality"),
+    maxResults: validateInt(values["max-results"]!, "max-results"),
+    concurrency: validateInt(values.concurrency!, "concurrency"),
     dryRun: values["dry-run"]!,
     resume: values.resume!,
     verbose: values.verbose!,
   };
+}
+
+// ─── Validation helpers ──────────────────────────────────────────
+
+function validateInt(value: string, name: string): number {
+  const n = parseInt(value, 10);
+  if (Number.isNaN(n)) {
+    console.error(`Error: --${name} must be an integer, got "${value}"`);
+    process.exit(1);
+  }
+  return n;
+}
+
+function validateFloat(value: string, name: string): number {
+  const n = parseFloat(value);
+  if (Number.isNaN(n)) {
+    console.error(`Error: --${name} must be a number, got "${value}"`);
+    process.exit(1);
+  }
+  return n;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -338,9 +358,11 @@ async function processCandidate(
         `[imported] ${key} — quality=${quality.score}, domain=${domain}${skillId ? `, id=${skillId}` : ""}`,
       );
     } else {
-      // Dry run — just log what would happen
+      // Dry run — log what would happen but don't mark as imported
+      // so that a subsequent non-dry-run with --resume will re-process
       checkpointMgr.updateCandidate(key, {
-        status: "imported",
+        status: "skipped",
+        reason: `dry-run: would import (quality=${quality.score}, domain=${domain})`,
         qualityScore: quality.score,
         domain,
       });
