@@ -44,3 +44,7 @@ specs/knowledge-unit-schema.json
 
 # Marketing drafts
 marketing/
+
+# GitHub SKILL.md importer
+scripts/.github-import-checkpoint.json
+scripts/.github-import-report-*.json
