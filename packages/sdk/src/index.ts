@@ -63,6 +63,19 @@ export {
 // Migrations
 export { migrate } from "./migrations/index.js";
 
+// SOP Import
+export {
+  parseDocx,
+  parsePdf,
+  extractDecisionTree,
+  getExtractionPrompt,
+} from "./sop-import/index.js";
+export type {
+  LLMConfig,
+  ParseResult,
+  ExtractionResult,
+} from "./sop-import/index.js";
+
 // Reputation
 export {
   computeEigenTrust,

@@ -1,5 +1,8 @@
 import type { ValidationVote } from "@knowledgepulse/sdk";
 import type {
+  BadgeLevel,
+  CertificationProposal,
+  DomainBadge,
   PaginatedResult,
   PaginationOpts,
   ReputationRecord,
@@ -12,6 +15,8 @@ export class MemoryReputationStore implements ReputationStore {
   private records = new Map<string, ReputationRecord>();
   private createdAt = new Map<string, Date>();
   private votes: ValidationVote[] = [];
+  private badges = new Map<string, DomainBadge[]>(); // agentId -> badges
+  private proposals = new Map<string, CertificationProposal>(); // proposalId -> proposal
 
   async get(agentId: string): Promise<ReputationRecord | undefined> {
     return this.records.get(agentId);
@@ -25,7 +30,14 @@ export class MemoryReputationStore implements ReputationStore {
       existing.score = Math.max(0, existing.score + delta);
       existing.history.push({ timestamp: now, delta, reason });
       if (delta > 0) existing.contributions++;
+      if (reason.includes("Validated")) existing.validations++;
       existing.updated_at = now;
+
+      // Auto-grant badges on contribution
+      if (reason.includes("Contributed") || reason.includes("Created")) {
+        await this.evaluateBadges(agentId, "general");
+      }
+
       return existing;
     }
 
@@ -33,12 +45,18 @@ export class MemoryReputationStore implements ReputationStore {
       agent_id: agentId,
       score: Math.max(0, delta),
       contributions: delta > 0 ? 1 : 0,
-      validations: 0,
+      validations: reason.includes("Validated") ? 1 : 0,
       history: [{ timestamp: now, delta, reason }],
       updated_at: now,
     };
     this.records.set(agentId, record);
     this.createdAt.set(agentId, new Date());
+
+    // Auto-grant badges on contribution (even for first record)
+    if (reason.includes("Contributed") || reason.includes("Created")) {
+      await this.evaluateBadges(agentId, "general");
+    }
+
     return record;
   }
 
@@ -69,6 +87,91 @@ export class MemoryReputationStore implements ReputationStore {
     const created = this.createdAt.get(agentId);
     if (!created) return false;
     return Date.now() - created.getTime() >= THIRTY_DAYS_MS;
+  }
+
+  // ── Badge methods ───────────────────────────────────────
+
+  async getBadges(agentId: string): Promise<DomainBadge[]> {
+    return this.badges.get(agentId) ?? [];
+  }
+
+  async grantBadge(badge: DomainBadge): Promise<void> {
+    const existing = this.badges.get(badge.agent_id) ?? [];
+    existing.push(badge);
+    this.badges.set(badge.agent_id, existing);
+  }
+
+  async hasBadge(agentId: string, domain: string, level: BadgeLevel): Promise<boolean> {
+    const agentBadges = this.badges.get(agentId) ?? [];
+    return agentBadges.some((b) => b.domain === domain && b.level === level);
+  }
+
+  // ── Certification proposal methods ──────────────────────
+
+  async createProposal(proposal: CertificationProposal): Promise<CertificationProposal> {
+    this.proposals.set(proposal.proposal_id, proposal);
+    return proposal;
+  }
+
+  async getProposal(proposalId: string): Promise<CertificationProposal | undefined> {
+    return this.proposals.get(proposalId);
+  }
+
+  async getOpenProposals(): Promise<CertificationProposal[]> {
+    return Array.from(this.proposals.values()).filter((p) => p.status === "open");
+  }
+
+  async addVoteToProposal(
+    proposalId: string,
+    vote: CertificationProposal["votes"][0],
+  ): Promise<void> {
+    const proposal = this.proposals.get(proposalId);
+    if (!proposal) return;
+    proposal.votes.push(vote);
+  }
+
+  async updateProposalStatus(
+    proposalId: string,
+    status: CertificationProposal["status"],
+  ): Promise<void> {
+    const proposal = this.proposals.get(proposalId);
+    if (!proposal) return;
+    proposal.status = status;
+  }
+
+  // ── Auto-grant logic ───────────────────────────────────
+
+  private async evaluateBadges(agentId: string, domain: string): Promise<void> {
+    const record = this.records.get(agentId);
+    if (!record) return;
+
+    // Bronze: contributions >= 10 AND score > 0
+    if (record.contributions >= 10 && record.score > 0) {
+      if (!(await this.hasBadge(agentId, domain, "bronze"))) {
+        await this.grantBadge({
+          badge_id: `badge-${agentId}-${domain}-bronze`,
+          agent_id: agentId,
+          domain,
+          level: "bronze",
+          granted_at: new Date().toISOString(),
+          granted_by: "system",
+        });
+      }
+    }
+
+    // Silver: contributions >= 50 AND validations >= 20
+    if (record.contributions >= 50 && record.validations >= 20) {
+      if (!(await this.hasBadge(agentId, domain, "silver"))) {
+        await this.grantBadge({
+          badge_id: `badge-${agentId}-${domain}-silver`,
+          agent_id: agentId,
+          domain,
+          level: "silver",
+          granted_at: new Date().toISOString(),
+          granted_by: "system",
+        });
+      }
+    }
   }
 
   /**

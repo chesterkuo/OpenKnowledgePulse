@@ -1598,6 +1598,38 @@ declare class NotFoundError extends KPError {
  */
 declare function migrate(unit: unknown, fromVersion: string, toVersion: string): unknown;
 
+interface LLMConfig {
+    provider: "anthropic" | "openai";
+    apiKey: string;
+    model?: string;
+    baseUrl?: string;
+}
+interface ParseResult {
+    text: string;
+    sections: Array<{
+        heading: string;
+        content: string;
+    }>;
+    metadata: {
+        pages?: number;
+        format: string;
+    };
+}
+interface ExtractionResult {
+    decision_tree: ExpertSOP["decision_tree"];
+    name: string;
+    domain: string;
+    confidence: number;
+}
+
+declare function parseDocx(buffer: ArrayBuffer): Promise<ParseResult>;
+
+declare function parsePdf(buffer: ArrayBuffer): Promise<ParseResult>;
+
+declare function extractDecisionTree(parseResult: ParseResult, config: LLMConfig): Promise<ExtractionResult>;
+/** Exported for testing */
+declare function getExtractionPrompt(): string;
+
 interface ValidationVote {
     validatorId: string;
     targetId: string;
@@ -1688,4 +1720,4 @@ declare function signCredential(vc: ReputationCredential, privateKey: Uint8Array
  */
 declare function verifyCredential(vc: ReputationCredential, publicKey: Uint8Array): Promise<boolean>;
 
-export { AuthenticationError, type CaptureConfig, type ContributeConfig, type EigenTrustConfig, type EigenTrustResult, type ExpertSOP, ExpertSOPSchema, KPCapture, KPError, KPRetrieval, KP_CONTEXT, type KeyPair, type KnowledgeUnit, type KnowledgeUnitMeta, KnowledgeUnitMetaSchema, KnowledgeUnitSchema, type KnowledgeUnitType, KnowledgeUnitTypeSchema, NotFoundError, type ParsedSkillMd, type PrivacyLevel, PrivacyLevelSchema, RateLimitError, type ReasoningTrace, ReasoningTraceSchema, type ReasoningTraceStep, ReasoningTraceStepSchema, type ReputationCredential, type RetrievalConfig, SanitizationError, type SanitizeResult, type SkillMdFrontmatter, SkillMdFrontmatterSchema, type SkillMdKpExtension, SkillMdKpExtensionSchema, type ToolCallPattern, ToolCallPatternSchema, type TrustEdge, ValidationError, type ValidationVote, VectorCache, type Visibility, VisibilitySchema, computeEigenTrust, contributeKnowledge, contributeSkill, createCredential, evaluateValue, generateKeyPair, generatePatternId, generateSkillId, generateSkillMd, generateSopId, generateTraceId, migrate, parseSkillMd, sanitizeSkillMd, sha256, signCredential, validateSkillMd, verifyCredential };
+export { AuthenticationError, type CaptureConfig, type ContributeConfig, type EigenTrustConfig, type EigenTrustResult, type ExpertSOP, ExpertSOPSchema, type ExtractionResult, KPCapture, KPError, KPRetrieval, KP_CONTEXT, type KeyPair, type KnowledgeUnit, type KnowledgeUnitMeta, KnowledgeUnitMetaSchema, KnowledgeUnitSchema, type KnowledgeUnitType, KnowledgeUnitTypeSchema, type LLMConfig, NotFoundError, type ParseResult, type ParsedSkillMd, type PrivacyLevel, PrivacyLevelSchema, RateLimitError, type ReasoningTrace, ReasoningTraceSchema, type ReasoningTraceStep, ReasoningTraceStepSchema, type ReputationCredential, type RetrievalConfig, SanitizationError, type SanitizeResult, type SkillMdFrontmatter, SkillMdFrontmatterSchema, type SkillMdKpExtension, SkillMdKpExtensionSchema, type ToolCallPattern, ToolCallPatternSchema, type TrustEdge, ValidationError, type ValidationVote, VectorCache, type Visibility, VisibilitySchema, computeEigenTrust, contributeKnowledge, contributeSkill, createCredential, evaluateValue, extractDecisionTree, generateKeyPair, generatePatternId, generateSkillId, generateSkillMd, generateSopId, generateTraceId, getExtractionPrompt, migrate, parseDocx, parsePdf, parseSkillMd, sanitizeSkillMd, sha256, signCredential, validateSkillMd, verifyCredential };

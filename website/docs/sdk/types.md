@@ -229,6 +229,95 @@ interface SkillMdKpExtension {
 }
 ```
 
+## SOP Import Types
+
+The SDK provides types and functions for importing SOPs from documents. These are used by SOP Studio's document import feature but can also be used independently.
+
+### LLMConfig
+
+Configuration for the LLM provider used during document extraction:
+
+```ts
+interface LLMConfig {
+  provider: "openai" | "anthropic" | "ollama";
+  apiKey: string;              // Your provider API key
+  model: string;               // Model identifier (e.g., "gpt-4o")
+  baseUrl?: string;            // Custom endpoint (required for Ollama)
+  temperature?: number;        // 0.0 to 1.0 (default: 0.2)
+}
+```
+
+### ParseResult
+
+Returned by `parseDocx` and `parsePdf` after parsing a document:
+
+```ts
+interface ParseResult {
+  text: string;                // Full plain-text content
+  sections: Array<{
+    heading: string;
+    content: string;
+    level: number;             // Heading level (1-6)
+  }>;
+  tables: Array<{
+    headers: string[];
+    rows: string[][];
+  }>;
+  metadata: {
+    title?: string;
+    author?: string;
+    pageCount?: number;
+  };
+}
+```
+
+### ExtractionResult
+
+Returned by `extractDecisionTree` after LLM extraction:
+
+```ts
+interface ExtractionResult {
+  name: string;                // Detected SOP name
+  domain: string;              // Detected domain
+  description: string;         // Generated description
+  decision_tree: Array<{       // ExpertSOP-compatible decision tree
+    step: string;
+    instruction: string;
+    criteria?: Record<string, string>;
+    conditions?: Record<string, {
+      action: string;
+      sla_min?: number;
+    }>;
+    tool_suggestions?: Array<{
+      name: string;
+      when: string;
+    }>;
+  }>;
+  confidence: number;          // 0.0 to 1.0
+  warnings: string[];          // Extraction issues or ambiguities
+}
+```
+
+### Document Parsing Functions
+
+```ts
+import { parseDocx, parsePdf, extractDecisionTree } from "@knowledgepulse/sdk";
+
+// Parse a DOCX file
+const docxResult: ParseResult = await parseDocx(buffer);
+
+// Parse a PDF file
+const pdfResult: ParseResult = await parsePdf(buffer);
+
+// Extract a decision tree using an LLM
+const extraction: ExtractionResult = await extractDecisionTree(pdfResult, {
+  provider: "openai",
+  apiKey: "sk-...",
+  model: "gpt-4o",
+  temperature: 0.2,
+});
+```
+
 ## Zod Schemas
 
 Every type above has a corresponding Zod schema for runtime validation. The schemas are exported from `@knowledgepulse/sdk` and can be used directly with `safeParse` or `parse`.

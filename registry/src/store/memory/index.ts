@@ -1,10 +1,13 @@
 import type { AllStores } from "../interfaces.js";
 import { MemoryApiKeyStore } from "./api-key-store.js";
 import { MemoryAuditLogStore } from "./audit-log-store.js";
+import { MemoryCreditStore } from "./credit-store.js";
 import { MemoryKnowledgeStore } from "./knowledge-store.js";
+import { MemoryMarketplaceStore } from "./marketplace-store.js";
 import { MemoryRateLimitStore } from "./rate-limit-store.js";
 import { MemoryReputationStore } from "./reputation-store.js";
 import { MemorySkillStore } from "./skill-store.js";
+import { MemorySopStore } from "./sop-store.js";
 
 export function createMemoryStore(): AllStores {
   return {
@@ -12,6 +15,9 @@ export function createMemoryStore(): AllStores {
     knowledge: new MemoryKnowledgeStore(),
     reputation: new MemoryReputationStore(),
     apiKeys: new MemoryApiKeyStore(),
+    sop: new MemorySopStore(),
+    credits: new MemoryCreditStore(),
+    marketplace: new MemoryMarketplaceStore(),
     rateLimit: new MemoryRateLimitStore(),
     auditLog: new MemoryAuditLogStore(),
   };
@@ -22,4 +28,7 @@ export { MemoryKnowledgeStore } from "./knowledge-store.js";
 export { MemoryReputationStore } from "./reputation-store.js";
 export { MemoryApiKeyStore } from "./api-key-store.js";
 export { MemoryRateLimitStore } from "./rate-limit-store.js";
+export { MemorySopStore } from "./sop-store.js";
+export { MemoryCreditStore } from "./credit-store.js";
+export { MemoryMarketplaceStore } from "./marketplace-store.js";
 export { MemoryAuditLogStore } from "./audit-log-store.js";

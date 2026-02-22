@@ -741,6 +741,143 @@ function migrate(unit, fromVersion, toVersion) {
   return result;
 }
 
+// src/sop-import/parse-docx.ts
+async function parseDocx(buffer) {
+  const moduleName = "mammoth";
+  const mammoth = await import(moduleName);
+  const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
+  const text = result.value.replace(/<[^>]+>/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  const sections = [];
+  const headingRegex = /<h[1-6][^>]*>(.*?)<\/h[1-6]>/gi;
+  const htmlParts = result.value.split(headingRegex);
+  for (let i = 1; i < htmlParts.length; i += 2) {
+    const heading = htmlParts[i].replace(/<[^>]+>/g, "").trim();
+    const content = (htmlParts[i + 1] ?? "").replace(/<[^>]+>/g, "").trim();
+    sections.push({ heading, content });
+  }
+  return { text, sections, metadata: { format: "docx" } };
+}
+
+// src/sop-import/parse-pdf.ts
+async function parsePdf(buffer) {
+  const moduleName = "pdf-parse";
+  const pdfParseModule = await import(moduleName);
+  const pdfParse = pdfParseModule.default ?? pdfParseModule;
+  const result = await pdfParse(Buffer.from(buffer));
+  const lines = result.text.split("\n");
+  const sections = [];
+  let currentHeading = "";
+  let currentContent = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed && (trimmed === trimmed.toUpperCase() && trimmed.length > 3 || /^\d+\.\s/.test(trimmed))) {
+      if (currentHeading) {
+        sections.push({
+          heading: currentHeading,
+          content: currentContent.join("\n").trim()
+        });
+      }
+      currentHeading = trimmed;
+      currentContent = [];
+    } else {
+      currentContent.push(trimmed);
+    }
+  }
+  if (currentHeading) {
+    sections.push({
+      heading: currentHeading,
+      content: currentContent.join("\n").trim()
+    });
+  }
+  return {
+    text: result.text,
+    sections,
+    metadata: { pages: result.numpages, format: "pdf" }
+  };
+}
+
+// src/sop-import/extract.ts
+var EXTRACTION_PROMPT = `You are an expert at converting standard operating procedures (SOPs) into structured decision trees.
+
+Given the following document text, extract a decision tree in JSON format.
+
+Return ONLY valid JSON with this structure:
+{
+  "name": "string - name of the SOP",
+  "domain": "string - knowledge domain (e.g., finance, medical, customer_service)",
+  "confidence": number between 0 and 1,
+  "decision_tree": [
+    {
+      "step": "string - step identifier",
+      "instruction": "string - what to do",
+      "criteria": { "key": "value" } (optional),
+      "conditions": { "condition_name": { "action": "string", "sla_min": number } } (optional),
+      "tool_suggestions": [{ "name": "string", "when": "string" }] (optional)
+    }
+  ]
+}
+
+Document text:
+`;
+async function extractDecisionTree(parseResult, config) {
+  const text = parseResult.sections.length > 0 ? parseResult.sections.map((s) => `## ${s.heading}
+${s.content}`).join("\n\n") : parseResult.text;
+  const prompt = EXTRACTION_PROMPT + text;
+  let responseText;
+  if (config.provider === "anthropic") {
+    const baseUrl = config.baseUrl ?? "https://api.anthropic.com";
+    const model = config.model ?? "claude-sonnet-4-20250514";
+    const res = await fetch(`${baseUrl}/v1/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": config.apiKey,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 4096,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    responseText = data.content[0]?.text ?? "";
+  } else {
+    const baseUrl = config.baseUrl ?? "https://api.openai.com";
+    const model = config.model ?? "gpt-4o";
+    const res = await fetch(`${baseUrl}/v1/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.apiKey}`
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" }
+      })
+    });
+    const data = await res.json();
+    responseText = data.choices[0]?.message?.content ?? "";
+  }
+  const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/) ?? [
+    null,
+    responseText
+  ];
+  const parsed = JSON.parse(
+    jsonMatch[1] ?? responseText
+  );
+  return {
+    decision_tree: parsed.decision_tree,
+    name: parsed.name,
+    domain: parsed.domain,
+    confidence: parsed.confidence
+  };
+}
+function getExtractionPrompt() {
+  return EXTRACTION_PROMPT;
+}
+
 // src/reputation/eigentrust.ts
 var DEFAULT_CONFIG = {
   alpha: 0.1,
@@ -765,10 +902,7 @@ function computeEigenTrust(votes, configOverrides) {
   for (let i = 0; i < n; i++) {
     agentIndex.set(agents[i], i);
   }
-  const rawTrust = Array.from(
-    { length: n },
-    () => new Array(n).fill(0)
-  );
+  const rawTrust = Array.from({ length: n }, () => new Array(n).fill(0));
   for (const vote of votes) {
     const from = agentIndex.get(vote.validatorId);
     const to = agentIndex.get(vote.targetId);
@@ -776,10 +910,7 @@ function computeEigenTrust(votes, configOverrides) {
     const row = rawTrust[from];
     row[to] = row[to] + (vote.valid ? 1 : -0.5);
   }
-  const C = Array.from(
-    { length: n },
-    () => new Array(n).fill(0)
-  );
+  const C = Array.from({ length: n }, () => new Array(n).fill(0));
   for (let i = 0; i < n; i++) {
     const rawRow = rawTrust[i];
     const cRow = C[i];
@@ -833,10 +964,7 @@ function computeEigenTrust(votes, configOverrides) {
     }
     let maxDiff = 0;
     for (let j = 0; j < n; j++) {
-      maxDiff = Math.max(
-        maxDiff,
-        Math.abs(tNext[j] - t[j])
-      );
+      maxDiff = Math.max(maxDiff, Math.abs(tNext[j] - t[j]));
     }
     t = tNext;
     if (maxDiff < epsilon) {
@@ -956,13 +1084,17 @@ export {
   contributeSkill,
   createCredential,
   evaluateValue,
+  extractDecisionTree,
   generateKeyPair,
   generatePatternId,
   generateSkillId,
   generateSkillMd,
   generateSopId,
   generateTraceId,
+  getExtractionPrompt,
   migrate,
+  parseDocx,
+  parsePdf,
   parseSkillMd,
   sanitizeSkillMd,
   sha256,
