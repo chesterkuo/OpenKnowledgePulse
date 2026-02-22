@@ -1,0 +1,230 @@
+<svg width="320" height="330" viewBox="0 0 320 330" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- body gradient: deep ocean navy, zero purple -->
+    <radialGradient id="body" cx="44%" cy="36%" r="58%">
+      <stop offset="0%"   stop-color="#1A3C58"/>
+      <stop offset="45%"  stop-color="#0D2438"/>
+      <stop offset="100%" stop-color="#060E18"/>
+    </radialGradient>
+    <radialGradient id="bodySheen" cx="36%" cy="28%" r="48%">
+      <stop offset="0%"   stop-color="#2A6090" stop-opacity=".35"/>
+      <stop offset="100%" stop-color="#2A6090" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="eyeIris" cx="35%" cy="32%" r="62%">
+      <stop offset="0%"   stop-color="#4ADEFF"/>
+      <stop offset="60%"  stop-color="#0FA8D8"/>
+      <stop offset="100%" stop-color="#0868A8"/>
+    </radialGradient>
+    <radialGradient id="haloBlue" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#1E7EC8" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#1E7EC8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="haloTeal" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#12B5A8" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#12B5A8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="haloGreen" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#18A06A" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#18A06A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="haloOrange" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#E07A20" stop-opacity=".4"/>
+      <stop offset="100%" stop-color="#E07A20" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur4"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="2.5"/></filter>
+    <filter id="glow3">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient bg glow -->
+  <ellipse cx="160" cy="160" rx="130" ry="110" fill="#081828" opacity=".7"/>
+
+  <g>
+    <!-- SMIL float animation (replaces CSS .float) -->
+    <animateTransform attributeName="transform" type="translate" values="0,0;0,-7;0,0" dur="4.2s" repeatCount="indefinite"/>
+
+    <!-- ────── 8 ARMS ────────────────────────── -->
+
+    <!-- Arm 1 - far-left - blue -->
+    <path d="M108,208 C84,220 54,214 32,240 C18,256 26,274 20,292 C14,306 10,314 6,326"
+          stroke="#0D4878" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M108,208 C84,220 54,214 32,240 C18,256 26,274 20,292 C14,306 10,314 6,326"
+          stroke="#1E7EC8" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="0s" repeatCount="indefinite"/>
+    </path>
+    <!-- suckers arm1 -->
+    <circle cx="74"  cy="220" r="3.8" fill="#060E18" stroke="#1E7EC8" stroke-width="1.5" opacity=".55"/>
+    <circle cx="50"  cy="234" r="3.2" fill="#060E18" stroke="#1E7EC8" stroke-width="1.4" opacity=".5"/>
+    <circle cx="30"  cy="254" r="2.8" fill="#060E18" stroke="#1E7EC8" stroke-width="1.3" opacity=".4"/>
+
+    <!-- Arm 2 - left - teal -->
+    <path d="M118,218 C96,240 72,250 54,272 C40,288 42,304 36,318 C30,330 24,336 18,346"
+          stroke="#0A5850" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M118,218 C96,240 72,250 54,272 C40,288 42,304 36,318 C30,330 24,336 18,346"
+          stroke="#12B5A8" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="0.33s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="92"  cy="238" r="3.8" fill="#060E18" stroke="#12B5A8" stroke-width="1.5" opacity=".55"/>
+    <circle cx="68"  cy="258" r="3.2" fill="#060E18" stroke="#12B5A8" stroke-width="1.4" opacity=".5"/>
+
+    <!-- Arm 3 - centre-left - green -->
+    <path d="M132,226 C120,252 112,270 104,292 C96,308 90,316 84,330 C78,340 72,346 68,356"
+          stroke="#0A4A30" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M132,226 C120,252 112,270 104,292 C96,308 90,316 84,330 C78,340 72,346 68,356"
+          stroke="#18A06A" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="0.66s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="122" cy="252" r="3.8" fill="#060E18" stroke="#18A06A" stroke-width="1.5" opacity=".55"/>
+    <circle cx="110" cy="278" r="3.2" fill="#060E18" stroke="#18A06A" stroke-width="1.4" opacity=".5"/>
+
+    <!-- Arm 4 - centre - orange -->
+    <path d="M148,230 C144,258 142,276 140,300 C138,316 132,326 130,340 C126,352 122,358 118,368"
+          stroke="#5A3008" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M148,230 C144,258 142,276 140,300 C138,316 132,326 130,340 C126,352 122,358 118,368"
+          stroke="#E07A20" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="0.99s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="144" cy="262" r="3.8" fill="#060E18" stroke="#E07A20" stroke-width="1.5" opacity=".55"/>
+    <circle cx="140" cy="292" r="3.2" fill="#060E18" stroke="#E07A20" stroke-width="1.4" opacity=".5"/>
+
+    <!-- Arm 5 - centre-right - blue -->
+    <path d="M172,230 C176,258 178,276 180,300 C182,316 188,326 190,340 C194,352 198,358 202,368"
+          stroke="#0D4878" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M172,230 C176,258 178,276 180,300 C182,316 188,326 190,340 C194,352 198,358 202,368"
+          stroke="#1E7EC8" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="1.32s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="174" cy="260" r="3.8" fill="#060E18" stroke="#1E7EC8" stroke-width="1.5" opacity=".55"/>
+    <circle cx="178" cy="292" r="3.2" fill="#060E18" stroke="#1E7EC8" stroke-width="1.4" opacity=".5"/>
+
+    <!-- Arm 6 - right - green -->
+    <path d="M188,226 C200,252 208,270 216,292 C224,308 230,316 236,330 C242,340 248,346 252,356"
+          stroke="#0A4A30" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M188,226 C200,252 208,270 216,292 C224,308 230,316 236,330 C242,340 248,346 252,356"
+          stroke="#18A06A" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="1.65s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="198" cy="252" r="3.8" fill="#060E18" stroke="#18A06A" stroke-width="1.5" opacity=".55"/>
+    <circle cx="210" cy="276" r="3.2" fill="#060E18" stroke="#18A06A" stroke-width="1.4" opacity=".5"/>
+
+    <!-- Arm 7 - far-right - teal -->
+    <path d="M202,218 C224,240 248,250 266,272 C280,288 278,304 284,318 C290,330 296,336 302,346"
+          stroke="#0A5850" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M202,218 C224,240 248,250 266,272 C280,288 278,304 284,318 C290,330 296,336 302,346"
+          stroke="#12B5A8" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="1.98s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="228" cy="238" r="3.8" fill="#060E18" stroke="#12B5A8" stroke-width="1.5" opacity=".55"/>
+    <circle cx="248" cy="258" r="3.2" fill="#060E18" stroke="#12B5A8" stroke-width="1.4" opacity=".5"/>
+
+    <!-- Arm 8 - far-right - orange -->
+    <path d="M212,208 C236,220 266,214 288,240 C302,256 294,274 300,292 C306,306 310,314 314,326"
+          stroke="#5A3008" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M212,208 C236,220 266,214 288,240 C302,256 294,274 300,292 C306,306 310,314 314,326"
+          stroke="#E07A20" stroke-width="5" fill="none" stroke-linecap="round"
+          stroke-dasharray="14 16">
+      <animate attributeName="opacity" values="0.28;1;0.28" dur="2.6s" begin="2.31s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="248" cy="220" r="3.8" fill="#060E18" stroke="#E07A20" stroke-width="1.5" opacity=".55"/>
+    <circle cx="272" cy="236" r="3.2" fill="#060E18" stroke="#E07A20" stroke-width="1.4" opacity=".4"/>
+
+    <!-- ────── BODY ───────────────────────────── -->
+
+    <!-- body shadow -->
+    <ellipse cx="160" cy="156" rx="78" ry="86" fill="#040C16" opacity=".6" filter="url(#blur4)"/>
+
+    <!-- main body fill -->
+    <ellipse cx="160" cy="154" rx="74" ry="84" fill="url(#body)"/>
+    <ellipse cx="160" cy="154" rx="74" ry="84" fill="url(#bodySheen)"/>
+
+    <!-- scale/skin texture -->
+    <ellipse cx="138" cy="126" rx="6" ry="4" fill="#0D2C48" opacity=".6"/>
+    <ellipse cx="178" cy="116" rx="5" ry="3.5" fill="#0D2C48" opacity=".5"/>
+    <ellipse cx="152" cy="155" rx="5" ry="3" fill="#0A2238" opacity=".5"/>
+    <ellipse cx="174" cy="146" rx="6.5" ry="4" fill="#0D2C48" opacity=".55"/>
+    <ellipse cx="140" cy="175" rx="5" ry="3" fill="#0A2238" opacity=".5"/>
+    <ellipse cx="183" cy="170" rx="4" ry="2.8" fill="#0A2238" opacity=".45"/>
+    <ellipse cx="128" cy="148" rx="4" ry="3" fill="#0D3050" opacity=".4"/>
+    <ellipse cx="190" cy="136" rx="4.5" ry="3" fill="#0D3050" opacity=".4"/>
+    <ellipse cx="162" cy="134" rx="4" ry="2.5" fill="#0D2C48" opacity=".4"/>
+
+    <!-- bioluminescent dots -->
+    <circle cx="130" cy="138" r="4"   fill="#12B5A8" opacity=".22" filter="url(#blur2)"/>
+    <circle cx="188" cy="128" r="3.5" fill="#1E7EC8" opacity=".22" filter="url(#blur2)"/>
+    <circle cx="156" cy="172" r="3"   fill="#18A06A" opacity=".18" filter="url(#blur2)"/>
+
+    <!-- body outline -->
+    <ellipse cx="160" cy="154" rx="74" ry="84" fill="none" stroke="#1E5A88" stroke-width="1.5" opacity=".3"/>
+
+    <!-- head ridge -->
+    <path d="M 130,94 C 140,76 180,76 190,94" fill="none" stroke="#1A4A6A" stroke-width="2" opacity=".4" stroke-linecap="round"/>
+
+    <!-- ────── EYES ───────────────────────────── -->
+    <!-- eye glow halos -->
+    <circle cx="134" cy="148" r="24" fill="url(#haloBlue)"/>
+    <circle cx="186" cy="148" r="24" fill="url(#haloBlue)"/>
+
+    <!-- eye socket -->
+    <ellipse cx="134" cy="148" rx="19" ry="21" fill="#040C18"/>
+    <ellipse cx="186" cy="148" rx="19" ry="21" fill="#040C18"/>
+
+    <!-- iris -->
+    <circle cx="134" cy="148" r="14" fill="url(#eyeIris)"/>
+    <circle cx="186" cy="148" r="14" fill="url(#eyeIris)"/>
+
+    <!-- horizontal slit pupils with SMIL blink animation -->
+    <ellipse cx="134" cy="148" rx="5.5" ry="10" fill="#020810">
+      <animate attributeName="ry" values="10;10;10;0.7;10;10" keyTimes="0;0.88;0.93;0.94;0.95;1" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="186" cy="148" rx="5.5" ry="10" fill="#020810">
+      <animate attributeName="ry" values="10;10;10;0.7;10;10" keyTimes="0;0.88;0.93;0.94;0.95;1" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- eye highlight -->
+    <circle cx="128" cy="141" r="4"   fill="white" opacity=".72"/>
+    <circle cx="130" cy="143" r="1.8" fill="white" opacity=".4"/>
+    <circle cx="180" cy="141" r="4"   fill="white" opacity=".72"/>
+    <circle cx="182" cy="143" r="1.8" fill="white" opacity=".4"/>
+
+    <!-- eye ring -->
+    <ellipse cx="134" cy="148" rx="19" ry="21" fill="none" stroke="#1E6090" stroke-width="1.8" opacity=".45"/>
+    <ellipse cx="186" cy="148" rx="19" ry="21" fill="none" stroke="#1E6090" stroke-width="1.8" opacity=".45"/>
+
+    <!-- ────── SMILE ──────────────────────────── -->
+    <path d="M146,174 C152,181 168,181 174,174"
+          stroke="#1A7090" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".65"/>
+
+    <!-- ────── KP BADGE ───────────────────────── -->
+    <rect x="143" y="90" width="34" height="20" rx="5"
+          fill="#060E18" stroke="#E07A20" stroke-width="1.8" opacity=".9"/>
+    <text x="160" y="104" text-anchor="middle" dominant-baseline="middle"
+          font-family="'JetBrains Mono',monospace" font-size="11" font-weight="500"
+          fill="#E07A20" opacity=".95" letter-spacing="1">KP</text>
+
+  </g><!-- end float group -->
+
+  <!-- ────── FLOATING NETWORK NODES ───────── -->
+  <circle cx="58"  cy="116" r="5.5" fill="#060E18" stroke="#1E7EC8" stroke-width="1.8" opacity=".6"/>
+  <circle cx="58"  cy="116" r="2.2" fill="#1E7EC8" opacity=".85"/>
+  <circle cx="262" cy="112" r="5.5" fill="#060E18" stroke="#18A06A" stroke-width="1.8" opacity=".6"/>
+  <circle cx="262" cy="112" r="2.2" fill="#18A06A" opacity=".85"/>
+  <circle cx="76"  cy="82"  r="4.5" fill="#060E18" stroke="#12B5A8" stroke-width="1.6" opacity=".5"/>
+  <circle cx="76"  cy="82"  r="1.8" fill="#12B5A8" opacity=".75"/>
+  <circle cx="246" cy="80"  r="4.5" fill="#060E18" stroke="#E07A20" stroke-width="1.6" opacity=".5"/>
+  <circle cx="246" cy="80"  r="1.8" fill="#E07A20" opacity=".75"/>
+  <!-- dashed connection lines -->
+  <line x1="90"  y1="128" x2="63"  y2="118" stroke="#1E7EC8" stroke-width=".9" opacity=".18" stroke-dasharray="3 5"/>
+  <line x1="230" y1="126" x2="259" y2="114" stroke="#18A06A" stroke-width=".9" opacity=".18" stroke-dasharray="3 5"/>
+  <line x1="104" y1="102" x2="80"  y2="86"  stroke="#12B5A8" stroke-width=".9" opacity=".15" stroke-dasharray="3 5"/>
+  <line x1="218" y1="100" x2="244" y2="84"  stroke="#E07A20" stroke-width=".9" opacity=".15" stroke-dasharray="3 5"/>
+</svg>
