@@ -1,7 +1,7 @@
 /**
- * Token-bucket rate limiter with sliding window approach.
+ * Sliding-window rate limiter.
  *
- * Ensures no more than `maxPerMinute` tokens are consumed within
+ * Ensures no more than `maxPerMinute` requests are made within
  * any rolling 60-second window.
  */
 export class RateLimiter {
@@ -46,9 +46,13 @@ export class RateLimiter {
 /**
  * Retry wrapper for fetch calls with exponential backoff.
  *
- * Retries on 403 (rate limit), 429 (too many requests), and 503
- * (service unavailable) status codes. Uses exponential backoff
- * with jitter: base delays of 1s, 2s, 4s.
+ * Retries on 403 (GitHub secondary rate limit), 429, and 503 status codes.
+ * Respects the `Retry-After` header when present; otherwise uses exponential
+ * backoff with jitter (base delays of 1s, 2s, 4s).
+ *
+ * Note: GitHub returns 403 for both rate limits and genuinely forbidden
+ * resources. The caller (GitHubClient) should handle permanent 403s at a
+ * higher level; this wrapper treats them as potentially transient.
  *
  * @param fn - An async function that returns a Response (e.g., a fetch call)
  * @param maxAttempts - Maximum number of attempts (default 3)
@@ -72,10 +76,14 @@ export async function withRetry(
       }
 
       if (retryableStatuses.has(response.status) && attempt < maxAttempts - 1) {
-        // Exponential backoff: 1s, 2s, 4s base with jitter
-        const baseDelayMs = 1000 * Math.pow(2, attempt);
-        const jitter = Math.random() * baseDelayMs * 0.5;
-        const delayMs = baseDelayMs + jitter;
+        const retryAfter = response.headers.get("Retry-After");
+        let delayMs: number;
+        if (retryAfter) {
+          delayMs = (parseInt(retryAfter, 10) || 1) * 1000;
+        } else {
+          const baseDelayMs = 1000 * Math.pow(2, attempt);
+          delayMs = baseDelayMs + Math.random() * baseDelayMs * 0.5;
+        }
 
         await sleep(delayMs);
         continue;
