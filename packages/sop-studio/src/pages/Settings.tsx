@@ -88,19 +88,19 @@ export default function Settings() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-kp-heading">Settings</h1>
+        <p className="mt-1 text-sm text-kp-muted">
           Configure your registry connection and LLM preferences.
         </p>
       </div>
 
       {/* Registry Connection */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Registry Connection</h2>
+      <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">Registry Connection</h2>
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="registry-url" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="registry-url" className="block text-sm font-medium text-kp-muted mb-1">
               Registry URL
             </label>
             <input
@@ -109,9 +109,9 @@ export default function Settings() {
               value={registry.url}
               onChange={(e) => setRegistry((prev) => ({ ...prev, url: e.target.value }))}
               placeholder="http://localhost:8080"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-kp-muted/60">
               Leave empty to use the dev proxy (recommended for local development).
             </p>
           </div>
@@ -119,7 +119,7 @@ export default function Settings() {
           <div>
             <label
               htmlFor="registry-api-key"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-kp-muted mb-1"
             >
               API Key
             </label>
@@ -129,7 +129,7 @@ export default function Settings() {
               value={registry.apiKey}
               onChange={(e) => setRegistry((prev) => ({ ...prev, apiKey: e.target.value }))}
               placeholder="Enter your API key"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
 
@@ -137,7 +137,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleRegistrySave}
-              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90 transition-colors"
             >
               Save
             </button>
@@ -145,12 +145,12 @@ export default function Settings() {
               type="button"
               onClick={handleTestConnection}
               disabled={testStatus === "testing"}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-colors"
+              className="inline-flex items-center px-4 py-2 border border-kp-border text-sm font-medium rounded-md text-kp-text bg-kp-navy hover:bg-kp-panel disabled:opacity-50 transition-colors"
             >
               {testStatus === "testing" ? (
                 <>
                   <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-kp-muted"
                     fill="none"
                     viewBox="0 0 24 24"
                   >
@@ -174,7 +174,7 @@ export default function Settings() {
                 "Test Connection"
               )}
             </button>
-            {registrySaved && <span className="text-sm text-green-600 font-medium">Saved</span>}
+            {registrySaved && <span className="text-sm text-kp-green font-medium">Saved</span>}
           </div>
 
           {/* Test result */}
@@ -182,14 +182,14 @@ export default function Settings() {
             <div
               className={`rounded-md p-3 ${
                 testStatus === "success"
-                  ? "bg-green-50 border border-green-200"
-                  : "bg-red-50 border border-red-200"
+                  ? "bg-kp-green/10 border border-kp-green/30"
+                  : "bg-kp-error/10 border border-kp-error/30"
               }`}
             >
               <div className="flex items-start gap-2">
                 {testStatus === "success" ? (
                   <svg
-                    className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
+                    className="w-5 h-5 text-kp-green flex-shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -203,7 +203,7 @@ export default function Settings() {
                   </svg>
                 ) : (
                   <svg
-                    className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"
+                    className="w-5 h-5 text-kp-error flex-shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -218,7 +218,7 @@ export default function Settings() {
                 )}
                 <p
                   className={`text-sm ${
-                    testStatus === "success" ? "text-green-700" : "text-red-700"
+                    testStatus === "success" ? "text-kp-green" : "text-kp-error"
                   }`}
                 >
                   {testMessage}
@@ -230,22 +230,22 @@ export default function Settings() {
       </div>
 
       {/* LLM Configuration */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">LLM Configuration</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">LLM Configuration</h2>
+        <p className="text-sm text-kp-muted mb-4">
           Configure the LLM provider used for document extraction on the Import page.
         </p>
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="llm-provider" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="llm-provider" className="block text-sm font-medium text-kp-muted mb-1">
               Provider
             </label>
             <select
               id="llm-provider"
               value={llm.provider}
               onChange={(e) => setLlm((prev) => ({ ...prev, provider: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal"
             >
               <option value="anthropic">Anthropic</option>
               <option value="openai">OpenAI</option>
@@ -253,7 +253,7 @@ export default function Settings() {
           </div>
 
           <div>
-            <label htmlFor="llm-api-key" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="llm-api-key" className="block text-sm font-medium text-kp-muted mb-1">
               API Key
             </label>
             <input
@@ -262,12 +262,12 @@ export default function Settings() {
               value={llm.apiKey}
               onChange={(e) => setLlm((prev) => ({ ...prev, apiKey: e.target.value }))}
               placeholder={llm.provider === "openai" ? "sk-..." : "sk-ant-..."}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
 
           <div>
-            <label htmlFor="llm-model" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="llm-model" className="block text-sm font-medium text-kp-muted mb-1">
               Model Override
             </label>
             <input
@@ -280,9 +280,9 @@ export default function Settings() {
                   ? "gpt-4o (default)"
                   : "claude-sonnet-4-20250514 (default)"
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-kp-muted/60">
               Leave empty to use the default model for the selected provider.
             </p>
           </div>
@@ -291,22 +291,22 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleLlmSave}
-              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90 transition-colors"
             >
               Save
             </button>
-            {llmSaved && <span className="text-sm text-green-600 font-medium">Saved</span>}
+            {llmSaved && <span className="text-sm text-kp-green font-medium">Saved</span>}
           </div>
         </div>
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
-        <h2 className="text-lg font-semibold text-red-900 mb-4">Danger Zone</h2>
+      <div className="bg-kp-panel rounded-lg border border-kp-error/30 p-6">
+        <h2 className="text-lg font-semibold text-kp-error mb-4">Danger Zone</h2>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900">Clear all settings</p>
-            <p className="text-xs text-gray-500">
+            <p className="text-sm font-medium text-kp-heading">Clear all settings</p>
+            <p className="text-xs text-kp-muted">
               Remove all stored configuration from localStorage.
             </p>
           </div>
@@ -329,7 +329,7 @@ export default function Settings() {
                 setTestMessage("");
               }
             }}
-            className="px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+            className="px-4 py-2 border border-kp-error/50 text-sm font-medium rounded-md text-kp-error hover:bg-kp-error/10 transition-colors"
           >
             Clear All
           </button>
