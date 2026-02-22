@@ -1518,15 +1518,19 @@ declare function contributeSkill(skillMdContent: string, visibility?: Visibility
  * 1,000 x 384-dim vectors = sub-1ms scan. Interface supports future HNSW swap.
  */
 declare class VectorCache {
-    private vectors;
+    private entries;
     private readonly maxElements;
     private readonly dimensions;
+    private readonly ttlMs;
     constructor(opts?: {
         maxElements?: number;
         dimensions?: number;
+        ttlMs?: number;
     });
     get size(): number;
     add(vector: ArrayLike<number>): void;
+    /** Remove entries older than `ttlMs`. No-op when TTL is not configured. */
+    evictExpired(): void;
     maxCosineSimilarity(query: ArrayLike<number>): number;
     clear(): void;
 }
@@ -1594,4 +1598,94 @@ declare class NotFoundError extends KPError {
  */
 declare function migrate(unit: unknown, fromVersion: string, toVersion: string): unknown;
 
-export { AuthenticationError, type CaptureConfig, type ContributeConfig, type ExpertSOP, ExpertSOPSchema, KPCapture, KPError, KPRetrieval, KP_CONTEXT, type KnowledgeUnit, type KnowledgeUnitMeta, KnowledgeUnitMetaSchema, KnowledgeUnitSchema, type KnowledgeUnitType, KnowledgeUnitTypeSchema, NotFoundError, type ParsedSkillMd, type PrivacyLevel, PrivacyLevelSchema, RateLimitError, type ReasoningTrace, ReasoningTraceSchema, type ReasoningTraceStep, ReasoningTraceStepSchema, type RetrievalConfig, SanitizationError, type SanitizeResult, type SkillMdFrontmatter, SkillMdFrontmatterSchema, type SkillMdKpExtension, SkillMdKpExtensionSchema, type ToolCallPattern, ToolCallPatternSchema, ValidationError, VectorCache, type Visibility, VisibilitySchema, contributeKnowledge, contributeSkill, evaluateValue, generatePatternId, generateSkillId, generateSkillMd, generateSopId, generateTraceId, migrate, parseSkillMd, sanitizeSkillMd, sha256, validateSkillMd };
+interface ValidationVote {
+    validatorId: string;
+    targetId: string;
+    unitId: string;
+    valid: boolean;
+    timestamp: string;
+}
+interface TrustEdge {
+    from: string;
+    to: string;
+    weight: number;
+}
+interface EigenTrustConfig {
+    alpha: number;
+    epsilon: number;
+    maxIterations: number;
+    preTrustScore: number;
+}
+interface EigenTrustResult {
+    scores: Map<string, number>;
+    iterations: number;
+    converged: boolean;
+}
+interface ReputationCredential {
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://knowledgepulse.dev/credentials/v1"
+    ];
+    type: ["VerifiableCredential", "KPReputationCredential"];
+    issuer: string;
+    issuanceDate: string;
+    credentialSubject: {
+        id: string;
+        score: number;
+        contributions: number;
+        validations: number;
+        domain?: string;
+    };
+    proof?: {
+        type: "Ed25519Signature2020";
+        created: string;
+        verificationMethod: string;
+        proofPurpose: "assertionMethod";
+        proofValue: string;
+    };
+}
+
+/**
+ * Compute EigenTrust reputation scores from validation votes.
+ *
+ * Algorithm:
+ * 1. Collect unique agents from votes
+ * 2. Build raw trust matrix: positive vote = +1, negative vote = -0.5, ignore self-votes
+ * 3. Clamp negatives to 0, row-normalize
+ * 4. Pre-trust vector p = uniform(1/n)
+ * 5. Iterate: T(i+1) = (1-alpha) * C^T * T(i) + alpha * p
+ * 6. Converge when max(|T(i+1) - T(i)|) < epsilon
+ */
+declare function computeEigenTrust(votes: ValidationVote[], configOverrides?: Partial<EigenTrustConfig>): EigenTrustResult;
+
+interface KeyPair {
+    publicKey: Uint8Array;
+    privateKey: Uint8Array;
+}
+/**
+ * Generate an Ed25519 key pair for credential signing.
+ */
+declare function generateKeyPair(): Promise<KeyPair>;
+/**
+ * Create an unsigned W3C Verifiable Credential for a reputation score.
+ */
+declare function createCredential(opts: {
+    issuer: string;
+    agentId: string;
+    score: number;
+    contributions: number;
+    validations: number;
+    domain?: string;
+}): ReputationCredential;
+/**
+ * Sign a W3C Verifiable Credential with an Ed25519 private key.
+ * Returns a new credential object with the proof attached.
+ */
+declare function signCredential(vc: ReputationCredential, privateKey: Uint8Array, verificationMethod: string): Promise<ReputationCredential>;
+/**
+ * Verify an Ed25519-signed W3C Verifiable Credential.
+ * Returns true if the signature is valid, false otherwise.
+ */
+declare function verifyCredential(vc: ReputationCredential, publicKey: Uint8Array): Promise<boolean>;
+
+export { AuthenticationError, type CaptureConfig, type ContributeConfig, type EigenTrustConfig, type EigenTrustResult, type ExpertSOP, ExpertSOPSchema, KPCapture, KPError, KPRetrieval, KP_CONTEXT, type KeyPair, type KnowledgeUnit, type KnowledgeUnitMeta, KnowledgeUnitMetaSchema, KnowledgeUnitSchema, type KnowledgeUnitType, KnowledgeUnitTypeSchema, NotFoundError, type ParsedSkillMd, type PrivacyLevel, PrivacyLevelSchema, RateLimitError, type ReasoningTrace, ReasoningTraceSchema, type ReasoningTraceStep, ReasoningTraceStepSchema, type ReputationCredential, type RetrievalConfig, SanitizationError, type SanitizeResult, type SkillMdFrontmatter, SkillMdFrontmatterSchema, type SkillMdKpExtension, SkillMdKpExtensionSchema, type ToolCallPattern, ToolCallPatternSchema, type TrustEdge, ValidationError, type ValidationVote, VectorCache, type Visibility, VisibilitySchema, computeEigenTrust, contributeKnowledge, contributeSkill, createCredential, evaluateValue, generateKeyPair, generatePatternId, generateSkillId, generateSkillMd, generateSopId, generateTraceId, migrate, parseSkillMd, sanitizeSkillMd, sha256, signCredential, validateSkillMd, verifyCredential };

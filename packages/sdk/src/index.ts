@@ -62,3 +62,18 @@ export {
 
 // Migrations
 export { migrate } from "./migrations/index.js";
+
+// Reputation
+export {
+  computeEigenTrust,
+  createCredential,
+  generateKeyPair,
+  signCredential,
+  verifyCredential,
+  type KeyPair,
+  type ValidationVote,
+  type TrustEdge,
+  type EigenTrustConfig,
+  type EigenTrustResult,
+  type ReputationCredential,
+} from "./reputation/index.js";

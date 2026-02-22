@@ -51,9 +51,12 @@ __export(index_exports, {
   ValidationError: () => ValidationError,
   VectorCache: () => VectorCache,
   VisibilitySchema: () => VisibilitySchema,
+  computeEigenTrust: () => computeEigenTrust,
   contributeKnowledge: () => contributeKnowledge,
   contributeSkill: () => contributeSkill,
+  createCredential: () => createCredential,
   evaluateValue: () => evaluateValue,
+  generateKeyPair: () => generateKeyPair,
   generatePatternId: () => generatePatternId,
   generateSkillId: () => generateSkillId,
   generateSkillMd: () => generateSkillMd,
@@ -63,7 +66,9 @@ __export(index_exports, {
   parseSkillMd: () => parseSkillMd,
   sanitizeSkillMd: () => sanitizeSkillMd,
   sha256: () => sha256,
-  validateSkillMd: () => validateSkillMd
+  signCredential: () => signCredential,
+  validateSkillMd: () => validateSkillMd,
+  verifyCredential: () => verifyCredential
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -72,11 +77,7 @@ var KP_CONTEXT = "https://knowledgepulse.dev/schema/v1";
 
 // src/types/zod-schemas.ts
 var import_zod = require("zod");
-var KnowledgeUnitTypeSchema = import_zod.z.enum([
-  "ReasoningTrace",
-  "ToolCallPattern",
-  "ExpertSOP"
-]);
+var KnowledgeUnitTypeSchema = import_zod.z.enum(["ReasoningTrace", "ToolCallPattern", "ExpertSOP"]);
 var PrivacyLevelSchema = import_zod.z.enum(["aggregated", "federated", "private"]);
 var VisibilitySchema = import_zod.z.enum(["private", "org", "network"]);
 var KnowledgeUnitMetaSchema = import_zod.z.object({
@@ -213,38 +214,49 @@ var SkillMdKpExtensionSchema = import_zod.z.object({
 
 // src/hnsw-cache.ts
 var VectorCache = class {
-  vectors = [];
+  entries = [];
   maxElements;
   dimensions;
+  ttlMs;
   constructor(opts = {}) {
     this.maxElements = opts.maxElements ?? 1e3;
     this.dimensions = opts.dimensions ?? 384;
+    this.ttlMs = opts.ttlMs ?? null;
   }
   get size() {
-    return this.vectors.length;
+    this.evictExpired();
+    return this.entries.length;
   }
   add(vector) {
     if (vector.length !== this.dimensions) {
       throw new Error(`Expected ${this.dimensions} dimensions, got ${vector.length}`);
     }
     const v = vector instanceof Float32Array ? vector : new Float32Array(vector);
-    this.vectors.push(v);
-    if (this.vectors.length > this.maxElements) {
-      this.vectors.shift();
+    this.entries.push({ vector: v, addedAt: Date.now() });
+    if (this.entries.length > this.maxElements) {
+      this.entries.shift();
     }
   }
+  /** Remove entries older than `ttlMs`. No-op when TTL is not configured. */
+  evictExpired() {
+    if (this.ttlMs === null) return;
+    const now = Date.now();
+    const cutoff = now - this.ttlMs;
+    this.entries = this.entries.filter((e) => e.addedAt > cutoff);
+  }
   maxCosineSimilarity(query) {
-    if (this.vectors.length === 0) return 0;
+    this.evictExpired();
+    if (this.entries.length === 0) return 0;
     const q = query instanceof Float32Array ? query : new Float32Array(query);
     let maxSim = -1;
-    for (const vec of this.vectors) {
-      const sim = cosineSimilarity(q, vec);
+    for (const entry of this.entries) {
+      const sim = cosineSimilarity(q, entry.vector);
       if (sim > maxSim) maxSim = sim;
     }
     return maxSim;
   }
   clear() {
-    this.vectors = [];
+    this.entries = [];
   }
 };
 function cosineSimilarity(a, b) {
@@ -261,6 +273,21 @@ function cosineSimilarity(a, b) {
 }
 
 // src/scoring.ts
+var DEFAULT_WEIGHTS = {
+  complexity: 0.25,
+  novelty: 0.35,
+  toolDiversity: 0.15,
+  outcomeConfidence: 0.25
+};
+var DOMAIN_WEIGHTS = {
+  finance: { complexity: 0.2, novelty: 0.25, toolDiversity: 0.1, outcomeConfidence: 0.45 },
+  code: { complexity: 0.2, novelty: 0.3, toolDiversity: 0.3, outcomeConfidence: 0.2 },
+  medical: { complexity: 0.15, novelty: 0.2, toolDiversity: 0.1, outcomeConfidence: 0.55 },
+  customer_service: { complexity: 0.2, novelty: 0.3, toolDiversity: 0.2, outcomeConfidence: 0.3 }
+};
+function getWeights(domain) {
+  return DOMAIN_WEIGHTS[domain] ?? DEFAULT_WEIGHTS;
+}
 var localCache = new VectorCache({ maxElements: 1e3, dimensions: 384 });
 var embedderPromise = null;
 async function getEmbedder() {
@@ -290,16 +317,17 @@ async function evaluateValue(trace) {
   let N = 0.5;
   const embedder = await getEmbedder();
   if (embedder) {
-    const text = task.objective + " " + steps.map((s) => s.content ?? "").join(" ");
+    const text = `${task.objective} ${steps.map((s) => s.content ?? "").join(" ")}`;
     const embedding = await embedder(text);
     N = localCache.size > 0 ? 1 - localCache.maxCosineSimilarity(embedding) : 0.5;
     localCache.add(embedding);
   }
-  const uniqueTools = new Set(steps.filter((s) => s.tool).map((s) => s.tool.name)).size;
+  const uniqueTools = new Set(steps.filter((s) => s.tool).map((s) => s.tool?.name)).size;
   const D = Math.min(1, uniqueTools / Math.max(1, steps.length) * 3);
   const O = outcome.confidence * (trace.metadata.success ? 1 : 0.3);
-  let score = C * 0.25 + N * 0.35 + D * 0.15 + O * 0.25;
-  if (steps.length === 1 && steps[0].type === "thought") score = 0.1;
+  const w = getWeights(trace.metadata.task_domain);
+  let score = C * w.complexity + N * w.novelty + D * w.toolDiversity + O * w.outcomeConfidence;
+  if (steps.length === 1 && steps[0]?.type === "thought") score = 0.1;
   if (errorRecovery > 2 && trace.metadata.success) score = Math.min(1, score + 0.1);
   if (uniqueTools <= 1 && steps.some((s) => s.tool)) score = Math.max(0, score - 0.1);
   return score;
@@ -339,9 +367,8 @@ var KPCapture = class {
    * The wrapper records execution trace, scores it, and async-contributes if above threshold.
    */
   wrap(agentFn) {
-    const self = this;
     return (async (...args) => {
-      if (!self.config.autoCapture) {
+      if (!this.config.autoCapture) {
         return agentFn(...args);
       }
       const traceId = generateTraceId();
@@ -378,15 +405,15 @@ var KPCapture = class {
           id: traceId,
           metadata: {
             created_at: (/* @__PURE__ */ new Date()).toISOString(),
-            task_domain: self.config.domain,
+            task_domain: this.config.domain,
             success,
             quality_score: 0,
             // placeholder, scored below
-            visibility: self.config.visibility,
-            privacy_level: self.config.privacyLevel
+            visibility: this.config.visibility,
+            privacy_level: this.config.privacyLevel
           },
           task: {
-            objective: `Agent execution in ${self.config.domain}`
+            objective: `Agent execution in ${this.config.domain}`
           },
           steps,
           outcome: {
@@ -394,7 +421,7 @@ var KPCapture = class {
             confidence: success ? 0.8 : 0.2
           }
         };
-        void self.scoreAndContribute(trace).catch(() => {
+        void this.scoreAndContribute(trace).catch(() => {
         });
       }
       return result;
@@ -409,7 +436,7 @@ var KPCapture = class {
       "Content-Type": "application/json"
     };
     if (this.config.apiKey) {
-      headers["Authorization"] = `Bearer ${this.config.apiKey}`;
+      headers.Authorization = `Bearer ${this.config.apiKey}`;
     }
     await fetch(`${url}/v1/knowledge`, {
       method: "POST",
@@ -438,7 +465,7 @@ var KPRetrieval = class {
     const url = this.config.registryUrl ?? "https://registry.knowledgepulse.dev";
     const headers = {};
     if (this.config.apiKey) {
-      headers["Authorization"] = `Bearer ${this.config.apiKey}`;
+      headers.Authorization = `Bearer ${this.config.apiKey}`;
     }
     const res = await fetch(`${url}/v1/knowledge?${params}`, { headers });
     const body = await res.json();
@@ -454,7 +481,7 @@ var KPRetrieval = class {
     const url = this.config.registryUrl ?? "https://registry.knowledgepulse.dev";
     const headers = {};
     if (this.config.apiKey) {
-      headers["Authorization"] = `Bearer ${this.config.apiKey}`;
+      headers.Authorization = `Bearer ${this.config.apiKey}`;
     }
     const res = await fetch(`${url}/v1/skills?${params}`, { headers });
     const body = await res.json();
@@ -491,13 +518,6 @@ function formatExpertSOP(sop) {
     lines.push(`  ${node.step}: ${node.instruction}`);
   }
   return lines.join("\n");
-}
-
-// src/utils/hash.ts
-async function sha256(data) {
-  const encoded = new TextEncoder().encode(data);
-  const buffer = await crypto.subtle.digest("SHA-256", encoded);
-  return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // src/errors.ts
@@ -542,6 +562,13 @@ var NotFoundError = class extends KPError {
   }
 };
 
+// src/utils/hash.ts
+async function sha256(data) {
+  const encoded = new TextEncoder().encode(data);
+  const buffer = await crypto.subtle.digest("SHA-256", encoded);
+  return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 // src/contribute.ts
 async function contributeKnowledge(unit, config = {}) {
   const parsed = KnowledgeUnitSchema.safeParse(unit);
@@ -561,7 +588,7 @@ async function contributeKnowledge(unit, config = {}) {
     "Idempotency-Key": idempotencyKey
   };
   if (config.apiKey) {
-    headers["Authorization"] = `Bearer ${config.apiKey}`;
+    headers.Authorization = `Bearer ${config.apiKey}`;
   }
   const res = await fetch(`${url}/v1/knowledge`, {
     method: "POST",
@@ -582,7 +609,7 @@ async function contributeSkill(skillMdContent, visibility = "network", config = 
     "Idempotency-Key": idempotencyKey
   };
   if (config.apiKey) {
-    headers["Authorization"] = `Bearer ${config.apiKey}`;
+    headers.Authorization = `Bearer ${config.apiKey}`;
   }
   const res = await fetch(`${url}/v1/skills`, {
     method: "POST",
@@ -787,6 +814,195 @@ function migrate(unit, fromVersion, toVersion) {
   }
   return result;
 }
+
+// src/reputation/eigentrust.ts
+var DEFAULT_CONFIG = {
+  alpha: 0.1,
+  epsilon: 1e-3,
+  maxIterations: 50,
+  preTrustScore: 0.1
+};
+function computeEigenTrust(votes, configOverrides) {
+  const config = { ...DEFAULT_CONFIG, ...configOverrides };
+  const { alpha, epsilon, maxIterations } = config;
+  if (votes.length === 0) {
+    return { scores: /* @__PURE__ */ new Map(), iterations: 0, converged: true };
+  }
+  const agentSet = /* @__PURE__ */ new Set();
+  for (const vote of votes) {
+    agentSet.add(vote.validatorId);
+    agentSet.add(vote.targetId);
+  }
+  const agents = Array.from(agentSet);
+  const n = agents.length;
+  const agentIndex = /* @__PURE__ */ new Map();
+  for (let i = 0; i < n; i++) {
+    agentIndex.set(agents[i], i);
+  }
+  const rawTrust = Array.from(
+    { length: n },
+    () => new Array(n).fill(0)
+  );
+  for (const vote of votes) {
+    const from = agentIndex.get(vote.validatorId);
+    const to = agentIndex.get(vote.targetId);
+    if (from === to) continue;
+    const row = rawTrust[from];
+    row[to] = row[to] + (vote.valid ? 1 : -0.5);
+  }
+  const C = Array.from(
+    { length: n },
+    () => new Array(n).fill(0)
+  );
+  for (let i = 0; i < n; i++) {
+    const rawRow = rawTrust[i];
+    const cRow = C[i];
+    for (let j = 0; j < n; j++) {
+      rawRow[j] = Math.max(0, rawRow[j]);
+    }
+    let rowSum = 0;
+    for (let j = 0; j < n; j++) {
+      rowSum += rawRow[j];
+    }
+    if (rowSum > 0) {
+      for (let j = 0; j < n; j++) {
+        cRow[j] = rawRow[j] / rowSum;
+      }
+    } else {
+      for (let j = 0; j < n; j++) {
+        cRow[j] = 1 / n;
+      }
+    }
+  }
+  const p = new Array(n).fill(1 / n);
+  const localTrust = new Array(n).fill(0);
+  let localSum = 0;
+  for (let j = 0; j < n; j++) {
+    for (let i = 0; i < n; i++) {
+      const rawRow = rawTrust[i];
+      localTrust[j] = localTrust[j] + rawRow[j];
+    }
+    localSum += localTrust[j];
+  }
+  let t;
+  if (localSum > 0) {
+    t = localTrust.map((v) => v / localSum);
+  } else {
+    t = new Array(n).fill(1 / n);
+  }
+  let iterations = 0;
+  let converged = false;
+  for (let iter = 0; iter < maxIterations; iter++) {
+    iterations = iter + 1;
+    const ct = new Array(n).fill(0);
+    for (let j = 0; j < n; j++) {
+      for (let i = 0; i < n; i++) {
+        const cRow = C[i];
+        ct[j] = ct[j] + cRow[j] * t[i];
+      }
+    }
+    const tNext = new Array(n);
+    for (let j = 0; j < n; j++) {
+      tNext[j] = (1 - alpha) * ct[j] + alpha * p[j];
+    }
+    let maxDiff = 0;
+    for (let j = 0; j < n; j++) {
+      maxDiff = Math.max(
+        maxDiff,
+        Math.abs(tNext[j] - t[j])
+      );
+    }
+    t = tNext;
+    if (maxDiff < epsilon) {
+      converged = true;
+      break;
+    }
+  }
+  const scores = /* @__PURE__ */ new Map();
+  for (let i = 0; i < n; i++) {
+    scores.set(agents[i], t[i]);
+  }
+  return { scores, iterations, converged };
+}
+
+// src/reputation/verifiable-credential.ts
+var ed25519 = __toESM(require("@noble/ed25519"), 1);
+var import_sha2 = require("@noble/hashes/sha2.js");
+ed25519.hashes.sha512 = (msg) => (0, import_sha2.sha512)(msg);
+async function generateKeyPair() {
+  const privateKey = ed25519.utils.randomSecretKey();
+  const publicKey = await ed25519.getPublicKeyAsync(privateKey);
+  return { publicKey, privateKey };
+}
+function createCredential(opts) {
+  const credential = {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://knowledgepulse.dev/credentials/v1"
+    ],
+    type: ["VerifiableCredential", "KPReputationCredential"],
+    issuer: opts.issuer,
+    issuanceDate: (/* @__PURE__ */ new Date()).toISOString(),
+    credentialSubject: {
+      id: opts.agentId,
+      score: opts.score,
+      contributions: opts.contributions,
+      validations: opts.validations
+    }
+  };
+  if (opts.domain !== void 0) {
+    credential.credentialSubject.domain = opts.domain;
+  }
+  return credential;
+}
+function canonicalize(vc) {
+  const { proof, ...rest } = vc;
+  return JSON.stringify(rest);
+}
+async function signCredential(vc, privateKey, verificationMethod) {
+  const canonical = canonicalize(vc);
+  const message = new TextEncoder().encode(canonical);
+  const signature = await ed25519.signAsync(message, privateKey);
+  const proofValue = bytesToBase64(signature);
+  return {
+    ...vc,
+    proof: {
+      type: "Ed25519Signature2020",
+      created: (/* @__PURE__ */ new Date()).toISOString(),
+      verificationMethod,
+      proofPurpose: "assertionMethod",
+      proofValue
+    }
+  };
+}
+async function verifyCredential(vc, publicKey) {
+  if (!vc.proof) {
+    return false;
+  }
+  const canonical = canonicalize(vc);
+  const message = new TextEncoder().encode(canonical);
+  const signature = base64ToBytes(vc.proof.proofValue);
+  try {
+    return await ed25519.verifyAsync(signature, message, publicKey);
+  } catch {
+    return false;
+  }
+}
+function bytesToBase64(bytes) {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+function base64ToBytes(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AuthenticationError,
@@ -810,9 +1026,12 @@ function migrate(unit, fromVersion, toVersion) {
   ValidationError,
   VectorCache,
   VisibilitySchema,
+  computeEigenTrust,
   contributeKnowledge,
   contributeSkill,
+  createCredential,
   evaluateValue,
+  generateKeyPair,
   generatePatternId,
   generateSkillId,
   generateSkillMd,
@@ -822,6 +1041,8 @@ function migrate(unit, fromVersion, toVersion) {
   parseSkillMd,
   sanitizeSkillMd,
   sha256,
-  validateSkillMd
+  signCredential,
+  validateSkillMd,
+  verifyCredential
 });
 //# sourceMappingURL=index.cjs.map
