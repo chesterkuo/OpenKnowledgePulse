@@ -1,36 +1,36 @@
 @theme {
   /* ── Palette ── */
-  --color-kp-blue: #1E7EC8;
-  --color-kp-green: #18A06A;
-  --color-kp-teal: #12B5A8;
-  --color-kp-orange: #E07A20;
-  --color-kp-cyan: #4ADEFF;
+  --color-kp-blue: #1e7ec8;
+  --color-kp-green: #18a06a;
+  --color-kp-teal: #12b5a8;
+  --color-kp-orange: #e07a20;
+  --color-kp-cyan: #4adeff;
 
   /* ── Surfaces ── */
-  --color-kp-dark: #050D16;
+  --color-kp-dark: #050d16;
   --color-kp-navy: #081828;
-  --color-kp-panel: #0C1A28;
+  --color-kp-panel: #0c1a28;
   --color-kp-border: #163248;
 
   /* ── Typography ── */
-  --color-kp-text: #C8DDF0;
-  --color-kp-muted: #4A7FA5;
-  --color-kp-heading: #EEF6FF;
+  --color-kp-text: #c8ddf0;
+  --color-kp-muted: #4a7fa5;
+  --color-kp-heading: #eef6ff;
 
   /* ── Body gradient ── */
-  --color-kp-body-hi: #1A3C58;
-  --color-kp-body-mid: #0D2438;
-  --color-kp-body-lo: #060E18;
+  --color-kp-body-hi: #1a3c58;
+  --color-kp-body-mid: #0d2438;
+  --color-kp-body-lo: #060e18;
 
   /* ── Semantic ── */
-  --color-kp-success: #18A06A;
-  --color-kp-warning: #E07A20;
-  --color-kp-error: #DC2626;
-  --color-kp-info: #1E7EC8;
+  --color-kp-success: #18a06a;
+  --color-kp-warning: #e07a20;
+  --color-kp-error: #dc2626;
+  --color-kp-info: #1e7ec8;
 
   /* ── Fonts ── */
-  --font-display: 'Outfit', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* ── Radii ── */
   --radius-sm: 6px;

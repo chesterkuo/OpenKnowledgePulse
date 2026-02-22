@@ -20,8 +20,7 @@ function HeroSection(): JSX.Element {
   return (
     <section
       style={{
-        background:
-          "radial-gradient(ellipse at 50% 20%, #0C1A28 0%, #050D16 70%)",
+        background: "radial-gradient(ellipse at 50% 20%, #0C1A28 0%, #050D16 70%)",
         padding: "5rem 1.5rem 4rem",
         textAlign: "center",
         overflow: "hidden",
@@ -252,9 +251,7 @@ function LayerBar({ num, name, color, highlight }: Layer) {
         display: "flex",
         alignItems: "center",
         gap: "1rem",
-        border: highlight
-          ? "1px solid rgba(224,122,32,0.25)"
-          : "1px solid var(--kp-border)",
+        border: highlight ? "1px solid rgba(224,122,32,0.25)" : "1px solid var(--kp-border)",
         borderLeftWidth: 4,
         borderLeftStyle: "solid",
         borderLeftColor: color,
@@ -287,9 +284,7 @@ function LayerBar({ num, name, color, highlight }: Layer) {
 
 function ProtocolStack(): JSX.Element {
   return (
-    <section
-      style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}>
       <div style={{ maxWidth: 700, margin: "0 auto" }}>
         <h2
           style={{
@@ -397,9 +392,7 @@ function FeatureCard({ icon, title, desc, color }: Feature) {
 
 function FeatureGrid(): JSX.Element {
   return (
-    <section
-      style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}>
       <div style={{ maxWidth: 960, margin: "0 auto" }}>
         <h2
           style={{
@@ -446,9 +439,7 @@ function Fn({ text }: { text: string }) {
 
 function CodeExample(): JSX.Element {
   return (
-    <section
-      style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}>
       <div style={{ maxWidth: 700, margin: "0 auto" }}>
         <h2
           style={{
@@ -484,15 +475,12 @@ function CodeExample(): JSX.Element {
             {"\n"}
             <Keyword text="import" /> {"{ "}
             <Fn text="KPCapture" />
-            {" }"} <Keyword text="from" />{" "}
-            <Str text={'"@knowledgepulse/sdk"'} />;{"\n"}
-            <Keyword text="const" /> capture = <Keyword text="new" />{" "}
-            <Fn text="KPCapture" />
-            {'({ domain: '}
+            {" }"} <Keyword text="from" /> <Str text={'"@knowledgepulse/sdk"'} />;{"\n"}
+            <Keyword text="const" /> capture = <Keyword text="new" /> <Fn text="KPCapture" />
+            {"({ domain: "}
             <Str text={'"analysis"'} />
             {" })"};{"\n"}
-            <Keyword text="const" /> unit = <Keyword text="await" />{" "}
-            capture.
+            <Keyword text="const" /> unit = <Keyword text="await" /> capture.
             <Fn text="extract" />
             (agentTrace);
           </code>
@@ -508,16 +496,10 @@ type Mark = "yes" | "no" | "partial";
 
 function Cell({ mark }: { mark: Mark }) {
   if (mark === "yes") {
-    return (
-      <span style={{ color: "var(--kp-teal)", fontWeight: 700 }}>
-        {"\u2713"}
-      </span>
-    );
+    return <span style={{ color: "var(--kp-teal)", fontWeight: 700 }}>{"\u2713"}</span>;
   }
   if (mark === "partial") {
-    return (
-      <span style={{ color: "var(--kp-orange)", fontWeight: 700 }}>~</span>
-    );
+    return <span style={{ color: "var(--kp-orange)", fontWeight: 700 }}>~</span>;
   }
   return <span style={{ color: "var(--kp-muted)" }}>{"\u2717"}</span>;
 }
@@ -610,9 +592,7 @@ const tdBase: React.CSSProperties = {
 
 function ComparisonTable(): JSX.Element {
   return (
-    <section
-      style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}>
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
         <h2
           style={{
@@ -639,12 +619,8 @@ function ComparisonTable(): JSX.Element {
           >
             <thead>
               <tr>
-                <th style={{ ...thBase, textAlign: "left", paddingLeft: "1rem" }}>
-                  功能
-                </th>
-                <th style={{ ...thBase, color: "var(--kp-teal)" }}>
-                  KnowledgePulse
-                </th>
+                <th style={{ ...thBase, textAlign: "left", paddingLeft: "1rem" }}>功能</th>
+                <th style={{ ...thBase, color: "var(--kp-teal)" }}>KnowledgePulse</th>
                 <th style={thBase}>SkillsMP</th>
                 <th style={thBase}>LangChain Hub</th>
                 <th style={thBase}>Mem0</th>
@@ -751,9 +727,7 @@ function CaseCard({ domain, desc, color }: UseCase) {
 
 function UseCaseCards(): JSX.Element {
   return (
-    <section
-      style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}>
       <div style={{ maxWidth: 960, margin: "0 auto" }}>
         <h2
           style={{
@@ -844,9 +818,7 @@ function Pill({ name, priority }: Framework) {
 
 function FrameworkLogos(): JSX.Element {
   return (
-    <section
-      style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <h2
           style={{
@@ -891,36 +863,27 @@ const testimonials: Testimonial[] = [
   {
     initials: "AK",
     color: "var(--kp-teal)",
-    quote:
-      "KnowledgePulse 彻底改变了我们 AI 智能体在团队间共享知识的方式。",
+    quote: "KnowledgePulse 彻底改变了我们 AI 智能体在团队间共享知识的方式。",
     name: "Alex Kim",
     role: "ML 工程师",
   },
   {
     initials: "SR",
     color: "var(--kp-blue)",
-    quote:
-      "SOP 工作室让我们能够捕获以前未记录的专家流程。",
+    quote: "SOP 工作室让我们能够捕获以前未记录的专家流程。",
     name: "Sarah Rodriguez",
     role: "运营主管",
   },
   {
     initials: "JC",
     color: "var(--kp-orange)",
-    quote:
-      "终于有一个跨不同 AI 框架工作的知识协议了。",
+    quote: "终于有一个跨不同 AI 框架工作的知识协议了。",
     name: "James Chen",
     role: "AI 架构师",
   },
 ];
 
-function TestimonialCard({
-  initials,
-  color,
-  quote,
-  name,
-  role,
-}: Testimonial) {
+function TestimonialCard({ initials, color, quote, name, role }: Testimonial) {
   return (
     <div
       style={{
@@ -985,9 +948,7 @@ function TestimonialCard({
 
 function TestimonialCards(): JSX.Element {
   return (
-    <section
-      style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}>
       <div style={{ maxWidth: 960, margin: "0 auto" }}>
         <h2
           style={{
@@ -1034,9 +995,7 @@ function EcosystemNote(): JSX.Element {
   const muted: React.CSSProperties = { color: "var(--kp-muted)" };
 
   return (
-    <section
-      style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}
-    >
+    <section style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}>
       <div
         style={{
           maxWidth: 600,
@@ -1052,12 +1011,11 @@ function EcosystemNote(): JSX.Element {
         }}
       >
         <p style={lineStyle}>
-          <span style={accent}>OpenClaw</span>{" "}
-          <span style={muted}>&mdash;</span> 龙虾。强壮的钳子，执行任务。
+          <span style={accent}>OpenClaw</span> <span style={muted}>&mdash;</span>{" "}
+          龙虾。强壮的钳子，执行任务。
         </p>
         <p style={lineStyle}>
-          <span style={accent}>KnowledgePulse</span>{" "}
-          <span style={muted}>&mdash;</span> 章鱼。8
+          <span style={accent}>KnowledgePulse</span> <span style={muted}>&mdash;</span> 章鱼。8
           条分布式手臂，共享智能。
         </p>
         <p
@@ -1081,8 +1039,7 @@ function CTASection(): JSX.Element {
   return (
     <section
       style={{
-        background:
-          "radial-gradient(ellipse at 50% 80%, #0C1A28 0%, #050D16 70%)",
+        background: "radial-gradient(ellipse at 50% 80%, #0C1A28 0%, #050D16 70%)",
         padding: "5rem 1.5rem",
         textAlign: "center",
       }}
