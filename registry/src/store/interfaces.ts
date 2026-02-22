@@ -1,4 +1,4 @@
-import type { KnowledgeUnit, ValidationVote, Visibility } from "@knowledgepulse/sdk";
+import type { ExpertSOP, KnowledgeUnit, ValidationVote, Visibility } from "@knowledgepulse/sdk";
 
 // ── Pagination ─────────────────────────────────────────
 
@@ -36,6 +36,25 @@ export interface StoredKnowledgeUnit {
   visibility: Visibility;
   created_at: string;
   updated_at: string;
+}
+
+export interface StoredSOP {
+  id: string;
+  sop: ExpertSOP;
+  version: number;
+  previous_version_id?: string;
+  status: "draft" | "pending_review" | "approved" | "rejected";
+  visibility: Visibility;
+  approved_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SOPVersion {
+  sop_id: string;
+  version: number;
+  diff_summary: string;
+  created_at: string;
 }
 
 export interface ReputationRecord {
@@ -112,6 +131,22 @@ export interface ApiKeyStore {
   getByAgentId(agentId: string): Promise<ApiKeyRecord[]>;
 }
 
+export interface SopStore {
+  create(sop: StoredSOP): Promise<StoredSOP>;
+  getById(id: string): Promise<StoredSOP | undefined>;
+  search(opts: {
+    query?: string;
+    domain?: string;
+    status?: StoredSOP["status"];
+    pagination?: PaginationOpts;
+  }): Promise<PaginatedResult<StoredSOP>>;
+  update(id: string, updates: Partial<StoredSOP>): Promise<StoredSOP | undefined>;
+  delete(id: string): Promise<boolean>;
+  getVersions(id: string): Promise<SOPVersion[]>;
+  addVersion(version: SOPVersion): Promise<void>;
+  getByDomain(domain: string): Promise<StoredSOP[]>;
+}
+
 // ── Audit Logging ─────────────────────────────────────
 
 export type AuditAction = "create" | "read" | "update" | "delete" | "export" | "validate";
@@ -158,6 +193,7 @@ export interface AllStores {
   knowledge: KnowledgeStore;
   reputation: ReputationStore;
   apiKeys: ApiKeyStore;
+  sop: SopStore;
   rateLimit: RateLimitStore;
   auditLog: AuditLogStore;
 }
