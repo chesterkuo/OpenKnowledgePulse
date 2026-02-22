@@ -1,3 +1,4 @@
+export { parseConfluence, parseConfluenceAdf } from "./parse-confluence.js";
 export { parseDocx } from "./parse-docx.js";
 export { parseNotion, parseNotionBlocks } from "./parse-notion.js";
 export { parsePdf } from "./parse-pdf.js";
