@@ -1,0 +1,27 @@
+{
+  "id": "getting-started/quickstart",
+  "title": "快速开始",
+  "description": "几分钟内启动并运行 KnowledgePulse。",
+  "source": "@site/i18n/zh-Hans/docusaurus-plugin-content-docs/current/getting-started/quickstart.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/quickstart",
+  "permalink": "/zh-Hans/docs/getting-started/quickstart",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/getting-started/quickstart.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "简介",
+    "permalink": "/zh-Hans/docs/getting-started/introduction"
+  },
+  "next": {
+    "title": "核心概念",
+    "permalink": "/zh-Hans/docs/getting-started/concepts"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "sdk/utilities",
+  "title": "Utilities",
+  "description": "ID generators, hashing, content sanitization, knowledge capture, retrieval, and contribution helpers.",
+  "source": "@site/docs/sdk/utilities.md",
+  "sourceDirName": "sdk",
+  "slug": "/sdk/utilities",
+  "permalink": "/docs/sdk/utilities",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/sdk/utilities.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "title": "Utilities",
+    "description": "ID generators, hashing, content sanitization, knowledge capture, retrieval, and contribution helpers."
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Scoring",
+    "permalink": "/docs/sdk/scoring"
+  },
+  "next": {
+    "title": "API Reference",
+    "permalink": "/docs/registry/api-reference"
+  }
+}

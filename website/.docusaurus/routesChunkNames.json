@@ -1,0 +1,98 @@
+{
+  "/zh-Hans/docs-ce1": {
+    "__comp": "5e95c892",
+    "__context": {
+      "plugin": "aba21aa0"
+    }
+  },
+  "/zh-Hans/docs-371": {
+    "__comp": "a7bd4aaa",
+    "__props": "eceef310"
+  },
+  "/zh-Hans/docs-2d5": {
+    "__comp": "a94703ab"
+  },
+  "/zh-Hans/docs/architecture/overview-457": {
+    "__comp": "17896441",
+    "content": "78ebddcf"
+  },
+  "/zh-Hans/docs/architecture/protocol-06c": {
+    "__comp": "17896441",
+    "content": "2579c4a2"
+  },
+  "/zh-Hans/docs/architecture/security-596": {
+    "__comp": "17896441",
+    "content": "d6da5dde"
+  },
+  "/zh-Hans/docs/cli/reference-af0": {
+    "__comp": "17896441",
+    "content": "a2d64b56"
+  },
+  "/zh-Hans/docs/contributing/development-d54": {
+    "__comp": "17896441",
+    "content": "1498396d"
+  },
+  "/zh-Hans/docs/contributing/guidelines-529": {
+    "__comp": "17896441",
+    "content": "731142b2"
+  },
+  "/zh-Hans/docs/getting-started/concepts-3f7": {
+    "__comp": "17896441",
+    "content": "6944b834"
+  },
+  "/zh-Hans/docs/getting-started/introduction-c27": {
+    "__comp": "17896441",
+    "content": "ae292ca7"
+  },
+  "/zh-Hans/docs/getting-started/quickstart-8f6": {
+    "__comp": "17896441",
+    "content": "fea0f996"
+  },
+  "/zh-Hans/docs/mcp-server/setup-5b4": {
+    "__comp": "17896441",
+    "content": "95722bee"
+  },
+  "/zh-Hans/docs/mcp-server/tools-d06": {
+    "__comp": "17896441",
+    "content": "21c31119"
+  },
+  "/zh-Hans/docs/registry/api-reference-fb3": {
+    "__comp": "17896441",
+    "content": "34196577"
+  },
+  "/zh-Hans/docs/registry/authentication-f41": {
+    "__comp": "17896441",
+    "content": "ccfd1b13"
+  },
+  "/zh-Hans/docs/registry/rate-limiting-9fd": {
+    "__comp": "17896441",
+    "content": "23b2cda1"
+  },
+  "/zh-Hans/docs/sdk/installation-29c": {
+    "__comp": "17896441",
+    "content": "0d1221b9"
+  },
+  "/zh-Hans/docs/sdk/scoring-109": {
+    "__comp": "17896441",
+    "content": "43ddee2d"
+  },
+  "/zh-Hans/docs/sdk/skill-md-96a": {
+    "__comp": "17896441",
+    "content": "a997c1d3"
+  },
+  "/zh-Hans/docs/sdk/types-64e": {
+    "__comp": "17896441",
+    "content": "270ad3ab"
+  },
+  "/zh-Hans/docs/sdk/utilities-61a": {
+    "__comp": "17896441",
+    "content": "75cad09c"
+  },
+  "/zh-Hans/-d55": {
+    "__comp": "5df77b6a",
+    "__context": {
+      "plugin": "a7456010"
+    },
+    "config": "5e9f5e1a"
+  }
+}

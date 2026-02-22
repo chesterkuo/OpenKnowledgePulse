@@ -1,0 +1,29 @@
+{
+  "id": "mcp-server/setup",
+  "title": "MCP Server Setup",
+  "description": "How to install, configure, and run the KnowledgePulse MCP server in standalone or proxy mode.",
+  "source": "@site/docs/mcp-server/setup.md",
+  "sourceDirName": "mcp-server",
+  "slug": "/mcp-server/setup",
+  "permalink": "/docs/mcp-server/setup",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/mcp-server/setup.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "MCP Server Setup",
+    "description": "How to install, configure, and run the KnowledgePulse MCP server in standalone or proxy mode."
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Rate Limiting",
+    "permalink": "/docs/registry/rate-limiting"
+  },
+  "next": {
+    "title": "MCP Tools Reference",
+    "permalink": "/docs/mcp-server/tools"
+  }
+}

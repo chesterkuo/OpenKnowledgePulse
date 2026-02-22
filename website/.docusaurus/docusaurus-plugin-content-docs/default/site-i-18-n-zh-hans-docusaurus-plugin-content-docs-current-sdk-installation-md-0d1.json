@@ -1,0 +1,29 @@
+{
+  "id": "sdk/installation",
+  "title": "安装",
+  "description": "为 TypeScript 和 JavaScript 项目安装和配置 KnowledgePulse SDK。",
+  "source": "@site/i18n/zh-Hans/docusaurus-plugin-content-docs/current/sdk/installation.md",
+  "sourceDirName": "sdk",
+  "slug": "/sdk/installation",
+  "permalink": "/zh-Hans/docs/sdk/installation",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/sdk/installation.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "安装",
+    "description": "为 TypeScript 和 JavaScript 项目安装和配置 KnowledgePulse SDK。"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "安全模型",
+    "permalink": "/zh-Hans/docs/architecture/security"
+  },
+  "next": {
+    "title": "类型",
+    "permalink": "/zh-Hans/docs/sdk/types"
+  }
+}

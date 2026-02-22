@@ -1,0 +1,29 @@
+{
+  "id": "architecture/overview",
+  "title": "架构概述",
+  "description": "KnowledgePulse 的双层架构、协议栈和 monorepo 结构。",
+  "source": "@site/i18n/zh-Hans/docusaurus-plugin-content-docs/current/architecture/overview.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/overview",
+  "permalink": "/zh-Hans/docs/architecture/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/architecture/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "架构概述",
+    "description": "KnowledgePulse 的双层架构、协议栈和 monorepo 结构。"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "核心概念",
+    "permalink": "/zh-Hans/docs/getting-started/concepts"
+  },
+  "next": {
+    "title": "KnowledgeUnit 协议",
+    "permalink": "/zh-Hans/docs/architecture/protocol"
+  }
+}

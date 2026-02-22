@@ -1,0 +1,23 @@
+{
+  "id": "getting-started/introduction",
+  "title": "Introduction",
+  "description": "KnowledgePulse is an open-source, cross-platform AI knowledge-sharing protocol. It enables AI agents and human experts to securely share problem-solving experience — including reasoning chains, tool call patterns, and standard operating procedures — across frameworks and organizations, while protecting data privacy and intellectual property.",
+  "source": "@site/docs/getting-started/introduction.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/introduction",
+  "permalink": "/docs/getting-started/introduction",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/getting-started/introduction.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "docsSidebar",
+  "next": {
+    "title": "Quickstart",
+    "permalink": "/docs/getting-started/quickstart"
+  }
+}

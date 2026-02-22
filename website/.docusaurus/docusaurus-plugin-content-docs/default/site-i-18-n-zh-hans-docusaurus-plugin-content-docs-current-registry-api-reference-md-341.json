@@ -1,0 +1,29 @@
+{
+  "id": "registry/api-reference",
+  "title": "API 参考",
+  "description": "KnowledgePulse Registry REST API 所有端点的完整参考文档。",
+  "source": "@site/i18n/zh-Hans/docusaurus-plugin-content-docs/current/registry/api-reference.md",
+  "sourceDirName": "registry",
+  "slug": "/registry/api-reference",
+  "permalink": "/zh-Hans/docs/registry/api-reference",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/registry/api-reference.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "API 参考",
+    "description": "KnowledgePulse Registry REST API 所有端点的完整参考文档。"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "实用工具",
+    "permalink": "/zh-Hans/docs/sdk/utilities"
+  },
+  "next": {
+    "title": "认证",
+    "permalink": "/zh-Hans/docs/registry/authentication"
+  }
+}

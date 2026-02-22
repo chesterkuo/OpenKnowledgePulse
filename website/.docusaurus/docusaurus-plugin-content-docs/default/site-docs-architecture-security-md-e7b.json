@@ -1,0 +1,29 @@
+{
+  "id": "architecture/security",
+  "title": "Security Model",
+  "description": "Threat model, content sanitization, authentication, rate limiting, and GDPR compliance.",
+  "source": "@site/docs/architecture/security.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/security",
+  "permalink": "/docs/architecture/security",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/architecture/security.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Security Model",
+    "description": "Threat model, content sanitization, authentication, rate limiting, and GDPR compliance."
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "KnowledgeUnit Protocol",
+    "permalink": "/docs/architecture/protocol"
+  },
+  "next": {
+    "title": "Installation",
+    "permalink": "/docs/sdk/installation"
+  }
+}

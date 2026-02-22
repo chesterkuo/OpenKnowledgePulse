@@ -1,0 +1,638 @@
+{
+  "$ref": "#/definitions/KnowledgeUnit",
+  "definitions": {
+    "KnowledgeUnit": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "@context": {
+              "type": "string",
+              "const": "https://knowledgepulse.dev/schema/v1"
+            },
+            "@type": {
+              "type": "string",
+              "const": "ReasoningTrace"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^kp\\:trace\\:"
+            },
+            "source_skill": {
+              "type": "string"
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "agent_id": {
+                  "type": "string"
+                },
+                "framework": {
+                  "type": "string"
+                },
+                "task_domain": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "success": {
+                  "type": "boolean"
+                },
+                "quality_score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": [
+                    "private",
+                    "org",
+                    "network"
+                  ]
+                },
+                "privacy_level": {
+                  "type": "string",
+                  "enum": [
+                    "aggregated",
+                    "federated",
+                    "private"
+                  ]
+                },
+                "validated_by": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "created_at",
+                "task_domain",
+                "success",
+                "quality_score",
+                "visibility",
+                "privacy_level"
+              ],
+              "additionalProperties": false
+            },
+            "task": {
+              "type": "object",
+              "properties": {
+                "objective": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "input_schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "required": [
+                "objective"
+              ],
+              "additionalProperties": false
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "step_id": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "thought",
+                      "tool_call",
+                      "observation",
+                      "error_recovery"
+                    ]
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "tool": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "mcp_server": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "input": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  },
+                  "output_summary": {
+                    "type": "string"
+                  },
+                  "latency_ms": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "step_id",
+                  "type"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "outcome": {
+              "type": "object",
+              "properties": {
+                "result_summary": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "result_summary",
+                "confidence"
+              ],
+              "additionalProperties": false
+            },
+            "knowledge_graph_delta": {
+              "type": "object",
+              "properties": {
+                "entities": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "relationships": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "fact": {
+                        "type": "string"
+                      },
+                      "valid_from": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "fact",
+                      "valid_from"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "entities",
+                "relationships"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "@context",
+            "@type",
+            "id",
+            "metadata",
+            "task",
+            "steps",
+            "outcome"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@context": {
+              "type": "string",
+              "const": "https://knowledgepulse.dev/schema/v1"
+            },
+            "@type": {
+              "type": "string",
+              "const": "ToolCallPattern"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^kp\\:pattern\\:"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string"
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "agent_id": {
+                  "type": "string"
+                },
+                "framework": {
+                  "type": "string"
+                },
+                "task_domain": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "success": {
+                  "type": "boolean"
+                },
+                "quality_score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": [
+                    "private",
+                    "org",
+                    "network"
+                  ]
+                },
+                "privacy_level": {
+                  "type": "string",
+                  "enum": [
+                    "aggregated",
+                    "federated",
+                    "private"
+                  ]
+                },
+                "validated_by": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "created_at",
+                "task_domain",
+                "success",
+                "quality_score",
+                "visibility",
+                "privacy_level"
+              ],
+              "additionalProperties": false
+            },
+            "trigger_conditions": {
+              "type": "object",
+              "properties": {
+                "task_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                },
+                "required_tools": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "task_types"
+              ],
+              "additionalProperties": false
+            },
+            "tool_sequence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "step": {
+                    "type": "string"
+                  },
+                  "execution": {
+                    "type": "string",
+                    "enum": [
+                      "parallel",
+                      "sequential"
+                    ]
+                  },
+                  "tools": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "query_template": {
+                          "type": "string"
+                        },
+                        "input_template": {
+                          "type": "object",
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "condition": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "step",
+                  "execution",
+                  "tools"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "performance": {
+              "type": "object",
+              "properties": {
+                "avg_ms": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "success_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "uses": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "avg_ms",
+                "success_rate",
+                "uses"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "@context",
+            "@type",
+            "id",
+            "name",
+            "description",
+            "metadata",
+            "trigger_conditions",
+            "tool_sequence",
+            "performance"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@context": {
+              "type": "string",
+              "const": "https://knowledgepulse.dev/schema/v1"
+            },
+            "@type": {
+              "type": "string",
+              "const": "ExpertSOP"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^kp\\:sop\\:"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "domain": {
+              "type": "string",
+              "minLength": 1
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "agent_id": {
+                  "type": "string"
+                },
+                "framework": {
+                  "type": "string"
+                },
+                "task_domain": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "success": {
+                  "type": "boolean"
+                },
+                "quality_score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": [
+                    "private",
+                    "org",
+                    "network"
+                  ]
+                },
+                "privacy_level": {
+                  "type": "string",
+                  "enum": [
+                    "aggregated",
+                    "federated",
+                    "private"
+                  ]
+                },
+                "validated_by": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "created_at",
+                "task_domain",
+                "success",
+                "quality_score",
+                "visibility",
+                "privacy_level"
+              ],
+              "additionalProperties": false
+            },
+            "source": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "human_expert"
+                },
+                "expert_id": {
+                  "type": "string"
+                },
+                "credentials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "type",
+                "expert_id",
+                "credentials"
+              ],
+              "additionalProperties": false
+            },
+            "decision_tree": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "step": {
+                    "type": "string"
+                  },
+                  "instruction": {
+                    "type": "string"
+                  },
+                  "criteria": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "conditions": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "action": {
+                          "type": "string"
+                        },
+                        "sla_min": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "action"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "tool_suggestions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "when": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "when"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "step",
+                  "instruction"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "validation": {
+              "type": "object",
+              "properties": {
+                "test_cases": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "input": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "expected_output": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      }
+                    },
+                    "required": [
+                      "input",
+                      "expected_output"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "test_cases"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "@context",
+            "@type",
+            "id",
+            "name",
+            "domain",
+            "metadata",
+            "source",
+            "decision_tree"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

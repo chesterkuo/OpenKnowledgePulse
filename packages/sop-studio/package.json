@@ -1,0 +1,13 @@
+{
+  "name": "@knowledgepulse/sop-studio",
+  "version": "0.0.1",
+  "description": "KnowledgePulse Expert SOP Studio — Phase 3 placeholder",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'SOP Studio is planned for Phase 3'",
+    "build": "echo 'SOP Studio is planned for Phase 3'"
+  },
+  "dependencies": {},
+  "license": "Apache-2.0"
+}

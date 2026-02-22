@@ -1,0 +1,30 @@
+{
+  "name": "knowledgepulse",
+  "private": true,
+  "workspaces": [
+    "packages/sdk",
+    "packages/mcp-server",
+    "packages/cli",
+    "packages/sop-studio",
+    "registry"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "build": "bun run --filter '*' build",
+    "test": "bun test --recursive",
+    "codegen": "bun run specs/codegen.ts",
+    "lint": "bunx biome check .",
+    "format": "bunx biome format --write .",
+    "validate-schema": "bun run specs/validate-consistency.ts",
+    "docs:dev": "npm --prefix website start",
+    "docs:build": "npm --prefix website run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.0",
+    "@types/bun": "^1.1.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "zod": "^3.23.0",
+    "zod-to-json-schema": "^3.23.0"
+  }
+}

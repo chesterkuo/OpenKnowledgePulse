@@ -1,0 +1,29 @@
+{
+  "id": "contributing/development",
+  "title": "Development Setup",
+  "description": "How to set up a local development environment for the KnowledgePulse monorepo.",
+  "source": "@site/docs/contributing/development.md",
+  "sourceDirName": "contributing",
+  "slug": "/contributing/development",
+  "permalink": "/docs/contributing/development",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/contributing/development.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Development Setup",
+    "description": "How to set up a local development environment for the KnowledgePulse monorepo."
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "CLI Reference",
+    "permalink": "/docs/cli/reference"
+  },
+  "next": {
+    "title": "Contributing Guidelines",
+    "permalink": "/docs/contributing/guidelines"
+  }
+}

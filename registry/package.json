@@ -1,0 +1,16 @@
+{
+  "name": "@knowledgepulse/registry",
+  "version": "0.1.0",
+  "description": "KnowledgePulse Knowledge Registry Server",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "build": "echo 'Registry runs directly via Bun'"
+  },
+  "dependencies": {
+    "@knowledgepulse/sdk": "workspace:*",
+    "hono": "^4.4.0",
+    "zod": "^3.23.0"
+  },
+  "license": "Apache-2.0"
+}

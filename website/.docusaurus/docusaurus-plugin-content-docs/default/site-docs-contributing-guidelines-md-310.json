@@ -1,0 +1,25 @@
+{
+  "id": "contributing/guidelines",
+  "title": "Contributing Guidelines",
+  "description": "Code style, testing conventions, and PR process for contributing to KnowledgePulse.",
+  "source": "@site/docs/contributing/guidelines.md",
+  "sourceDirName": "contributing",
+  "slug": "/contributing/guidelines",
+  "permalink": "/docs/contributing/guidelines",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/contributing/guidelines.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "Contributing Guidelines",
+    "description": "Code style, testing conventions, and PR process for contributing to KnowledgePulse."
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Development Setup",
+    "permalink": "/docs/contributing/development"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "mcp-server/tools",
+  "title": "MCP Tools Reference",
+  "description": "Complete reference for all six MCP tools exposed by the KnowledgePulse MCP server.",
+  "source": "@site/docs/mcp-server/tools.md",
+  "sourceDirName": "mcp-server",
+  "slug": "/mcp-server/tools",
+  "permalink": "/docs/mcp-server/tools",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/mcp-server/tools.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "MCP Tools Reference",
+    "description": "Complete reference for all six MCP tools exposed by the KnowledgePulse MCP server."
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "MCP Server Setup",
+    "permalink": "/docs/mcp-server/setup"
+  },
+  "next": {
+    "title": "CLI Reference",
+    "permalink": "/docs/cli/reference"
+  }
+}

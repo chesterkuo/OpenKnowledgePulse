@@ -1,0 +1,8 @@
+{
+  "name": "kp-basic-sdk-example",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@knowledgepulse/sdk": "workspace:*"
+  }
+}

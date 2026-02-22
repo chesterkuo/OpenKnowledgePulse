@@ -1,0 +1,29 @@
+{
+  "id": "sdk/scoring",
+  "title": "评分",
+  "description": "KnowledgePulse SDK 如何使用多维评分算法评估推理追踪的价值。",
+  "source": "@site/i18n/zh-Hans/docusaurus-plugin-content-docs/current/sdk/scoring.md",
+  "sourceDirName": "sdk",
+  "slug": "/sdk/scoring",
+  "permalink": "/zh-Hans/docs/sdk/scoring",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/sdk/scoring.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "评分",
+    "description": "KnowledgePulse SDK 如何使用多维评分算法评估推理追踪的价值。"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "SKILL.md",
+    "permalink": "/zh-Hans/docs/sdk/skill-md"
+  },
+  "next": {
+    "title": "实用工具",
+    "permalink": "/zh-Hans/docs/sdk/utilities"
+  }
+}

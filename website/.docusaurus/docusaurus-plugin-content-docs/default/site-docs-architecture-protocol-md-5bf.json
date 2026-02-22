@@ -1,0 +1,29 @@
+{
+  "id": "architecture/protocol",
+  "title": "KnowledgeUnit Protocol",
+  "description": "JSON-LD schema, knowledge types, versioning strategy, and migration system.",
+  "source": "@site/docs/architecture/protocol.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/protocol",
+  "permalink": "/docs/architecture/protocol",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/openclaw/knowledgepulse/tree/main/website/docs/architecture/protocol.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "KnowledgeUnit Protocol",
+    "description": "JSON-LD schema, knowledge types, versioning strategy, and migration system."
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Architecture Overview",
+    "permalink": "/docs/architecture/overview"
+  },
+  "next": {
+    "title": "Security Model",
+    "permalink": "/docs/architecture/security"
+  }
+}
