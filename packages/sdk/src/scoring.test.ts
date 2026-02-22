@@ -11,6 +11,7 @@ function makeTrace(
     success?: boolean;
     confidence?: number;
     objective?: string;
+    task_domain?: string;
   } = {},
 ): ReasoningTrace {
   return {
@@ -19,7 +20,7 @@ function makeTrace(
     id: "kp:trace:test-0001",
     metadata: {
       created_at: "2025-06-15T10:00:00.000Z",
-      task_domain: "testing",
+      task_domain: overrides.task_domain ?? "testing",
       success: overrides.success ?? true,
       quality_score: 0,
       visibility: "network",
@@ -253,5 +254,79 @@ describe("evaluateValue", () => {
     const trace = makeTrace({ steps, confidence: 0, success: false });
     const score = await evaluateValue(trace);
     expect(score).toBeGreaterThanOrEqual(0.0);
+  });
+
+  // ── Domain Weight Profiles ────────────────────────────────
+
+  test("finance domain weights outcome confidence higher", async () => {
+    // Finance domain puts 0.45 on outcome confidence vs default 0.25
+    // A high-confidence trace should score higher under finance weights
+    const steps: ReasoningTraceStep[] = [
+      { step_id: 0, type: "thought", content: "Analyzing financials" },
+      { step_id: 1, type: "tool_call", tool: { name: "calc" }, content: "Calculating" },
+      { step_id: 2, type: "tool_call", tool: { name: "verify" }, content: "Verifying" },
+      { step_id: 3, type: "observation", content: "Result confirmed" },
+    ];
+
+    const financeScore = await evaluateValue(
+      makeTrace({ steps, confidence: 0.95, success: true, task_domain: "finance" }),
+    );
+
+    _getLocalCache().clear();
+
+    const generalScore = await evaluateValue(
+      makeTrace({ steps, confidence: 0.95, success: true, task_domain: "general" }),
+    );
+
+    // Finance weights outcome confidence at 0.45 vs default 0.25 —
+    // with high confidence the finance score should be higher
+    expect(financeScore).toBeGreaterThan(generalScore);
+  });
+
+  test("code domain weights tool diversity higher", async () => {
+    // Code domain puts 0.30 on tool diversity vs default 0.15
+    // A trace with diverse tools should score higher under code weights
+    const steps: ReasoningTraceStep[] = [
+      { step_id: 0, type: "thought", content: "Planning implementation" },
+      { step_id: 1, type: "tool_call", tool: { name: "linter" }, content: "Linting" },
+      { step_id: 2, type: "tool_call", tool: { name: "compiler" }, content: "Compiling" },
+      { step_id: 3, type: "tool_call", tool: { name: "test_runner" }, content: "Testing" },
+      { step_id: 4, type: "tool_call", tool: { name: "formatter" }, content: "Formatting" },
+      { step_id: 5, type: "observation", content: "All checks passed" },
+    ];
+
+    const codeScore = await evaluateValue(
+      makeTrace({ steps, confidence: 0.5, success: true, task_domain: "code" }),
+    );
+
+    _getLocalCache().clear();
+
+    const generalScore = await evaluateValue(
+      makeTrace({ steps, confidence: 0.5, success: true, task_domain: "general" }),
+    );
+
+    // Code weights tool diversity at 0.30 vs default 0.15 —
+    // with diverse tools the code score should be higher
+    expect(codeScore).toBeGreaterThan(generalScore);
+  });
+
+  test("unknown domain falls back to default weights", async () => {
+    const steps: ReasoningTraceStep[] = [
+      { step_id: 0, type: "thought", content: "Thinking" },
+      { step_id: 1, type: "tool_call", tool: { name: "search" }, content: "Searching" },
+      { step_id: 2, type: "observation", content: "Found" },
+    ];
+
+    const trace = makeTrace({
+      steps,
+      confidence: 0.8,
+      success: true,
+      task_domain: "underwater_basket_weaving",
+    });
+    const score = await evaluateValue(trace);
+
+    // Unknown domain should still produce a valid 0-1 score
+    expect(score).toBeGreaterThanOrEqual(0);
+    expect(score).toBeLessThanOrEqual(1);
   });
 });

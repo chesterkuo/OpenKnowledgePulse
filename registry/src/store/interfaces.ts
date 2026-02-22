@@ -1,4 +1,4 @@
-import type { KnowledgeUnit, Visibility } from "@knowledgepulse/sdk";
+import type { KnowledgeUnit, ValidationVote, Visibility } from "@knowledgepulse/sdk";
 
 // ── Pagination ─────────────────────────────────────────
 
@@ -95,6 +95,10 @@ export interface ReputationStore {
   get(agentId: string): Promise<ReputationRecord | undefined>;
   upsert(agentId: string, delta: number, reason: string): Promise<ReputationRecord>;
   getAll(): Promise<ReputationRecord[]>;
+  getLeaderboard(opts: PaginationOpts): Promise<PaginatedResult<ReputationRecord>>;
+  recordVote(vote: ValidationVote): Promise<void>;
+  getVotes(): Promise<ValidationVote[]>;
+  canVote(agentId: string): Promise<boolean>;
 }
 
 export interface ApiKeyStore {
@@ -106,6 +110,31 @@ export interface ApiKeyStore {
   verify(rawKey: string): Promise<ApiKeyRecord | undefined>;
   revoke(keyPrefix: string): Promise<boolean>;
   getByAgentId(agentId: string): Promise<ApiKeyRecord[]>;
+}
+
+// ── Audit Logging ─────────────────────────────────────
+
+export type AuditAction = "create" | "read" | "update" | "delete" | "export" | "validate";
+
+export interface AuditLogEntry {
+  id: string;
+  action: AuditAction;
+  agentId: string;
+  resourceType: string;
+  resourceId: string;
+  timestamp: string;
+  ip: string;
+  details?: Record<string, unknown>;
+}
+
+export interface AuditLogStore {
+  log(entry: Omit<AuditLogEntry, "id" | "timestamp">): Promise<void>;
+  query(opts: {
+    agentId?: string;
+    action?: AuditAction;
+    from?: string;
+    to?: string;
+  }): Promise<AuditLogEntry[]>;
 }
 
 export interface RateLimitStore {
@@ -130,4 +159,5 @@ export interface AllStores {
   reputation: ReputationStore;
   apiKeys: ApiKeyStore;
   rateLimit: RateLimitStore;
+  auditLog: AuditLogStore;
 }

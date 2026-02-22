@@ -1,6 +1,31 @@
 import { VectorCache } from "./hnsw-cache.js";
 import type { ReasoningTrace } from "./types/knowledge-unit.js";
 
+export interface ScoringWeights {
+  complexity: number;
+  novelty: number;
+  toolDiversity: number;
+  outcomeConfidence: number;
+}
+
+const DEFAULT_WEIGHTS: ScoringWeights = {
+  complexity: 0.25,
+  novelty: 0.35,
+  toolDiversity: 0.15,
+  outcomeConfidence: 0.25,
+};
+
+const DOMAIN_WEIGHTS: Record<string, ScoringWeights> = {
+  finance: { complexity: 0.2, novelty: 0.25, toolDiversity: 0.1, outcomeConfidence: 0.45 },
+  code: { complexity: 0.2, novelty: 0.3, toolDiversity: 0.3, outcomeConfidence: 0.2 },
+  medical: { complexity: 0.15, novelty: 0.2, toolDiversity: 0.1, outcomeConfidence: 0.55 },
+  customer_service: { complexity: 0.2, novelty: 0.3, toolDiversity: 0.2, outcomeConfidence: 0.3 },
+};
+
+function getWeights(domain: string): ScoringWeights {
+  return DOMAIN_WEIGHTS[domain] ?? DEFAULT_WEIGHTS;
+}
+
 const localCache = new VectorCache({ maxElements: 1000, dimensions: 384 });
 
 // Lazy-loaded embedder (avoids 80MB import on startup)
@@ -56,7 +81,8 @@ export async function evaluateValue(trace: ReasoningTrace): Promise<number> {
   const O = outcome.confidence * (trace.metadata.success ? 1.0 : 0.3);
 
   // ── Composite Score ──
-  let score = C * 0.25 + N * 0.35 + D * 0.15 + O * 0.25;
+  const w = getWeights(trace.metadata.task_domain);
+  let score = C * w.complexity + N * w.novelty + D * w.toolDiversity + O * w.outcomeConfidence;
 
   // ── Rule-based Overrides ──
   if (steps.length === 1 && steps[0]?.type === "thought") score = 0.1;

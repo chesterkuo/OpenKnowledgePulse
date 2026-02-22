@@ -164,4 +164,32 @@ describe("VectorCache", () => {
     expect(cache.maxCosineSimilarity([1, 0, 0])).toBeCloseTo(0.0, 5);
     expect(cache.maxCosineSimilarity([0, 1, 0])).toBeCloseTo(1.0, 5);
   });
+
+  // ── TTL-based eviction ──────────────────────────────────
+
+  describe("TTL-based eviction", () => {
+    test("vectors expire after TTL", () => {
+      const cache = new VectorCache({ maxElements: 100, dimensions: 3, ttlMs: 100 });
+      cache.add([1, 0, 0]);
+      expect(cache.size).toBe(1);
+      Bun.sleepSync(150);
+      cache.evictExpired();
+      expect(cache.size).toBe(0);
+    });
+
+    test("non-expired vectors are kept", () => {
+      const cache = new VectorCache({ maxElements: 100, dimensions: 3, ttlMs: 5000 });
+      cache.add([1, 0, 0]);
+      cache.evictExpired();
+      expect(cache.size).toBe(1);
+    });
+
+    test("maxCosineSimilarity ignores expired vectors", () => {
+      const cache = new VectorCache({ maxElements: 100, dimensions: 3, ttlMs: 100 });
+      cache.add([1, 0, 0]);
+      Bun.sleepSync(150);
+      const sim = cache.maxCosineSimilarity([1, 0, 0]);
+      expect(sim).toBe(0);
+    });
+  });
 });
