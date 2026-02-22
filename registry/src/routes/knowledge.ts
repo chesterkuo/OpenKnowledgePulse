@@ -142,7 +142,12 @@ export function knowledgeRoutes(stores: AllStores) {
     }
 
     await stores.knowledge.delete(c.req.param("id"));
-    return c.json({ deleted: true });
+    return c.json({
+      deleted: true,
+      unit_id: c.req.param("id"),
+      deleted_at: new Date().toISOString(),
+      deleted_by: auth.agentId,
+    });
   });
 
   return app;

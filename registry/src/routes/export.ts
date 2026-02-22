@@ -21,13 +21,16 @@ export function exportRoutes(stores: AllStores) {
 
     const knowledgeUnits = await stores.knowledge.getByAgentId(agentId);
     const reputation = await stores.reputation.get(agentId);
+    const apiKeys = await stores.apiKeys.getByAgentId(agentId);
 
     const exportData = {
       "@context": "https://knowledgepulse.dev/export/v1",
       agent_id: agentId,
       exported_at: new Date().toISOString(),
+      total_contributions: knowledgeUnits.length,
       knowledge_units: knowledgeUnits.map((e) => e.unit),
       reputation: reputation ?? { score: 0, contributions: 0, validations: 0, history: [] },
+      api_keys: apiKeys.map(({ key_hash: _hash, ...rest }) => rest),
     };
 
     return c.json({ data: exportData });
