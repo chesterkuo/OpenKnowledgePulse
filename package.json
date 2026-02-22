@@ -17,6 +17,7 @@
     "lint": "bunx biome check .",
     "format": "bunx biome format --write .",
     "validate-schema": "bun run specs/validate-consistency.ts",
+    "build:cli": "bun build --compile packages/cli/src/index.ts --outfile dist/kp",
     "docs:dev": "npm --prefix website start",
     "docs:build": "npm --prefix website run build"
   },

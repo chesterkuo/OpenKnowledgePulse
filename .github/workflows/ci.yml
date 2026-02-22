@@ -85,3 +85,7 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: bun run build
+      - name: Build CLI binary
+        run: bun run build:cli
+      - name: Verify CLI binary
+        run: ./dist/kp --version
