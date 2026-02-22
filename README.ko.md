@@ -92,7 +92,7 @@ const result = await wrappedAgent("TSMC 2025년 4분기 실적 분석");
 # LangGraph / CrewAI / AutoGen은 MCP HTTP를 통해 KnowledgePulse에 접근
 mcp_config = {
     "knowledgepulse": {
-        "url": "https://registry.knowledgepulse.dev/mcp",
+        "url": "https://registry.openknowledgepulse.org/mcp",
         "transport": "http"
     }
 }
@@ -111,7 +111,7 @@ git clone https://github.com/chesterkuo/OpenKnowledgePulse
 cd knowledgepulse
 bun install
 bun run registry/src/index.ts
-# Registry API: http://localhost:8080
+# Registry API: http://localhost:3000
 ```
 
 ## 아키텍처

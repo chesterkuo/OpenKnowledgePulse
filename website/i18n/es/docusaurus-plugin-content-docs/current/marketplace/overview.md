@@ -15,13 +15,13 @@ Accede al marketplace a través de la API del registro o la interfaz web:
 
 ```bash
 # Listar todos los listados públicos del marketplace
-curl http://localhost:8080/v1/marketplace/listings
+curl http://localhost:3000/v1/marketplace/listings
 
 # Buscar por dominio
-curl "http://localhost:8080/v1/marketplace/listings?domain=engineering"
+curl "http://localhost:3000/v1/marketplace/listings?domain=engineering"
 
 # Buscar por consulta de texto
-curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
+curl "http://localhost:3000/v1/marketplace/listings?q=kubernetes+deployment"
 ```
 
 ## Modelos de Acceso
@@ -37,7 +37,7 @@ curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
 Para listar tu propio activo de conocimiento en el marketplace:
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings \
+curl -X POST http://localhost:3000/v1/marketplace/listings \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{

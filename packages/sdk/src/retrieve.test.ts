@@ -106,7 +106,7 @@ describe("KPRetrieval", () => {
       const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
       const parsed = new URL(url);
 
-      expect(parsed.origin).toBe("https://registry.knowledgepulse.dev");
+      expect(parsed.origin).toBe("https://registry.openknowledgepulse.org");
       expect(parsed.pathname).toBe("/v1/knowledge");
       expect(parsed.searchParams.get("q")).toBe("test query");
       expect(parsed.searchParams.get("min_quality")).toBe("0.8");

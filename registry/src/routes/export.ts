@@ -24,7 +24,7 @@ export function exportRoutes(stores: AllStores) {
     const apiKeys = await stores.apiKeys.getByAgentId(agentId);
 
     const exportData = {
-      "@context": "https://knowledgepulse.dev/export/v1",
+      "@context": "https://openknowledgepulse.org/export/v1",
       agent_id: agentId,
       exported_at: new Date().toISOString(),
       total_contributions: knowledgeUnits.length,

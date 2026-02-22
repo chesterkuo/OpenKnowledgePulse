@@ -15,14 +15,14 @@ Cada KnowledgeUnit es un documento JSON-LD con dos campos de contexto requeridos
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "Trace",
   "id": "kp:trace:a1b2c3d4",
   ...
 }
 ```
 
-- **`@context`** -- El URI del espacio de nombres del esquema. Todos los documentos v1.x comparten el contexto `https://knowledgepulse.dev/schema/v1`. Una nueva versión mayor introduce un nuevo URI de contexto (por ejemplo, `.../v2`).
+- **`@context`** -- El URI del espacio de nombres del esquema. Todos los documentos v1.x comparten el contexto `https://openknowledgepulse.org/schema/v1`. Una nueva versión mayor introduce un nuevo URI de contexto (por ejemplo, `.../v2`).
 - **`@type`** -- El discriminador de tipo. Uno de `Trace`, `Pattern` o `SOP`.
 
 ## Tipos de KnowledgeUnit
@@ -57,14 +57,14 @@ KnowledgePulse usa versionado semántico para su esquema, con reglas claras para
 ### Versiones Minor (por ejemplo, 1.0.0 a 1.1.0)
 
 - **Solo aditivo** -- pueden introducirse nuevos campos opcionales.
-- **Sin cambio** en el URI `@context` (sigue siendo `https://knowledgepulse.dev/schema/v1`).
+- **Sin cambio** en el URI `@context` (sigue siendo `https://openknowledgepulse.org/schema/v1`).
 - No se eliminan campos existentes ni se cambia su semántica.
 - Los consumidores existentes continúan funcionando; simplemente ignoran los nuevos campos.
 
 ### Versiones Major (por ejemplo, v1 a v2)
 
 - Cambios incompatibles -- los campos pueden ser eliminados, renombrados o tener su semántica cambiada.
-- **Nuevo URI `@context`** (por ejemplo, `https://knowledgepulse.dev/schema/v2`).
+- **Nuevo URI `@context`** (por ejemplo, `https://openknowledgepulse.org/schema/v2`).
 - Requiere migración explícita.
 
 ## Reglas de Compatibilidad Retroactiva

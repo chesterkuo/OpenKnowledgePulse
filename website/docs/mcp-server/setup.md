@@ -46,7 +46,7 @@ The server starts on port 3001 by default. No external services are required.
 In proxy mode the server forwards all requests to a running KnowledgePulse registry instance. Set `KP_REGISTRY_URL` to enable proxy mode, and optionally provide `KP_API_KEY` for authenticated endpoints.
 
 ```bash
-KP_REGISTRY_URL=http://localhost:8080 KP_API_KEY=kp_abc123 \
+KP_REGISTRY_URL=http://localhost:3000 KP_API_KEY=kp_abc123 \
   bun run packages/mcp-server/src/index.ts
 ```
 

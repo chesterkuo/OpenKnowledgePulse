@@ -3,7 +3,7 @@ import type { StoredKnowledgeUnit } from "../interfaces.js";
 import { createMemoryStore } from "./index.js";
 import { RetentionManager } from "./retention.js";
 
-const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 function makeEntry(
   id: string,

@@ -5,7 +5,7 @@ import type { AllStores, StoredSOP } from "../store/interfaces.js";
 import { createMemoryStore } from "../store/memory/index.js";
 import { sopRoutes } from "./sop.js";
 
-const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 function makeExpertSOP(overrides: Partial<ExpertSOP> = {}): ExpertSOP {
   return {

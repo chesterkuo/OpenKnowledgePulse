@@ -68,7 +68,7 @@ def main():
     # 3. After agent execution, contribute learned knowledge
     print("\n3. Contributing knowledge...")
     knowledge_unit = {
-        "@context": "https://knowledgepulse.dev/schema/v1",
+        "@context": "https://openknowledgepulse.org/schema/v1",
         "@type": "ReasoningTrace",
         "id": "kp:trace:example-from-langgraph",
         "metadata": {

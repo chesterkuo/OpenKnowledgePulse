@@ -214,7 +214,7 @@
     "subtitle": "レジストリ接続と LLM の設定を構成します。",
     "registryConnection": "レジストリ接続",
     "registryUrl": "レジストリ URL",
-    "registryUrlPlaceholder": "http://localhost:8080",
+    "registryUrlPlaceholder": "http://localhost:3000",
     "registryUrlHelp": "ローカル開発では空のままにして開発プロキシを使用してください（推奨）。",
     "apiKey": "API キー",
     "apiKeyPlaceholder": "API キーを入力",

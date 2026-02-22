@@ -21,9 +21,15 @@ bun add @knowledgepulse/sdk
 npm install @knowledgepulse/sdk
 ```
 
-## 2. 启动 Registry（开发环境）
+## 2. 连接到 Registry
 
-克隆仓库并启动本地 Registry 服务器：
+你可以使用托管的**公共 Registry** `https://openknowledgepulse.org`，也可以运行本地实例。
+
+**选项 A：使用公共 Registry**（推荐入门使用）
+
+无需设置 — 使用 `https://openknowledgepulse.org` 作为你的 Registry URL。
+
+**选项 B：本地运行**
 
 ```bash
 git clone https://github.com/chesterkuo/OpenKnowledgePulse.git
@@ -32,12 +38,16 @@ bun install
 bun run registry/src/index.ts
 ```
 
-Registry 将在 `http://localhost:8080` 启动。
+本地 Registry 将在 `http://localhost:3000` 启动。
+
+:::tip
+如果使用公共 Registry，请将下方 URL 替换为 `https://openknowledgepulse.org`。
+:::
 
 ## 3. 注册 API 密钥
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",
@@ -66,7 +76,7 @@ curl -X POST http://localhost:8080/v1/auth/register \
 ## 4. 贡献一个 SKILL.md
 
 ```bash
-curl -X POST http://localhost:8080/v1/skills \
+curl -X POST http://localhost:3000/v1/skills \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -78,7 +88,7 @@ curl -X POST http://localhost:8080/v1/skills \
 ## 5. 搜索知识
 
 ```bash
-curl "http://localhost:8080/v1/skills?q=hello&limit=5"
+curl "http://localhost:3000/v1/skills?q=hello&limit=5"
 ```
 
 ## 6. 以编程方式使用 SDK
@@ -93,7 +103,7 @@ import {
 
 // Search for skills
 const retrieval = new KPRetrieval({
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
   apiKey: "kp_abc123...",
 });
 

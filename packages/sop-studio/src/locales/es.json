@@ -214,7 +214,7 @@
     "subtitle": "Configura tu conexión al registro y las preferencias de LLM.",
     "registryConnection": "Conexión al registro",
     "registryUrl": "URL del registro",
-    "registryUrlPlaceholder": "http://localhost:8080",
+    "registryUrlPlaceholder": "http://localhost:3000",
     "registryUrlHelp": "Déjalo vacío para usar el proxy de desarrollo (recomendado para desarrollo local).",
     "apiKey": "Clave API",
     "apiKeyPlaceholder": "Introduce tu clave API",

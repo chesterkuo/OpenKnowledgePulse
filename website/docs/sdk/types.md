@@ -68,7 +68,7 @@ A step-by-step record of an agent's reasoning process, including tool calls, obs
 
 ```ts
 interface ReasoningTrace {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ReasoningTrace";
   id: string;                  // kp:trace:<uuid>
   source_skill?: string;       // kp:skill:<name>:<version>
@@ -121,7 +121,7 @@ A reusable pattern describing a sequence of tool invocations that accomplishes a
 
 ```ts
 interface ToolCallPattern {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ToolCallPattern";
   id: string;                  // kp:pattern:<uuid>
   name: string;
@@ -155,7 +155,7 @@ A structured standard operating procedure authored by a human expert, including 
 
 ```ts
 interface ExpertSOP {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ExpertSOP";
   id: string;                  // kp:sop:<uuid>
   name: string;

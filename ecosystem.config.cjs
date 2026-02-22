@@ -1,0 +1,43 @@
+module.exports = {
+  apps: [
+    {
+      name: "kp-registry",
+      script: "/home/ubuntu/.bun/bin/bun",
+      args: "run registry/src/index.ts",
+      interpreter: "none",
+      cwd: "/home/ubuntu/knowledgepulse",
+      env: {
+        KP_PORT: 3000,
+        KP_STORE_BACKEND: "sqlite",
+        KP_SQLITE_PATH: "/home/ubuntu/knowledgepulse/knowledgepulse.db",
+      },
+      exec_mode: "fork",
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "512M",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "/home/ubuntu/.pm2/logs/kp-registry-error.log",
+      out_file: "/home/ubuntu/.pm2/logs/kp-registry-out.log",
+      merge_logs: true,
+    },
+    {
+      name: "kp-mcp",
+      script: "/home/ubuntu/.bun/bin/bun",
+      args: "run packages/mcp-server/src/index.ts",
+      interpreter: "none",
+      cwd: "/home/ubuntu/knowledgepulse",
+      env: {
+        KP_MCP_PORT: 3001,
+        KP_REGISTRY_URL: "http://127.0.0.1:3000",
+      },
+      exec_mode: "fork",
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "256M",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "/home/ubuntu/.pm2/logs/kp-mcp-error.log",
+      out_file: "/home/ubuntu/.pm2/logs/kp-mcp-out.log",
+      merge_logs: true,
+    },
+  ],
+};

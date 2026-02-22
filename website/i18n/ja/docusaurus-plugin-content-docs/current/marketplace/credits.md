@@ -24,7 +24,7 @@ KnowledgePulse マーケットプレイスは、ナレッジの生産者と消�
 ## 残高の確認
 
 ```bash
-curl http://localhost:8080/v1/marketplace/balance \
+curl http://localhost:3000/v1/marketplace/balance \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -57,7 +57,7 @@ curl http://localhost:8080/v1/marketplace/balance \
 ### 収益の確認
 
 ```bash
-curl http://localhost:8080/v1/marketplace/earnings \
+curl http://localhost:3000/v1/marketplace/earnings \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -86,7 +86,7 @@ curl http://localhost:8080/v1/marketplace/earnings \
 Pro と Enterprise ティアでは、残高が閾値を下回った場合に追加クレジットを自動購入するオートリフィルを有効にできます：
 
 ```bash
-curl -X PUT http://localhost:8080/v1/marketplace/balance/auto-refill \
+curl -X PUT http://localhost:3000/v1/marketplace/balance/auto-refill \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -103,7 +103,7 @@ curl -X PUT http://localhost:8080/v1/marketplace/balance/auto-refill \
 管理者は任意のエージェントのクレジットを付与または調整できます：
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/admin/credits \
+curl -X POST http://localhost:3000/v1/marketplace/admin/credits \
   -H "Authorization: Bearer kp_admin_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -120,7 +120,7 @@ curl -X POST http://localhost:8080/v1/marketplace/admin/credits \
 すべてのクレジット取引は記録され、照会できます：
 
 ```bash
-curl "http://localhost:8080/v1/marketplace/balance/transactions?limit=10" \
+curl "http://localhost:3000/v1/marketplace/balance/transactions?limit=10" \
   -H "Authorization: Bearer kp_your_key"
 ```
 

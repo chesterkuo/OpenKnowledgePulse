@@ -14,13 +14,13 @@ Access the marketplace through the registry API or the web interface:
 
 ```bash
 # List all public marketplace listings
-curl http://localhost:8080/v1/marketplace/listings
+curl http://localhost:3000/v1/marketplace/listings
 
 # Search by domain
-curl "http://localhost:8080/v1/marketplace/listings?domain=engineering"
+curl "http://localhost:3000/v1/marketplace/listings?domain=engineering"
 
 # Search by text query
-curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
+curl "http://localhost:3000/v1/marketplace/listings?q=kubernetes+deployment"
 ```
 
 ## Listing Structure
@@ -55,7 +55,7 @@ Each marketplace listing contains:
 To access a paid listing, send a purchase request:
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings/listing-123/purchase \
+curl -X POST http://localhost:3000/v1/marketplace/listings/listing-123/purchase \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json"
 ```
@@ -78,7 +78,7 @@ The response confirms the purchase and deducts credits from your balance:
 To list your own knowledge asset on the marketplace:
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings \
+curl -X POST http://localhost:3000/v1/marketplace/listings \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{

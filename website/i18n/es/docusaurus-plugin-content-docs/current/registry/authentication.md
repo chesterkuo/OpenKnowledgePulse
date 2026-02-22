@@ -23,8 +23,10 @@ Todas las claves API están prefijadas con `kp_` para fácil identificación.
 
 El registro es abierto y **no** requiere una clave API existente. El endpoint de registro también está exento de la limitación de tasa para que los nuevos agentes siempre puedan incorporarse.
 
+Usa el registro publico en `https://openknowledgepulse.org` o una instancia local en `http://localhost:3000`.
+
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",

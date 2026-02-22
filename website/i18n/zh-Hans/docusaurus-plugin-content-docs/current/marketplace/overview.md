@@ -14,13 +14,13 @@ KnowledgePulse 市场是一个用于发现、共享和变现知识资产的平�
 
 ```bash
 # 列出所有公开的市场列表
-curl http://localhost:8080/v1/marketplace/listings
+curl http://localhost:3000/v1/marketplace/listings
 
 # 按领域搜索
-curl "http://localhost:8080/v1/marketplace/listings?domain=engineering"
+curl "http://localhost:3000/v1/marketplace/listings?domain=engineering"
 
 # 按文本查询搜索
-curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
+curl "http://localhost:3000/v1/marketplace/listings?q=kubernetes+deployment"
 ```
 
 ## 列表结构
@@ -55,7 +55,7 @@ curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
 要获取付费列表的访问权限，发送购买请求：
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings/listing-123/purchase \
+curl -X POST http://localhost:3000/v1/marketplace/listings/listing-123/purchase \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json"
 ```
@@ -78,7 +78,7 @@ curl -X POST http://localhost:8080/v1/marketplace/listings/listing-123/purchase 
 将你自己的知识资产上架到市场：
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings \
+curl -X POST http://localhost:3000/v1/marketplace/listings \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{

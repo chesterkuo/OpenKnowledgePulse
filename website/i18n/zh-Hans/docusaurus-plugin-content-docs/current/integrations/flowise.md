@@ -63,7 +63,7 @@ Flowise 通过 REST API 与 KnowledgePulse 通信。无需安装 SDK——所有
 1. 在流程中添加 **HTTP Request** 节点。
 2. 配置：
    - **Method:** `GET`
-   - **URL:** `http://localhost:8080/v1/knowledge`
+   - **URL:** `http://localhost:3000/v1/knowledge`
    - **Query Parameters:**
      - `q` = `{{input}}`（连接自用户的问题）
      - `limit` = `5`
@@ -78,7 +78,7 @@ Flowise 通过 REST API 与 KnowledgePulse 通信。无需安装 SDK——所有
 1. 添加另一个 **HTTP Request** 节点。
 2. 配置：
    - **Method:** `GET`
-   - **URL:** `http://localhost:8080/v1/skills`
+   - **URL:** `http://localhost:3000/v1/skills`
    - **Query Parameters:**
      - `q` = `{{input}}`
      - `tags` = `python,automation`（可选）
@@ -88,14 +88,14 @@ Flowise 通过 REST API 与 KnowledgePulse 通信。无需安装 SDK——所有
 1. 在流程末尾添加 **HTTP Request** 节点。
 2. 配置：
    - **Method:** `POST`
-   - **URL:** `http://localhost:8080/v1/knowledge`
+   - **URL:** `http://localhost:3000/v1/knowledge`
    - **Headers:**
      - `Content-Type`: `application/json`
      - `Authorization`: `Bearer <your-api-key>`
    - **Body (JSON):**
      ```json
      {
-       "@context": "https://knowledgepulse.dev/schema/v1",
+       "@context": "https://openknowledgepulse.org/schema/v1",
        "@type": "ReasoningTrace",
        "id": "kp:trace:flowise-{{timestamp}}",
        "metadata": {
@@ -129,7 +129,7 @@ Flowise 通过 REST API 与 KnowledgePulse 通信。无需安装 SDK——所有
 
 ```javascript
 const fetch = require('node-fetch');
-const KP_URL = 'http://localhost:8080';
+const KP_URL = 'http://localhost:3000';
 
 async function search(query) {
   const params = new URLSearchParams({
@@ -177,13 +177,13 @@ return search($input);
 
 ```javascript
 const fetch = require('node-fetch');
-const KP_URL = 'http://localhost:8080';
+const KP_URL = 'http://localhost:3000';
 const API_KEY = process.env.KP_API_KEY || '';
 
 async function contribute(input) {
   const parsed = JSON.parse(input);
   const unit = {
-    '@context': 'https://knowledgepulse.dev/schema/v1',
+    '@context': 'https://openknowledgepulse.org/schema/v1',
     '@type': 'ReasoningTrace',
     id: `kp:trace:flowise-${Date.now()}`,
     metadata: {

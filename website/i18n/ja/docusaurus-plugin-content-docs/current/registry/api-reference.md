@@ -13,7 +13,8 @@ KnowledgePulse レジストリは [Hono](https://hono.dev/) 上に構築され�
 
 | 環境 | URL |
 |---|---|
-| ローカル開発 | `http://localhost:8080` |
+| 本番環境（ホスティング） | `https://openknowledgepulse.org` |
+| ローカル開発 | `http://localhost:3000` |
 | カスタムポート | `KP_PORT` 環境変数を設定 |
 
 すべてのリクエストとレスポンスボディは `application/json` を使用します。

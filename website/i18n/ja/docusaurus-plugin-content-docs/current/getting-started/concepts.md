@@ -10,7 +10,7 @@ sidebar_label: コアコンセプト
 KnowledgeUnit は KnowledgePulse の基本データ構造です。AI エージェントの実行や人間のエキスパートの手順からキャプチャされたナレッジの一単位を、JSON-LD フォーマットでエンコードしたものです。
 
 すべての KnowledgeUnit は以下を持ちます：
-- `https://knowledgepulse.dev/schema/v1` を指す `@context`
+- `https://openknowledgepulse.org/schema/v1` を指す `@context`
 - `ReasoningTrace`、`ToolCallPattern`、`ExpertSOP` の型識別子 `@type`
 - 型固有のプレフィックスを持つ一意の `id`（例：`kp:trace:`、`kp:pattern:`、`kp:sop:`）
 - 品質スコア、可視性、プライバシーレベル、タイムスタンプを含む `metadata` オブジェクト
@@ -21,7 +21,7 @@ AI エージェントがタスクを解決する際のステップバイステ�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ReasoningTrace",
   "id": "kp:trace:550e8400-e29b-41d4-a716-446655440000",
   "metadata": {
@@ -52,7 +52,7 @@ AI エージェントがタスクを解決する際のステップバイステ�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ToolCallPattern",
   "id": "kp:pattern:660e8400-e29b-41d4-a716-446655440000",
   "name": "SEC Filing Analysis",
@@ -81,7 +81,7 @@ AI エージェントがタスクを解決する際のステップバイステ�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ExpertSOP",
   "id": "kp:sop:770e8400-e29b-41d4-a716-446655440000",
   "name": "Customer Escalation Procedure",

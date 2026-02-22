@@ -137,7 +137,7 @@ interface CaptureConfig {
   valueThreshold?: number;     // Defecto: 0.75 (puntuación mínima para contribuir)
   privacyLevel?: PrivacyLevel; // Defecto: "aggregated"
   visibility?: Visibility;     // Defecto: "network"
-  registryUrl?: string;        // Defecto: "https://registry.knowledgepulse.dev"
+  registryUrl?: string;        // Defecto: "https://registry.openknowledgepulse.org"
   apiKey?: string;             // Token Bearer para autenticación del registro
 }
 ```

@@ -116,7 +116,7 @@ import type { StoredSOP } from "../interfaces.js";
 import type { ExpertSOP } from "@knowledgepulse/sdk";
 
 const makeSOP = (overrides: Partial<ExpertSOP> = {}): ExpertSOP => ({
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ExpertSOP",
   id: `kp:sop:${crypto.randomUUID()}`,
   name: overrides.name ?? "Test SOP",

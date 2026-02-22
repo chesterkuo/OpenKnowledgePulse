@@ -3,7 +3,7 @@
  * Single Source of Truth — JSON Schema generated via `bun run codegen`
  */
 
-export const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+export const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 export type KnowledgeUnitType = "ReasoningTrace" | "ToolCallPattern" | "ExpertSOP";
 

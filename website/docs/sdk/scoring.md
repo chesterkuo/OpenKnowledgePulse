@@ -29,7 +29,7 @@ import { evaluateValue } from "@knowledgepulse/sdk";
 import type { ReasoningTrace } from "@knowledgepulse/sdk";
 
 const trace: ReasoningTrace = {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ReasoningTrace",
   id: "kp:trace:550e8400-e29b-41d4-a716-446655440000",
   metadata: {

@@ -18,7 +18,7 @@ SOP 工作室是一个可视化编辑器，用于构建标准操作程序（SOP�
 在启动 SOP 工作室之前，设置以下环境变量：
 
 ```bash
-export KP_REGISTRY_URL="http://localhost:8080"
+export KP_REGISTRY_URL="http://localhost:3000"
 export KP_API_KEY="kp_your_api_key_here"
 ```
 

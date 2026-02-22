@@ -14,14 +14,14 @@ Every KnowledgeUnit is a JSON-LD document with two required context fields:
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "Trace",
   "id": "kp:trace:a1b2c3d4",
   ...
 }
 ```
 
-- **`@context`** -- The schema namespace URI. All v1.x documents share the context `https://knowledgepulse.dev/schema/v1`. A new major version introduces a new context URI (e.g., `.../v2`).
+- **`@context`** -- The schema namespace URI. All v1.x documents share the context `https://openknowledgepulse.org/schema/v1`. A new major version introduces a new context URI (e.g., `.../v2`).
 - **`@type`** -- The type discriminator. One of `Trace`, `Pattern`, or `SOP`.
 
 ## KnowledgeUnit Types
@@ -56,14 +56,14 @@ KnowledgePulse uses semantic versioning for its schema, with clear rules for eac
 ### Minor Versions (e.g., 1.0.0 to 1.1.0)
 
 - **Additive only** -- new optional fields may be introduced.
-- **No change** to the `@context` URI (still `https://knowledgepulse.dev/schema/v1`).
+- **No change** to the `@context` URI (still `https://openknowledgepulse.org/schema/v1`).
 - No existing fields are removed or have their semantics changed.
 - Existing consumers continue to work; they simply ignore the new fields.
 
 ### Major Versions (e.g., v1 to v2)
 
 - Breaking changes -- fields may be removed, renamed, or have their semantics changed.
-- **New `@context` URI** (e.g., `https://knowledgepulse.dev/schema/v2`).
+- **New `@context` URI** (e.g., `https://openknowledgepulse.org/schema/v2`).
 - Requires explicit migration.
 
 ## Backward Compatibility Rules

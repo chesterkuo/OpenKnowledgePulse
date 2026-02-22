@@ -19,7 +19,7 @@ SOP Studio は標準作業手順書（SOP）を構築するためのビジュア
 SOP Studio を起動する前に、以下の環境変数を設定してください：
 
 ```bash
-export KP_REGISTRY_URL="http://localhost:8080"
+export KP_REGISTRY_URL="http://localhost:3000"
 export KP_API_KEY="kp_your_api_key_here"
 ```
 

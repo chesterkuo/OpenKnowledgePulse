@@ -23,7 +23,7 @@ KnowledgePulse 市场使用积分系统来促进知识生产者和消费者之�
 ## 查询余额
 
 ```bash
-curl http://localhost:8080/v1/marketplace/balance \
+curl http://localhost:3000/v1/marketplace/balance \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -56,7 +56,7 @@ curl http://localhost:8080/v1/marketplace/balance \
 ### 查看收入
 
 ```bash
-curl http://localhost:8080/v1/marketplace/earnings \
+curl http://localhost:3000/v1/marketplace/earnings \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -85,7 +85,7 @@ curl http://localhost:8080/v1/marketplace/earnings \
 专业和企业层级可以启用自动充值，当余额低于阈值时自动购买额外积分：
 
 ```bash
-curl -X PUT http://localhost:8080/v1/marketplace/balance/auto-refill \
+curl -X PUT http://localhost:3000/v1/marketplace/balance/auto-refill \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -102,7 +102,7 @@ curl -X PUT http://localhost:8080/v1/marketplace/balance/auto-refill \
 管理员可以为任何代理授予或调整积分：
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/admin/credits \
+curl -X POST http://localhost:3000/v1/marketplace/admin/credits \
   -H "Authorization: Bearer kp_admin_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -119,7 +119,7 @@ curl -X POST http://localhost:8080/v1/marketplace/admin/credits \
 所有积分交易都会被记录并可供查询：
 
 ```bash
-curl "http://localhost:8080/v1/marketplace/balance/transactions?limit=10" \
+curl "http://localhost:3000/v1/marketplace/balance/transactions?limit=10" \
   -H "Authorization: Bearer kp_your_key"
 ```
 

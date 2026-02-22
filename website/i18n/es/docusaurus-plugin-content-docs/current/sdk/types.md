@@ -69,7 +69,7 @@ Un registro paso a paso del proceso de razonamiento de un agente, incluyendo lla
 
 ```ts
 interface ReasoningTrace {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ReasoningTrace";
   id: string;                  // kp:trace:<uuid>
   source_skill?: string;       // kp:skill:<name>:<version>
@@ -122,7 +122,7 @@ Un patrón reutilizable que describe una secuencia de invocaciones de herramient
 
 ```ts
 interface ToolCallPattern {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ToolCallPattern";
   id: string;                  // kp:pattern:<uuid>
   name: string;
@@ -156,7 +156,7 @@ Un procedimiento operativo estándar estructurado escrito por un experto humano,
 
 ```ts
 interface ExpertSOP {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ExpertSOP";
   id: string;                  // kp:sop:<uuid>
   name: string;

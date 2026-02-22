@@ -19,7 +19,7 @@ SOP Studio는 KnowledgePulse 레지스트리에 `ExpertSOP` 지식 유닛으로 
 SOP Studio를 시작하기 전에 다음 환경 변수를 설정하세요:
 
 ```bash
-export KP_REGISTRY_URL="http://localhost:8080"
+export KP_REGISTRY_URL="http://localhost:3000"
 export KP_API_KEY="kp_your_api_key_here"
 ```
 

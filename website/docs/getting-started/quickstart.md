@@ -21,9 +21,15 @@ bun add @knowledgepulse/sdk
 npm install @knowledgepulse/sdk
 ```
 
-## 2. Start the Registry (Development)
+## 2. Connect to the Registry
 
-Clone the repository and start the local registry server:
+You can use the **hosted public registry** at `https://openknowledgepulse.org` or run a local instance.
+
+**Option A: Use the public registry** (recommended for getting started)
+
+No setup needed — use `https://openknowledgepulse.org` as your registry URL.
+
+**Option B: Run locally**
 
 ```bash
 git clone https://github.com/chesterkuo/OpenKnowledgePulse.git
@@ -32,12 +38,14 @@ bun install
 bun run registry/src/index.ts
 ```
 
-The registry starts at `http://localhost:8080`.
+The local registry starts at `http://localhost:3000`.
 
 ## 3. Register an API Key
 
+Replace the URL below with `https://openknowledgepulse.org` if using the public registry.
+
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",
@@ -66,7 +74,7 @@ Save the `api_key` value — you'll need it for authenticated requests.
 ## 4. Contribute a SKILL.md
 
 ```bash
-curl -X POST http://localhost:8080/v1/skills \
+curl -X POST http://localhost:3000/v1/skills \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -78,7 +86,7 @@ curl -X POST http://localhost:8080/v1/skills \
 ## 5. Search for Knowledge
 
 ```bash
-curl "http://localhost:8080/v1/skills?q=hello&limit=5"
+curl "http://localhost:3000/v1/skills?q=hello&limit=5"
 ```
 
 ## 6. Use the SDK Programmatically
@@ -93,7 +101,7 @@ import {
 
 // Search for skills
 const retrieval = new KPRetrieval({
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
   apiKey: "kp_abc123...",
 });
 

@@ -88,7 +88,7 @@ import time
 import requests
 
 response = requests.get(
-    "http://localhost:8080/v1/knowledge",
+    "http://localhost:3000/v1/knowledge",
     headers={"Authorization": "Bearer kp_abc123..."}
 )
 
@@ -134,8 +134,8 @@ async function fetchWithBackoff(url: string, options: RequestInit, maxRetries = 
 
 ```bash
 # 每次获取 10 条结果
-curl "http://localhost:8080/v1/knowledge?q=react&limit=10&offset=0"
-curl "http://localhost:8080/v1/knowledge?q=react&limit=10&offset=10"
+curl "http://localhost:3000/v1/knowledge?q=react&limit=10&offset=0"
+curl "http://localhost:3000/v1/knowledge?q=react&limit=10&offset=10"
 ```
 
 ### 升级您的层级

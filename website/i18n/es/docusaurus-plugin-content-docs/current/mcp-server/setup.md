@@ -35,7 +35,7 @@ bun run packages/mcp-server/src/index.ts
 En modo proxy el servidor reenvía todas las solicitudes a una instancia de registro KnowledgePulse en ejecución.
 
 ```bash
-KP_REGISTRY_URL=http://localhost:8080 KP_API_KEY=kp_abc123 \
+KP_REGISTRY_URL=http://localhost:3000 KP_API_KEY=kp_abc123 \
   bun run packages/mcp-server/src/index.ts
 ```
 

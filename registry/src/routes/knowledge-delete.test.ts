@@ -9,7 +9,7 @@ import { createMemoryStore } from "../store/memory/index.js";
 import { authRoutes } from "./auth.js";
 import { knowledgeRoutes } from "./knowledge.js";
 
-const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 function makeValidReasoningTrace(overrides: Partial<ReasoningTrace> = {}): ReasoningTrace {
   return {

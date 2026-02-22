@@ -18,7 +18,7 @@ SOP Studio is a visual editor for building Standard Operating Procedures (SOPs) 
 Set the following environment variables before launching SOP Studio:
 
 ```bash
-export KP_REGISTRY_URL="http://localhost:8080"
+export KP_REGISTRY_URL="http://localhost:3000"
 export KP_API_KEY="kp_your_api_key_here"
 ```
 

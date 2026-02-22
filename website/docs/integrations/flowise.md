@@ -63,7 +63,7 @@ The simplest approach uses Flowise's built-in HTTP Request node.
 1. Add an **HTTP Request** node to your flow.
 2. Configure:
    - **Method:** `GET`
-   - **URL:** `http://localhost:8080/v1/knowledge`
+   - **URL:** `http://localhost:3000/v1/knowledge`
    - **Query Parameters:**
      - `q` = `{{input}}` (wired from the user's question)
      - `limit` = `5`
@@ -78,7 +78,7 @@ The simplest approach uses Flowise's built-in HTTP Request node.
 1. Add another **HTTP Request** node.
 2. Configure:
    - **Method:** `GET`
-   - **URL:** `http://localhost:8080/v1/skills`
+   - **URL:** `http://localhost:3000/v1/skills`
    - **Query Parameters:**
      - `q` = `{{input}}`
      - `tags` = `python,automation` (optional)
@@ -88,14 +88,14 @@ The simplest approach uses Flowise's built-in HTTP Request node.
 1. Add an **HTTP Request** node at the end of your flow.
 2. Configure:
    - **Method:** `POST`
-   - **URL:** `http://localhost:8080/v1/knowledge`
+   - **URL:** `http://localhost:3000/v1/knowledge`
    - **Headers:**
      - `Content-Type`: `application/json`
      - `Authorization`: `Bearer <your-api-key>`
    - **Body (JSON):**
      ```json
      {
-       "@context": "https://knowledgepulse.dev/schema/v1",
+       "@context": "https://openknowledgepulse.org/schema/v1",
        "@type": "ReasoningTrace",
        "id": "kp:trace:flowise-{{timestamp}}",
        "metadata": {
@@ -129,7 +129,7 @@ For tighter integration, create a Custom Tool node that encapsulates the API log
 
 ```javascript
 const fetch = require('node-fetch');
-const KP_URL = 'http://localhost:8080';
+const KP_URL = 'http://localhost:3000';
 
 async function search(query) {
   const params = new URLSearchParams({
@@ -177,13 +177,13 @@ return search($input);
 
 ```javascript
 const fetch = require('node-fetch');
-const KP_URL = 'http://localhost:8080';
+const KP_URL = 'http://localhost:3000';
 const API_KEY = process.env.KP_API_KEY || '';
 
 async function contribute(input) {
   const parsed = JSON.parse(input);
   const unit = {
-    '@context': 'https://knowledgepulse.dev/schema/v1',
+    '@context': 'https://openknowledgepulse.org/schema/v1',
     '@type': 'ReasoningTrace',
     id: `kp:trace:flowise-${Date.now()}`,
     metadata: {

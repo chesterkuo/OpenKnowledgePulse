@@ -29,7 +29,7 @@ sidebar_label: AutoGen
 └─────────────────┼─────────────────────────┘
                   │
            ┌──────▼──────────────┐
-           │  KP Registry (:8080)│
+           │  KP Registry (:3000)│
            └─────────────────────┘
 ```
 
@@ -50,7 +50,7 @@ pip install pyautogen httpx
 import json
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 
 def kp_search_knowledge(
@@ -201,7 +201,7 @@ user_proxy.initiate_chat(
 def kp_contribute(task: str, outcome: str, domain: str = "general") -> str:
     """タスク完了後、推論トレースを KnowledgePulse にコントリビュートします。"""
     unit = {
-        "@context": "https://knowledgepulse.dev/schema/v1",
+        "@context": "https://openknowledgepulse.org/schema/v1",
         "@type": "ReasoningTrace",
         "id": f"kp:trace:autogen-{hash(task) % 10000:04d}",
         "metadata": {

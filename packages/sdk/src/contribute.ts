@@ -27,7 +27,7 @@ export async function contributeKnowledge(
   // Idempotency key via SHA-256
   const idempotencyKey = await sha256(JSON.stringify(unit));
 
-  const url = config.registryUrl ?? "https://registry.knowledgepulse.dev";
+  const url = config.registryUrl ?? "https://registry.openknowledgepulse.org";
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "Idempotency-Key": idempotencyKey,
@@ -57,7 +57,7 @@ export async function contributeSkill(
 ): Promise<{ id: string }> {
   const idempotencyKey = await sha256(skillMdContent);
 
-  const url = config.registryUrl ?? "https://registry.knowledgepulse.dev";
+  const url = config.registryUrl ?? "https://registry.openknowledgepulse.org";
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "Idempotency-Key": idempotencyKey,

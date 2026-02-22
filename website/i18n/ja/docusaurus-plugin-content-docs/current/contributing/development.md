@@ -74,7 +74,7 @@ bun test --recursive
 
 ### レジストリの起動
 
-レジストリはインメモリストアを持つ Hono HTTP サーバーです。デフォルトではポート 8080 でリッスンします。
+レジストリはインメモリストアを持つ Hono HTTP サーバーです。デフォルトではポート 3000 でリッスンします。
 
 ```bash
 bun run registry/src/index.ts
@@ -97,5 +97,5 @@ bun run packages/mcp-server/src/index.ts
 | JSON スキーマの生成 | `bun run codegen` |
 | リント | `bun run lint` |
 | 全テストの実行 | `bun test --recursive` |
-| レジストリの起動（ポート 8080） | `bun run registry/src/index.ts` |
+| レジストリの起動（ポート 3000） | `bun run registry/src/index.ts` |
 | MCP サーバーの起動（ポート 3001） | `bun run packages/mcp-server/src/index.ts` |

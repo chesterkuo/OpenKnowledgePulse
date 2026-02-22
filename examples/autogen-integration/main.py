@@ -19,7 +19,7 @@ import json
 
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 
 # ── Function tools (AutoGen-compatible) ──────────────────────

@@ -1,7 +1,7 @@
 {
   "name": "@knowledgepulse/sdk",
   "version": "0.1.0",
-  "description": "KnowledgePulse TypeScript SDK — Knowledge Capture, Retrieval, and Contribution",
+  "description": "KnowledgePulse TypeScript SDK — Knowledge Capture, Retrieval, Scoring, and Contribution for AI agents",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -18,6 +18,26 @@
     "build": "tsup",
     "dev": "tsup --watch"
   },
+  "keywords": [
+    "knowledgepulse",
+    "ai",
+    "knowledge-sharing",
+    "mcp",
+    "skill-md",
+    "reasoning",
+    "sop",
+    "agent"
+  ],
+  "homepage": "https://openknowledgepulse.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chesterkuo/OpenKnowledgePulse",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/chesterkuo/OpenKnowledgePulse/issues"
+  },
+  "author": "Summer Lab",
   "dependencies": {
     "@noble/ed25519": "^3.0.0",
     "@noble/hashes": "^2.0.1",
@@ -32,5 +52,8 @@
   "peerDependencies": {
     "zod": "^3.23.0"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  }
 }

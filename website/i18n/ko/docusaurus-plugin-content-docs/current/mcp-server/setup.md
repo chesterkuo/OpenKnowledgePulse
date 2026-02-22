@@ -33,7 +33,7 @@ bun run packages/mcp-server/src/index.ts
 `KP_REGISTRY_URL`을 설정하여 실행 중인 레지스트리 인스턴스로 요청을 전달합니다.
 
 ```bash
-KP_REGISTRY_URL=http://localhost:8080 KP_API_KEY=kp_abc123 \
+KP_REGISTRY_URL=http://localhost:3000 KP_API_KEY=kp_abc123 \
   bun run packages/mcp-server/src/index.ts
 ```
 

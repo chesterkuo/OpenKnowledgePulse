@@ -30,7 +30,7 @@ export function readConfig(): CLIConfig {
     return JSON.parse(data) as CLIConfig;
   } catch {
     return {
-      registryUrl: "http://localhost:8080",
+      registryUrl: "http://localhost:3000",
       defaultVisibility: "network",
     };
   }

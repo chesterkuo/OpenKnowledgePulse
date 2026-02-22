@@ -19,13 +19,13 @@ const capture = new KPCapture({
   domain: "code_review",
   visibility: "network",
   valueThreshold: 0.75,
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
 });
 
 // ── 2. Configure Knowledge Retrieval ────────────────────────
 
 const retrieval = new KPRetrieval({
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
   minQuality: 0.8,
   limit: 5,
 });

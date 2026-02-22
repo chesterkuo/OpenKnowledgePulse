@@ -28,7 +28,7 @@ La integración proporciona funciones Python independientes que cumplen con la i
 └─────────────────┼─────────────────────────┘
                   │
            ┌──────▼──────────────┐
-           │  KP Registry (:8080)│
+           │  KP Registry (:3000)│
            └─────────────────────┘
 ```
 
@@ -49,7 +49,7 @@ pip install pyautogen httpx
 import json
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 
 def kp_search_knowledge(
@@ -200,7 +200,7 @@ Después de que una conversación se completa, puedes contribuir los resultados 
 def kp_contribute(task: str, outcome: str, domain: str = "general") -> str:
     """Contribute a reasoning trace to KnowledgePulse after task completion."""
     unit = {
-        "@context": "https://knowledgepulse.dev/schema/v1",
+        "@context": "https://openknowledgepulse.org/schema/v1",
         "@type": "ReasoningTrace",
         "id": f"kp:trace:autogen-{hash(task) % 10000:04d}",
         "metadata": {

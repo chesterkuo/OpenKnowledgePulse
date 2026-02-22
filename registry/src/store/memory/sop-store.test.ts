@@ -3,7 +3,7 @@ import type { ExpertSOP } from "@knowledgepulse/sdk";
 import type { SOPVersion, StoredSOP } from "../interfaces.js";
 import { MemorySopStore } from "./sop-store.js";
 
-const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 function makeExpertSOP(overrides: Partial<ExpertSOP> = {}): ExpertSOP {
   return {

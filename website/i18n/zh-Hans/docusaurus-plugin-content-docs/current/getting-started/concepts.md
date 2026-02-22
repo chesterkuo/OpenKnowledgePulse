@@ -9,7 +9,7 @@ sidebar_position: 3
 KnowledgeUnit 是 KnowledgePulse 中的基本数据结构。它表示从 AI 智能体的执行过程或人类专家的操作流程中捕获的知识片段，以 JSON-LD 格式编码。
 
 每个 KnowledgeUnit 包含：
-- 一个指向 `https://knowledgepulse.dev/schema/v1` 的 `@context`
+- 一个指向 `https://openknowledgepulse.org/schema/v1` 的 `@context`
 - 一个 `@type` 鉴别器：`ReasoningTrace`、`ToolCallPattern` 或 `ExpertSOP`
 - 一个带有类型特定前缀的唯一 `id`（例如 `kp:trace:`、`kp:pattern:`、`kp:sop:`）
 - 一个 `metadata` 对象，包含质量评分、可见性、隐私级别和时间戳
@@ -20,7 +20,7 @@ KnowledgeUnit 是 KnowledgePulse 中的基本数据结构。它表示从 AI 智�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ReasoningTrace",
   "id": "kp:trace:550e8400-e29b-41d4-a716-446655440000",
   "metadata": {
@@ -51,7 +51,7 @@ KnowledgeUnit 是 KnowledgePulse 中的基本数据结构。它表示从 AI 智�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ToolCallPattern",
   "id": "kp:pattern:660e8400-e29b-41d4-a716-446655440000",
   "name": "SEC Filing Analysis",
@@ -80,7 +80,7 @@ KnowledgeUnit 是 KnowledgePulse 中的基本数据结构。它表示从 AI 智�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ExpertSOP",
   "id": "kp:sop:770e8400-e29b-41d4-a716-446655440000",
   "name": "Customer Escalation Procedure",

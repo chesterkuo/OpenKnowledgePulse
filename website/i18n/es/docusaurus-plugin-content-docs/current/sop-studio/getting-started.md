@@ -19,7 +19,7 @@ SOP Studio es un editor visual para construir Procedimientos Operativos Estánda
 Establece las siguientes variables de entorno antes de iniciar SOP Studio:
 
 ```bash
-export KP_REGISTRY_URL="http://localhost:8080"
+export KP_REGISTRY_URL="http://localhost:3000"
 export KP_API_KEY="kp_your_api_key_here"
 ```
 

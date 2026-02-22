@@ -28,7 +28,7 @@ description: 使用函数工具将 KnowledgePulse 与 Microsoft AutoGen 集成�
 └─────────────────┼─────────────────────────┘
                   │
            ┌──────▼──────────────┐
-           │  KP Registry (:8080)│
+           │  KP Registry (:3000)│
            └─────────────────────┘
 ```
 
@@ -49,7 +49,7 @@ pip install pyautogen httpx
 import json
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 
 def kp_search_knowledge(
@@ -199,7 +199,7 @@ user_proxy.initiate_chat(
 def kp_contribute(task: str, outcome: str, domain: str = "general") -> str:
     """任务完成后向 KnowledgePulse 贡献推理追踪。"""
     unit = {
-        "@context": "https://knowledgepulse.dev/schema/v1",
+        "@context": "https://openknowledgepulse.org/schema/v1",
         "@type": "ReasoningTrace",
         "id": f"kp:trace:autogen-{hash(task) % 10000:04d}",
         "metadata": {

@@ -24,7 +24,7 @@ KnowledgePulse 마켓플레이스는 지식 생산자와 소비자 간의 거래
 ## 잔액 확인
 
 ```bash
-curl http://localhost:8080/v1/marketplace/balance \
+curl http://localhost:3000/v1/marketplace/balance \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -57,7 +57,7 @@ curl http://localhost:8080/v1/marketplace/balance \
 ### 수입 조회
 
 ```bash
-curl http://localhost:8080/v1/marketplace/earnings \
+curl http://localhost:3000/v1/marketplace/earnings \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -86,7 +86,7 @@ curl http://localhost:8080/v1/marketplace/earnings \
 Pro 및 Enterprise 등급은 잔액이 임계값 아래로 떨어지면 추가 크레딧을 구매하는 자동 충전을 활성화할 수 있습니다:
 
 ```bash
-curl -X PUT http://localhost:8080/v1/marketplace/balance/auto-refill \
+curl -X PUT http://localhost:3000/v1/marketplace/balance/auto-refill \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -103,7 +103,7 @@ curl -X PUT http://localhost:8080/v1/marketplace/balance/auto-refill \
 관리자는 모든 에이전트의 크레딧을 부여하거나 조정할 수 있습니다:
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/admin/credits \
+curl -X POST http://localhost:3000/v1/marketplace/admin/credits \
   -H "Authorization: Bearer kp_admin_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -120,7 +120,7 @@ curl -X POST http://localhost:8080/v1/marketplace/admin/credits \
 모든 크레딧 거래는 기록되며 조회할 수 있습니다:
 
 ```bash
-curl "http://localhost:8080/v1/marketplace/balance/transactions?limit=10" \
+curl "http://localhost:3000/v1/marketplace/balance/transactions?limit=10" \
   -H "Authorization: Bearer kp_your_key"
 ```
 

@@ -15,13 +15,13 @@ KnowledgePulse 마켓플레이스는 SOP, 스킬, 도구 호출 패턴, 추론 �
 
 ```bash
 # List all public marketplace listings
-curl http://localhost:8080/v1/marketplace/listings
+curl http://localhost:3000/v1/marketplace/listings
 
 # Search by domain
-curl "http://localhost:8080/v1/marketplace/listings?domain=engineering"
+curl "http://localhost:3000/v1/marketplace/listings?domain=engineering"
 
 # Search by text query
-curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
+curl "http://localhost:3000/v1/marketplace/listings?q=kubernetes+deployment"
 ```
 
 ## 리스팅 구조
@@ -56,7 +56,7 @@ curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
 유료 리스팅에 접근하려면 구매 요청을 보냅니다:
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings/listing-123/purchase \
+curl -X POST http://localhost:3000/v1/marketplace/listings/listing-123/purchase \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json"
 ```
@@ -79,7 +79,7 @@ curl -X POST http://localhost:8080/v1/marketplace/listings/listing-123/purchase 
 마켓플레이스에 자신의 지식 자산을 등록하려면:
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings \
+curl -X POST http://localhost:3000/v1/marketplace/listings \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{

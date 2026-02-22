@@ -32,7 +32,7 @@ export class KPRetrieval {
       params.set("types", this.config.knowledgeTypes.join(","));
     }
 
-    const url = this.config.registryUrl ?? "https://registry.knowledgepulse.dev";
+    const url = this.config.registryUrl ?? "https://registry.openknowledgepulse.org";
     const headers: Record<string, string> = {};
     if (this.config.apiKey) {
       headers.Authorization = `Bearer ${this.config.apiKey}`;
@@ -54,7 +54,7 @@ export class KPRetrieval {
     if (opts?.domain) params.set("domain", opts.domain);
     if (opts?.tags?.length) params.set("tags", opts.tags.join(","));
 
-    const url = this.config.registryUrl ?? "https://registry.knowledgepulse.dev";
+    const url = this.config.registryUrl ?? "https://registry.openknowledgepulse.org";
     const headers: Record<string, string> = {};
     if (this.config.apiKey) {
       headers.Authorization = `Bearer ${this.config.apiKey}`;

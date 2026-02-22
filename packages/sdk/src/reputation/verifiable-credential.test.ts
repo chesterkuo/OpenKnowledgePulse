@@ -30,7 +30,7 @@ describe("verifiable-credential", () => {
 
       expect(vc["@context"]).toEqual([
         "https://www.w3.org/2018/credentials/v1",
-        "https://knowledgepulse.dev/credentials/v1",
+        "https://openknowledgepulse.org/credentials/v1",
       ]);
       expect(vc.type).toEqual(["VerifiableCredential", "KPReputationCredential"]);
       expect(vc.issuer).toBe("did:kp:registry-001");

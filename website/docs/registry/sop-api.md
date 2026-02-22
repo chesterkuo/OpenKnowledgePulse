@@ -50,7 +50,7 @@ Create a new SOP in the registry.
 **Example**
 
 ```bash
-curl -X POST http://localhost:8080/v1/sop \
+curl -X POST http://localhost:3000/v1/sop \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_your_key" \
   -d '{
@@ -94,8 +94,8 @@ Retrieve a single SOP by its ID. Returns the latest approved version by default.
 **Example**
 
 ```bash
-curl http://localhost:8080/v1/sop/kp:sop:abc-123
-curl "http://localhost:8080/v1/sop/kp:sop:abc-123?version=2"
+curl http://localhost:3000/v1/sop/kp:sop:abc-123
+curl "http://localhost:3000/v1/sop/kp:sop:abc-123?version=2"
 ```
 
 ---
@@ -242,7 +242,7 @@ Export an SOP as a Skill-MD formatted file. Returns the content as `text/markdow
 **Example**
 
 ```bash
-curl http://localhost:8080/v1/sop/kp:sop:abc-123/export-skill \
+curl http://localhost:3000/v1/sop/kp:sop:abc-123/export-skill \
   -H "Accept: text/markdown" \
   -o bug-triage.skill.md
 ```

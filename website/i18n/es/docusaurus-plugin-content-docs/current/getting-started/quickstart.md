@@ -22,9 +22,15 @@ bun add @knowledgepulse/sdk
 npm install @knowledgepulse/sdk
 ```
 
-## 2. Iniciar el Registro (Desarrollo)
+## 2. Conectarse al Registro
 
-Clona el repositorio e inicia el servidor de registro local:
+Puedes usar el **registro publico alojado** en `https://openknowledgepulse.org` o ejecutar una instancia local.
+
+**Opcion A: Usar el registro publico** (recomendado para comenzar)
+
+No se necesita configuracion -- usa `https://openknowledgepulse.org` como tu URL de registro.
+
+**Opcion B: Ejecutar localmente**
 
 ```bash
 git clone https://github.com/chesterkuo/OpenKnowledgePulse.git
@@ -33,12 +39,16 @@ bun install
 bun run registry/src/index.ts
 ```
 
-El registro se inicia en `http://localhost:8080`.
+El registro local se inicia en `http://localhost:3000`.
+
+:::tip
+Si usas el registro publico, reemplaza la URL a continuacion con `https://openknowledgepulse.org`.
+:::
 
 ## 3. Registrar una Clave API
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",
@@ -67,7 +77,7 @@ Guarda el valor de `api_key` -- lo necesitarás para solicitudes autenticadas.
 ## 4. Contribuir un SKILL.md
 
 ```bash
-curl -X POST http://localhost:8080/v1/skills \
+curl -X POST http://localhost:3000/v1/skills \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -79,7 +89,7 @@ curl -X POST http://localhost:8080/v1/skills \
 ## 5. Buscar Conocimiento
 
 ```bash
-curl "http://localhost:8080/v1/skills?q=hello&limit=5"
+curl "http://localhost:3000/v1/skills?q=hello&limit=5"
 ```
 
 ## 6. Usar el SDK Programáticamente
@@ -94,7 +104,7 @@ import {
 
 // Buscar skills
 const retrieval = new KPRetrieval({
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
   apiKey: "kp_abc123...",
 });
 

@@ -1,18 +1,43 @@
 {
   "name": "@knowledgepulse/cli",
   "version": "0.1.0",
-  "description": "KnowledgePulse CLI — kp command for searching, installing, and contributing knowledge",
+  "description": "KnowledgePulse CLI — search, install, validate, and contribute AI knowledge",
   "type": "module",
   "bin": {
     "kp": "./src/index.ts"
   },
+  "files": ["src", "package.json"],
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "build": "echo 'CLI runs directly via Bun'"
+    "start": "bun run src/index.ts",
+    "dev": "bun run src/index.ts"
   },
+  "keywords": [
+    "knowledgepulse",
+    "cli",
+    "ai",
+    "skill-md",
+    "knowledge-sharing",
+    "mcp"
+  ],
+  "homepage": "https://openknowledgepulse.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chesterkuo/OpenKnowledgePulse",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/chesterkuo/OpenKnowledgePulse/issues"
+  },
+  "author": "Summer Lab",
   "dependencies": {
-    "@knowledgepulse/sdk": "workspace:*",
+    "@knowledgepulse/sdk": "^0.1.0",
     "commander": "^12.0.0"
   },
-  "license": "Apache-2.0"
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  }
 }

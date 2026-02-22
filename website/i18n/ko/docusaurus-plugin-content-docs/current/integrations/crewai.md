@@ -27,7 +27,7 @@ description: CrewAI와 KnowledgePulse를 통합하여 Crew에 공유 에이전�
 └──────────┼──────────────┼───────────────┘
            │              │
      ┌─────▼──────────────▼─────┐
-     │   KP Registry (:8080)    │
+     │   KP Registry (:3000)    │
      └──────────────────────────┘
 ```
 
@@ -50,7 +50,7 @@ import json
 from typing import Any
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 class KnowledgePulseTool:
     """Wraps KnowledgePulse registry HTTP API for use in CrewAI agents."""
@@ -180,7 +180,7 @@ result = crew.kickoff()
 
 # After task completion, contribute the result back
 kp.contribute_knowledge({
-    "@context": "https://knowledgepulse.dev/schema/v1",
+    "@context": "https://openknowledgepulse.org/schema/v1",
     "@type": "ReasoningTrace",
     "id": f"kp:trace:crewai-{task.description[:20]}",
     "metadata": {

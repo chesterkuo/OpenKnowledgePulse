@@ -99,7 +99,7 @@ const validExpertSOP = {
 
 describe("KP_CONTEXT", () => {
   test("equals the canonical schema URL", () => {
-    expect(KP_CONTEXT).toBe("https://knowledgepulse.dev/schema/v1");
+    expect(KP_CONTEXT).toBe("https://openknowledgepulse.org/schema/v1");
   });
 });
 

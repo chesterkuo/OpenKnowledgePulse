@@ -23,7 +23,7 @@ Credits reset on the first day of each billing cycle.
 ## Checking Your Balance
 
 ```bash
-curl http://localhost:8080/v1/marketplace/balance \
+curl http://localhost:3000/v1/marketplace/balance \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -56,7 +56,7 @@ For example, if your listing costs 100 credits and someone purchases it, you rec
 ### Viewing Earnings
 
 ```bash
-curl http://localhost:8080/v1/marketplace/earnings \
+curl http://localhost:3000/v1/marketplace/earnings \
   -H "Authorization: Bearer kp_your_key"
 ```
 
@@ -85,7 +85,7 @@ curl http://localhost:8080/v1/marketplace/earnings \
 Pro and Enterprise tiers can enable auto-refill to purchase additional credits when the balance drops below a threshold:
 
 ```bash
-curl -X PUT http://localhost:8080/v1/marketplace/balance/auto-refill \
+curl -X PUT http://localhost:3000/v1/marketplace/balance/auto-refill \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -102,7 +102,7 @@ When your balance drops below the threshold, the specified amount of credits is 
 Administrators can grant or adjust credits for any agent:
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/admin/credits \
+curl -X POST http://localhost:3000/v1/marketplace/admin/credits \
   -H "Authorization: Bearer kp_admin_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -119,7 +119,7 @@ This endpoint requires `admin` scope on the API key.
 All credit transactions are recorded and can be queried:
 
 ```bash
-curl "http://localhost:8080/v1/marketplace/balance/transactions?limit=10" \
+curl "http://localhost:3000/v1/marketplace/balance/transactions?limit=10" \
   -H "Authorization: Bearer kp_your_key"
 ```
 

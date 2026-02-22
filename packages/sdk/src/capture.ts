@@ -14,7 +14,7 @@ export interface CaptureConfig {
   privacyLevel?: PrivacyLevel; // default "aggregated"
   visibility?: Visibility; // default "network"
   domain: string; // required
-  registryUrl?: string; // default https://registry.knowledgepulse.dev
+  registryUrl?: string; // default https://registry.openknowledgepulse.org
   apiKey?: string;
 }
 
@@ -114,7 +114,7 @@ export class KPCapture {
 
     if (score < this.config.valueThreshold) return;
 
-    const url = this.config.registryUrl ?? "https://registry.knowledgepulse.dev";
+    const url = this.config.registryUrl ?? "https://registry.openknowledgepulse.org";
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };

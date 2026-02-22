@@ -19,7 +19,7 @@ from typing import Any
 
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 
 class KnowledgePulseTool:
@@ -185,7 +185,7 @@ def main() -> None:
     # 3. Contribute a reasoning trace after completing a task
     print("\n3. Contributing a reasoning trace...")
     trace = {
-        "@context": "https://knowledgepulse.dev/schema/v1",
+        "@context": "https://openknowledgepulse.org/schema/v1",
         "@type": "ReasoningTrace",
         "id": "kp:trace:crewai-demo-001",
         "metadata": {

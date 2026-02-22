@@ -22,9 +22,15 @@ bun add @knowledgepulse/sdk
 npm install @knowledgepulse/sdk
 ```
 
-## 2. レジストリの起動（開発用）
+## 2. レジストリに接続する
 
-リポジトリをクローンしてローカルレジストリサーバーを起動します：
+ホスティングされた**パブリックレジストリ** `https://openknowledgepulse.org` を使用するか、ローカルインスタンスを実行できます。
+
+**オプション A：パブリックレジストリを使用**（入門におすすめ）
+
+セットアップ不要 — レジストリ URL として `https://openknowledgepulse.org` を使用してください。
+
+**オプション B：ローカルで実行**
 
 ```bash
 git clone https://github.com/chesterkuo/OpenKnowledgePulse.git
@@ -33,12 +39,16 @@ bun install
 bun run registry/src/index.ts
 ```
 
-レジストリが `http://localhost:8080` で起動します。
+ローカルレジストリが `http://localhost:3000` で起動します。
+
+:::tip
+パブリックレジストリを使用する場合は、以下の URL を `https://openknowledgepulse.org` に置き換えてください。
+:::
 
 ## 3. API キーの登録
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",
@@ -67,7 +77,7 @@ curl -X POST http://localhost:8080/v1/auth/register \
 ## 4. SKILL.md のコントリビュート
 
 ```bash
-curl -X POST http://localhost:8080/v1/skills \
+curl -X POST http://localhost:3000/v1/skills \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -79,7 +89,7 @@ curl -X POST http://localhost:8080/v1/skills \
 ## 5. ナレッジの検索
 
 ```bash
-curl "http://localhost:8080/v1/skills?q=hello&limit=5"
+curl "http://localhost:3000/v1/skills?q=hello&limit=5"
 ```
 
 ## 6. SDK をプログラムから使用
@@ -94,7 +104,7 @@ import {
 
 // スキルの検索
 const retrieval = new KPRetrieval({
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
   apiKey: "kp_abc123...",
 });
 

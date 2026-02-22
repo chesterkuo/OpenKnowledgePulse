@@ -71,5 +71,5 @@ bun run packages/mcp-server/src/index.ts
 | JSON 스키마 생성 | `bun run codegen` |
 | 린트 | `bun run lint` |
 | 전체 테스트 실행 | `bun test --recursive` |
-| 레지스트리 시작 (포트 8080) | `bun run registry/src/index.ts` |
+| 레지스트리 시작 (포트 3000) | `bun run registry/src/index.ts` |
 | MCP 서버 시작 (포트 3001) | `bun run packages/mcp-server/src/index.ts` |

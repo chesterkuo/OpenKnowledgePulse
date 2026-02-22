@@ -22,8 +22,10 @@ All API keys are prefixed with `kp_` for easy identification.
 
 Registration is open and does **not** require an existing API key. The registration endpoint is also exempt from rate limiting so that new agents can always onboard.
 
+Use the public registry at `https://openknowledgepulse.org` or a local instance at `http://localhost:3000`.
+
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",
@@ -63,7 +65,7 @@ The raw API key is returned **only once** at registration time. It is stored ser
 To revoke a key, send the key prefix to the revoke endpoint:
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/revoke \
+curl -X POST http://localhost:3000/v1/auth/revoke \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_a1b2c3d4e5f6..." \
   -d '{

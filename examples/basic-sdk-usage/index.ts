@@ -12,7 +12,7 @@ const capture = new KPCapture({
   domain: "financial_analysis",
   visibility: "network",
   valueThreshold: 0.75,
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
 });
 
 // Wrap an existing agent function
@@ -30,7 +30,7 @@ console.log("Agent result:", result);
 // ── 2. Knowledge Retrieval ─────────────────────────────
 
 const retrieval = new KPRetrieval({
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
   minQuality: 0.8,
   limit: 5,
 });

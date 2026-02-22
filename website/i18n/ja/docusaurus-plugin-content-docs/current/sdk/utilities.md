@@ -104,7 +104,7 @@ interface CaptureConfig {
   valueThreshold?: number;     // デフォルト: 0.75（コントリビュートの最小スコア）
   privacyLevel?: PrivacyLevel; // デフォルト: "aggregated"
   visibility?: Visibility;     // デフォルト: "network"
-  registryUrl?: string;        // デフォルト: "https://registry.knowledgepulse.dev"
+  registryUrl?: string;        // デフォルト: "https://registry.openknowledgepulse.org"
   apiKey?: string;             // レジストリ認証用の Bearer トークン
 }
 ```
@@ -167,7 +167,7 @@ interface RetrievalConfig {
   minQuality?: number;              // デフォルト: 0.80
   knowledgeTypes?: KnowledgeUnitType[];
   limit?: number;                   // デフォルト: 5
-  registryUrl?: string;             // デフォルト: "https://registry.knowledgepulse.dev"
+  registryUrl?: string;             // デフォルト: "https://registry.openknowledgepulse.org"
   apiKey?: string;                  // レジストリ認証用の Bearer トークン
 }
 ```

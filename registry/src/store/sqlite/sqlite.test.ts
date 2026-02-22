@@ -3,7 +3,7 @@ import type { ReasoningTrace, ToolCallPattern, ValidationVote } from "@knowledge
 import type { AllStores, StoredKnowledgeUnit, StoredSkill } from "../interfaces.js";
 import { createSqliteStore } from "./index.js";
 
-const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 // ── Helpers ───────────────────────────────────────────
 

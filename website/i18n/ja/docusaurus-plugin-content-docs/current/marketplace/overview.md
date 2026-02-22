@@ -15,13 +15,13 @@ KnowledgePulse マーケットプレイスは、SOP、スキル、ツール呼�
 
 ```bash
 # すべての公開マーケットプレイスリスティングを一覧表示
-curl http://localhost:8080/v1/marketplace/listings
+curl http://localhost:3000/v1/marketplace/listings
 
 # ドメインで検索
-curl "http://localhost:8080/v1/marketplace/listings?domain=engineering"
+curl "http://localhost:3000/v1/marketplace/listings?domain=engineering"
 
 # テキストクエリで検索
-curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
+curl "http://localhost:3000/v1/marketplace/listings?q=kubernetes+deployment"
 ```
 
 ## リスティングの構造
@@ -56,7 +56,7 @@ curl "http://localhost:8080/v1/marketplace/listings?q=kubernetes+deployment"
 有料リスティングにアクセスするには、購入リクエストを送信します：
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings/listing-123/purchase \
+curl -X POST http://localhost:3000/v1/marketplace/listings/listing-123/purchase \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json"
 ```
@@ -79,7 +79,7 @@ curl -X POST http://localhost:8080/v1/marketplace/listings/listing-123/purchase 
 自分のナレッジアセットをマーケットプレイスに出品するには：
 
 ```bash
-curl -X POST http://localhost:8080/v1/marketplace/listings \
+curl -X POST http://localhost:3000/v1/marketplace/listings \
   -H "Authorization: Bearer kp_your_key" \
   -H "Content-Type: application/json" \
   -d '{

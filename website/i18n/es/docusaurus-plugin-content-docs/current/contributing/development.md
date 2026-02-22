@@ -85,5 +85,5 @@ bun run packages/mcp-server/src/index.ts
 | Generar esquema JSON | `bun run codegen` |
 | Lint | `bun run lint` |
 | Ejecutar todos los tests | `bun test --recursive` |
-| Iniciar registro (puerto 8080) | `bun run registry/src/index.ts` |
+| Iniciar registro (puerto 3000) | `bun run registry/src/index.ts` |
 | Iniciar servidor MCP (puerto 3001) | `bun run packages/mcp-server/src/index.ts` |

@@ -50,7 +50,7 @@ POST /v1/sop
 **示例**
 
 ```bash
-curl -X POST http://localhost:8080/v1/sop \
+curl -X POST http://localhost:3000/v1/sop \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_your_key" \
   -d '{
@@ -94,8 +94,8 @@ GET /v1/sop/:id
 **示例**
 
 ```bash
-curl http://localhost:8080/v1/sop/kp:sop:abc-123
-curl "http://localhost:8080/v1/sop/kp:sop:abc-123?version=2"
+curl http://localhost:3000/v1/sop/kp:sop:abc-123
+curl "http://localhost:3000/v1/sop/kp:sop:abc-123?version=2"
 ```
 
 ---
@@ -242,7 +242,7 @@ GET /v1/sop/:id/export-skill
 **示例**
 
 ```bash
-curl http://localhost:8080/v1/sop/kp:sop:abc-123/export-skill \
+curl http://localhost:3000/v1/sop/kp:sop:abc-123/export-skill \
   -H "Accept: text/markdown" \
   -o bug-triage.skill.md
 ```

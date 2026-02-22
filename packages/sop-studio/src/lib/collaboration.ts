@@ -71,9 +71,9 @@ function deriveWsUrl(registryUrl: string, sopId: string): string {
 
 function getDefaultRegistryUrl(): string {
   if (typeof window !== "undefined" && window.localStorage) {
-    return localStorage.getItem("kp_registry_url") || "http://localhost:8080";
+    return localStorage.getItem("kp_registry_url") || "http://localhost:3000";
   }
-  return "http://localhost:8080";
+  return "http://localhost:3000";
 }
 
 function getDefaultAgentId(): string {

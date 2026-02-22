@@ -64,7 +64,7 @@ Flowise は REST API を介して KnowledgePulse と通信します。SDK のイ
 1. フローに **HTTP Request** ノードを追加します。
 2. 設定：
    - **Method:** `GET`
-   - **URL:** `http://localhost:8080/v1/knowledge`
+   - **URL:** `http://localhost:3000/v1/knowledge`
    - **Query Parameters:**
      - `q` = `{{input}}`（ユーザーの質問から接続）
      - `limit` = `5`
@@ -79,7 +79,7 @@ Flowise は REST API を介して KnowledgePulse と通信します。SDK のイ
 1. 別の **HTTP Request** ノードを追加します。
 2. 設定：
    - **Method:** `GET`
-   - **URL:** `http://localhost:8080/v1/skills`
+   - **URL:** `http://localhost:3000/v1/skills`
    - **Query Parameters:**
      - `q` = `{{input}}`
      - `tags` = `python,automation`（オプション）
@@ -89,14 +89,14 @@ Flowise は REST API を介して KnowledgePulse と通信します。SDK のイ
 1. フローの末尾に **HTTP Request** ノードを追加します。
 2. 設定：
    - **Method:** `POST`
-   - **URL:** `http://localhost:8080/v1/knowledge`
+   - **URL:** `http://localhost:3000/v1/knowledge`
    - **Headers:**
      - `Content-Type`: `application/json`
      - `Authorization`: `Bearer <your-api-key>`
    - **Body (JSON):**
      ```json
      {
-       "@context": "https://knowledgepulse.dev/schema/v1",
+       "@context": "https://openknowledgepulse.org/schema/v1",
        "@type": "ReasoningTrace",
        "id": "kp:trace:flowise-{{timestamp}}",
        "metadata": {
@@ -130,7 +130,7 @@ Flowise は REST API を介して KnowledgePulse と通信します。SDK のイ
 
 ```javascript
 const fetch = require('node-fetch');
-const KP_URL = 'http://localhost:8080';
+const KP_URL = 'http://localhost:3000';
 
 async function search(query) {
   const params = new URLSearchParams({
@@ -178,13 +178,13 @@ return search($input);
 
 ```javascript
 const fetch = require('node-fetch');
-const KP_URL = 'http://localhost:8080';
+const KP_URL = 'http://localhost:3000';
 const API_KEY = process.env.KP_API_KEY || '';
 
 async function contribute(input) {
   const parsed = JSON.parse(input);
   const unit = {
-    '@context': 'https://knowledgepulse.dev/schema/v1',
+    '@context': 'https://openknowledgepulse.org/schema/v1',
     '@type': 'ReasoningTrace',
     id: `kp:trace:flowise-${Date.now()}`,
     metadata: {

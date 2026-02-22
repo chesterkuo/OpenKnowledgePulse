@@ -61,7 +61,7 @@ function createBlankSOP(): StoredSOP {
   return {
     id: "",
     sop: {
-      "@context": "https://knowledgepulse.dev/schema/v1",
+      "@context": "https://openknowledgepulse.org/schema/v1",
       "@type": "ExpertSOP",
       id: "",
       name: "Untitled SOP",

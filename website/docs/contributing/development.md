@@ -73,7 +73,7 @@ bun test --recursive
 
 ### Start the Registry
 
-The registry is a Hono HTTP server with in-memory stores. It listens on port 8080 by default.
+The registry is a Hono HTTP server with in-memory stores. It listens on port 3000 by default.
 
 ```bash
 bun run registry/src/index.ts
@@ -96,5 +96,5 @@ bun run packages/mcp-server/src/index.ts
 | Generate JSON schema | `bun run codegen` |
 | Lint | `bun run lint` |
 | Run all tests | `bun test --recursive` |
-| Start registry (port 8080) | `bun run registry/src/index.ts` |
+| Start registry (port 3000) | `bun run registry/src/index.ts` |
 | Start MCP server (port 3001) | `bun run packages/mcp-server/src/index.ts` |

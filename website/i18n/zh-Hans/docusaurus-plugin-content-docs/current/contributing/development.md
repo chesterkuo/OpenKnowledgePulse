@@ -73,7 +73,7 @@ bun test --recursive
 
 ### 启动 Registry
 
-Registry 是一个使用内存存储的 Hono HTTP 服务器，默认监听端口 8080。
+Registry 是一个使用内存存储的 Hono HTTP 服务器，默认监听端口 3000。
 
 ```bash
 bun run registry/src/index.ts
@@ -96,5 +96,5 @@ bun run packages/mcp-server/src/index.ts
 | 生成 JSON schema | `bun run codegen` |
 | 代码检查 | `bun run lint` |
 | 运行全部测试 | `bun test --recursive` |
-| 启动 Registry（端口 8080） | `bun run registry/src/index.ts` |
+| 启动 Registry（端口 3000） | `bun run registry/src/index.ts` |
 | 启动 MCP 服务器（端口 3001） | `bun run packages/mcp-server/src/index.ts` |

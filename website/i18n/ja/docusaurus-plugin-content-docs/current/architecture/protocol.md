@@ -15,14 +15,14 @@ KnowledgeUnit プロトコルは、AI 生成ナレッジを表現するための
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "Trace",
   "id": "kp:trace:a1b2c3d4",
   ...
 }
 ```
 
-- **`@context`** -- スキーマ名前空間 URI。すべての v1.x ドキュメントは `https://knowledgepulse.dev/schema/v1` コンテキストを共有します。新しいメジャーバージョンは新しいコンテキスト URI を導入します（例：`.../v2`）。
+- **`@context`** -- スキーマ名前空間 URI。すべての v1.x ドキュメントは `https://openknowledgepulse.org/schema/v1` コンテキストを共有します。新しいメジャーバージョンは新しいコンテキスト URI を導入します（例：`.../v2`）。
 - **`@type`** -- 型識別子。`Trace`、`Pattern`、`SOP` のいずれか。
 
 ## KnowledgeUnit タイプ
@@ -57,14 +57,14 @@ KnowledgePulse はスキーマにセマンティックバージョニングを�
 ### マイナーバージョン（例：1.0.0 → 1.1.0）
 
 - **追加のみ** -- 新しいオプションフィールドが導入される可能性があります。
-- `@context` URI に**変更なし**（引き続き `https://knowledgepulse.dev/schema/v1`）。
+- `@context` URI に**変更なし**（引き続き `https://openknowledgepulse.org/schema/v1`）。
 - 既存のフィールドが削除されたり、セマンティクスが変更されることはありません。
 - 既存のコンシューマーは動作し続け、新しいフィールドを単に無視します。
 
 ### メジャーバージョン（例：v1 → v2）
 
 - 破壊的変更 -- フィールドの削除、名前変更、セマンティクスの変更が行われる可能性があります。
-- **新しい `@context` URI**（例：`https://knowledgepulse.dev/schema/v2`）。
+- **新しい `@context` URI**（例：`https://openknowledgepulse.org/schema/v2`）。
 - 明示的なマイグレーションが必要です。
 
 ## 後方互換性ルール

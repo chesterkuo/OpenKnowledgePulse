@@ -252,7 +252,7 @@ export default function Import() {
 
     try {
       const sopData = {
-        "@context": "https://knowledgepulse.dev/schema/v1",
+        "@context": "https://openknowledgepulse.org/schema/v1",
         "@type": "ExpertSOP",
         name: sopName.trim(),
         domain: domain.trim() || "general",

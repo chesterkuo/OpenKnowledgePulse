@@ -193,7 +193,7 @@ describe("KPCapture", () => {
       if (fetchMock.mock.calls.length > 0) {
         const [, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
         const body = JSON.parse(opts.body as string);
-        expect(body["@context"]).toBe("https://knowledgepulse.dev/schema/v1");
+        expect(body["@context"]).toBe("https://openknowledgepulse.org/schema/v1");
         expect(body["@type"]).toBe("ReasoningTrace");
         expect(body.id).toMatch(/^kp:trace:/);
         expect(body.metadata.task_domain).toBe("code-review");
@@ -216,7 +216,7 @@ describe("KPCapture", () => {
 
       if (fetchMock.mock.calls.length > 0) {
         const [url] = fetchMock.mock.calls[0] as [string];
-        expect(url).toStartWith("https://registry.knowledgepulse.dev/v1/knowledge");
+        expect(url).toStartWith("https://registry.openknowledgepulse.org/v1/knowledge");
       }
     });
   });

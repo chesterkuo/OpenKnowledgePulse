@@ -10,7 +10,7 @@ sidebar_label: 핵심 개념
 KnowledgeUnit은 KnowledgePulse의 기본 데이터 구조입니다. AI 에이전트의 실행이나 인간 전문가의 절차에서 캡처된 지식 조각을 JSON-LD 형식으로 인코딩하여 나타냅니다.
 
 모든 KnowledgeUnit에는 다음이 포함됩니다:
-- `https://knowledgepulse.dev/schema/v1`을 가리키는 `@context`
+- `https://openknowledgepulse.org/schema/v1`을 가리키는 `@context`
 - `@type` 식별자: `ReasoningTrace`, `ToolCallPattern`, 또는 `ExpertSOP`
 - 유형별 접두사가 있는 고유 `id` (예: `kp:trace:`, `kp:pattern:`, `kp:sop:`)
 - 품질 점수, 가시성, 프라이버시 수준, 타임스탬프가 포함된 `metadata` 객체
@@ -21,7 +21,7 @@ KnowledgeUnit은 KnowledgePulse의 기본 데이터 구조입니다. AI 에이�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ReasoningTrace",
   "id": "kp:trace:550e8400-e29b-41d4-a716-446655440000",
   "metadata": {
@@ -52,7 +52,7 @@ KnowledgeUnit은 KnowledgePulse의 기본 데이터 구조입니다. AI 에이�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ToolCallPattern",
   "id": "kp:pattern:660e8400-e29b-41d4-a716-446655440000",
   "name": "SEC Filing Analysis",
@@ -81,7 +81,7 @@ KnowledgeUnit은 KnowledgePulse의 기본 데이터 구조입니다. AI 에이�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ExpertSOP",
   "id": "kp:sop:770e8400-e29b-41d4-a716-446655440000",
   "name": "Customer Escalation Procedure",

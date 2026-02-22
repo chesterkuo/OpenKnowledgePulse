@@ -46,7 +46,7 @@ bun run packages/mcp-server/src/index.ts
 在代理模式下，服务器将所有请求转发到正在运行的 KnowledgePulse Registry 实例。设置 `KP_REGISTRY_URL` 以启用代理模式，并可选择提供 `KP_API_KEY` 用于需要认证的端点。
 
 ```bash
-KP_REGISTRY_URL=http://localhost:8080 KP_API_KEY=kp_abc123 \
+KP_REGISTRY_URL=http://localhost:3000 KP_API_KEY=kp_abc123 \
   bun run packages/mcp-server/src/index.ts
 ```
 

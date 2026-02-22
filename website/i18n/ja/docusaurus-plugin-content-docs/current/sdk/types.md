@@ -69,7 +69,7 @@ interface KnowledgeUnitMeta {
 
 ```ts
 interface ReasoningTrace {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ReasoningTrace";
   id: string;                  // kp:trace:<uuid>
   source_skill?: string;       // kp:skill:<name>:<version>
@@ -122,7 +122,7 @@ interface ReasoningTraceStep {
 
 ```ts
 interface ToolCallPattern {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ToolCallPattern";
   id: string;                  // kp:pattern:<uuid>
   name: string;
@@ -156,7 +156,7 @@ interface ToolCallPattern {
 
 ```ts
 interface ExpertSOP {
-  "@context": "https://knowledgepulse.dev/schema/v1";
+  "@context": "https://openknowledgepulse.org/schema/v1";
   "@type": "ExpertSOP";
   id: string;                  // kp:sop:<uuid>
   name: string;

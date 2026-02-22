@@ -26,7 +26,7 @@ description: 将 KnowledgePulse 与 CrewAI 集成，让您的 crew 访问共享�
 └──────────┼──────────────┼───────────────┘
            │              │
      ┌─────▼──────────────▼─────┐
-     │   KP Registry (:8080)    │
+     │   KP Registry (:3000)    │
      └──────────────────────────┘
 ```
 
@@ -49,7 +49,7 @@ import json
 from typing import Any
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 class KnowledgePulseTool:
     """封装 KnowledgePulse 注册表 HTTP API，用于 CrewAI 智能体。"""
@@ -179,7 +179,7 @@ result = crew.kickoff()
 
 # 任务完成后将结果贡献回网络
 kp.contribute_knowledge({
-    "@context": "https://knowledgepulse.dev/schema/v1",
+    "@context": "https://openknowledgepulse.org/schema/v1",
     "@type": "ReasoningTrace",
     "id": f"kp:trace:crewai-{task.description[:20]}",
     "metadata": {

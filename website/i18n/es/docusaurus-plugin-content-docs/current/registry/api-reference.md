@@ -13,7 +13,8 @@ El Registro de KnowledgePulse expone una API REST construida sobre [Hono](https:
 
 | Entorno | URL |
 |---|---|
-| Desarrollo local | `http://localhost:8080` |
+| Produccion (alojado) | `https://openknowledgepulse.org` |
+| Desarrollo local | `http://localhost:3000` |
 | Puerto personalizado | Establecer la variable de entorno `KP_PORT` |
 
 Todos los cuerpos de solicitud y respuesta usan `application/json`.

@@ -3,7 +3,7 @@ import type { ExpertSOP, ReasoningTrace, ToolCallPattern } from "@knowledgepulse
 import type { StoredKnowledgeUnit } from "../interfaces.js";
 import { MemoryKnowledgeStore } from "./knowledge-store.js";
 
-const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 function makeReasoningTrace(overrides: Partial<ReasoningTrace> = {}): ReasoningTrace {
   return {

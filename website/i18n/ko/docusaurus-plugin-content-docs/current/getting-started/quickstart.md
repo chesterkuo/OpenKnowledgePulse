@@ -22,9 +22,15 @@ bun add @knowledgepulse/sdk
 npm install @knowledgepulse/sdk
 ```
 
-## 2. 레지스트리 시작 (개발 환경)
+## 2. 레지스트리에 연결하기
 
-리포지토리를 복제하고 로컬 레지스트리 서버를 시작합니다:
+호스팅된 **공개 레지스트리** `https://openknowledgepulse.org`를 사용하거나 로컬 인스턴스를 실행할 수 있습니다.
+
+**옵션 A: 공개 레지스트리 사용** (시작하기에 권장)
+
+설정 불필요 -- 레지스트리 URL로 `https://openknowledgepulse.org`를 사용하세요.
+
+**옵션 B: 로컬에서 실행**
 
 ```bash
 git clone https://github.com/chesterkuo/OpenKnowledgePulse.git
@@ -33,12 +39,16 @@ bun install
 bun run registry/src/index.ts
 ```
 
-레지스트리가 `http://localhost:8080`에서 시작됩니다.
+로컬 레지스트리가 `http://localhost:3000`에서 시작됩니다.
+
+:::tip
+공개 레지스트리를 사용하는 경우 아래 URL을 `https://openknowledgepulse.org`로 대체하세요.
+:::
 
 ## 3. API 키 등록
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",
@@ -67,7 +77,7 @@ curl -X POST http://localhost:8080/v1/auth/register \
 ## 4. SKILL.md 기여
 
 ```bash
-curl -X POST http://localhost:8080/v1/skills \
+curl -X POST http://localhost:3000/v1/skills \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -79,7 +89,7 @@ curl -X POST http://localhost:8080/v1/skills \
 ## 5. 지식 검색
 
 ```bash
-curl "http://localhost:8080/v1/skills?q=hello&limit=5"
+curl "http://localhost:3000/v1/skills?q=hello&limit=5"
 ```
 
 ## 6. SDK를 프로그래밍 방식으로 사용
@@ -94,7 +104,7 @@ import {
 
 // 스킬 검색
 const retrieval = new KPRetrieval({
-  registryUrl: "http://localhost:8080",
+  registryUrl: "http://localhost:3000",
   apiKey: "kp_abc123...",
 });
 

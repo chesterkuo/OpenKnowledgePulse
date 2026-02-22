@@ -158,7 +158,7 @@ interface CaptureConfig {
   valueThreshold?: number;     // 默认值: 0.75（贡献的最低分数）
   privacyLevel?: PrivacyLevel; // 默认值: "aggregated"
   visibility?: Visibility;     // 默认值: "network"
-  registryUrl?: string;        // 默认值: "https://registry.knowledgepulse.dev"
+  registryUrl?: string;        // 默认值: "https://registry.openknowledgepulse.org"
   apiKey?: string;             // 注册中心认证的 Bearer 令牌
 }
 ```
@@ -170,7 +170,7 @@ interface CaptureConfig {
 | `valueThreshold` | `number` | `0.75` | 贡献追踪所需的最低 `evaluateValue()` 分数 |
 | `privacyLevel` | `PrivacyLevel` | `"aggregated"` | 捕获追踪的隐私级别 |
 | `visibility` | `Visibility` | `"network"` | 捕获追踪的可见性范围 |
-| `registryUrl` | `string` | `"https://registry.knowledgepulse.dev"` | 注册中心 API 端点 |
+| `registryUrl` | `string` | `"https://registry.openknowledgepulse.org"` | 注册中心 API 端点 |
 | `apiKey` | `string` | -- | 用于认证贡献的 API 密钥 |
 
 ### `wrap<T>(agentFn)`
@@ -233,7 +233,7 @@ interface RetrievalConfig {
   minQuality?: number;              // 默认值: 0.80
   knowledgeTypes?: KnowledgeUnitType[];
   limit?: number;                   // 默认值: 5
-  registryUrl?: string;             // 默认值: "https://registry.knowledgepulse.dev"
+  registryUrl?: string;             // 默认值: "https://registry.openknowledgepulse.org"
   apiKey?: string;                  // 注册中心认证的 Bearer 令牌
 }
 ```
@@ -243,7 +243,7 @@ interface RetrievalConfig {
 | `minQuality` | `number` | `0.80` | 最低质量分数过滤器 |
 | `knowledgeTypes` | `KnowledgeUnitType[]` | 所有类型 | 按知识单元类型过滤 |
 | `limit` | `number` | `5` | 最大结果数量 |
-| `registryUrl` | `string` | `"https://registry.knowledgepulse.dev"` | 注册中心 API 端点 |
+| `registryUrl` | `string` | `"https://registry.openknowledgepulse.org"` | 注册中心 API 端点 |
 | `apiKey` | `string` | -- | 用于认证请求的 API 密钥 |
 
 ### `search(query, domain?)`
@@ -376,7 +376,7 @@ import { contributeKnowledge, generateTraceId } from "@knowledgepulse/sdk";
 
 const result = await contributeKnowledge(
   {
-    "@context": "https://knowledgepulse.dev/schema/v1",
+    "@context": "https://openknowledgepulse.org/schema/v1",
     "@type": "ReasoningTrace",
     id: generateTraceId(),
     metadata: {

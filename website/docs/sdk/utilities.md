@@ -158,7 +158,7 @@ interface CaptureConfig {
   valueThreshold?: number;     // Default: 0.75 (minimum score to contribute)
   privacyLevel?: PrivacyLevel; // Default: "aggregated"
   visibility?: Visibility;     // Default: "network"
-  registryUrl?: string;        // Default: "https://registry.knowledgepulse.dev"
+  registryUrl?: string;        // Default: "https://registry.openknowledgepulse.org"
   apiKey?: string;             // Bearer token for registry auth
 }
 ```
@@ -170,7 +170,7 @@ interface CaptureConfig {
 | `valueThreshold` | `number` | `0.75` | Minimum `evaluateValue()` score to contribute a trace |
 | `privacyLevel` | `PrivacyLevel` | `"aggregated"` | Privacy level for captured traces |
 | `visibility` | `Visibility` | `"network"` | Visibility scope for captured traces |
-| `registryUrl` | `string` | `"https://registry.knowledgepulse.dev"` | Registry API endpoint |
+| `registryUrl` | `string` | `"https://registry.openknowledgepulse.org"` | Registry API endpoint |
 | `apiKey` | `string` | -- | API key for authenticated contributions |
 
 ### `wrap<T>(agentFn)`
@@ -233,7 +233,7 @@ interface RetrievalConfig {
   minQuality?: number;              // Default: 0.80
   knowledgeTypes?: KnowledgeUnitType[];
   limit?: number;                   // Default: 5
-  registryUrl?: string;             // Default: "https://registry.knowledgepulse.dev"
+  registryUrl?: string;             // Default: "https://registry.openknowledgepulse.org"
   apiKey?: string;                  // Bearer token for registry auth
 }
 ```
@@ -243,7 +243,7 @@ interface RetrievalConfig {
 | `minQuality` | `number` | `0.80` | Minimum quality score filter |
 | `knowledgeTypes` | `KnowledgeUnitType[]` | all types | Filter by knowledge unit types |
 | `limit` | `number` | `5` | Maximum number of results |
-| `registryUrl` | `string` | `"https://registry.knowledgepulse.dev"` | Registry API endpoint |
+| `registryUrl` | `string` | `"https://registry.openknowledgepulse.org"` | Registry API endpoint |
 | `apiKey` | `string` | -- | API key for authenticated requests |
 
 ### `search(query, domain?)`
@@ -376,7 +376,7 @@ import { contributeKnowledge, generateTraceId } from "@knowledgepulse/sdk";
 
 const result = await contributeKnowledge(
   {
-    "@context": "https://knowledgepulse.dev/schema/v1",
+    "@context": "https://openknowledgepulse.org/schema/v1",
     "@type": "ReasoningTrace",
     id: generateTraceId(),
     metadata: {

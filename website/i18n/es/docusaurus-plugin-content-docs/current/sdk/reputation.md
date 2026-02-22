@@ -82,7 +82,7 @@ Las puntuaciones de reputación se empaquetan como Credenciales Verificables W3C
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://knowledgepulse.dev/credentials/v1"
+    "https://openknowledgepulse.org/credentials/v1"
   ],
   "type": ["VerifiableCredential", "KPReputationCredential"],
   "issuer": "did:kp:registry-01",

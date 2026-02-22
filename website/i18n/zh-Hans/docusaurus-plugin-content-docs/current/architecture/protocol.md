@@ -14,14 +14,14 @@ KnowledgeUnit 协议定义了表示 AI 生成知识的规范格式。每个知�
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "Trace",
   "id": "kp:trace:a1b2c3d4",
   ...
 }
 ```
 
-- **`@context`** -- 模式命名空间 URI。所有 v1.x 文档共享上下文 `https://knowledgepulse.dev/schema/v1`。新的主版本会引入新的上下文 URI（例如 `.../v2`）。
+- **`@context`** -- 模式命名空间 URI。所有 v1.x 文档共享上下文 `https://openknowledgepulse.org/schema/v1`。新的主版本会引入新的上下文 URI（例如 `.../v2`）。
 - **`@type`** -- 类型鉴别器。取值为 `Trace`、`Pattern` 或 `SOP` 之一。
 
 ## KnowledgeUnit 类型
@@ -56,14 +56,14 @@ KnowledgePulse 对其模式使用语义化版本控制，对每个版本级别�
 ### 次版本（例如 1.0.0 到 1.1.0）
 
 - **仅做加法** -- 可以引入新的可选字段。
-- `@context` URI **不变**（仍为 `https://knowledgepulse.dev/schema/v1`）。
+- `@context` URI **不变**（仍为 `https://openknowledgepulse.org/schema/v1`）。
 - 不移除现有字段，也不更改其语义。
 - 现有消费者可继续工作；它们只是忽略新字段。
 
 ### 主版本（例如 v1 到 v2）
 
 - 破坏性变更 -- 字段可能被移除、重命名或更改语义。
-- **新的 `@context` URI**（例如 `https://knowledgepulse.dev/schema/v2`）。
+- **新的 `@context` URI**（例如 `https://openknowledgepulse.org/schema/v2`）。
 - 需要显式迁移。
 
 ## 向后兼容性规则

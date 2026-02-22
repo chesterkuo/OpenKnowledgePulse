@@ -47,7 +47,7 @@ bun run packages/mcp-server/src/index.ts
 プロキシモードでは、サーバーは実行中の KnowledgePulse レジストリインスタンスにすべてのリクエストを転送します。`KP_REGISTRY_URL` を設定してプロキシモードを有効にし、オプションで認証済みエンドポイント用に `KP_API_KEY` を指定します。
 
 ```bash
-KP_REGISTRY_URL=http://localhost:8080 KP_API_KEY=kp_abc123 \
+KP_REGISTRY_URL=http://localhost:3000 KP_API_KEY=kp_abc123 \
   bun run packages/mcp-server/src/index.ts
 ```
 

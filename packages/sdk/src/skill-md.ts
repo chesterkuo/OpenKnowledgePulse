@@ -89,8 +89,18 @@ export function validateSkillMd(content: string): { valid: boolean; errors: stri
 
   // Sanitize first
   try {
-    const { warnings } = sanitizeSkillMd(content);
+    const { warnings, injectionAssessment } = sanitizeSkillMd(content);
     errors.push(...warnings.map((w) => `Warning: ${w}`));
+    // Any matched injection pattern makes validation fail
+    if (injectionAssessment && injectionAssessment.patterns.length > 0) {
+      return {
+        valid: false,
+        errors: [
+          `Content contains potential prompt injection patterns: ${injectionAssessment.patterns.join(", ")}`,
+          ...errors,
+        ],
+      };
+    }
   } catch (e) {
     return {
       valid: false,

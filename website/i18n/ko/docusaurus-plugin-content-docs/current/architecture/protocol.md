@@ -15,14 +15,14 @@ KnowledgeUnit 프로토콜은 AI 생성 지식을 표현하기 위한 표준 형
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "Trace",
   "id": "kp:trace:a1b2c3d4",
   ...
 }
 ```
 
-- **`@context`** -- 스키마 네임스페이스 URI. 모든 v1.x 문서는 `https://knowledgepulse.dev/schema/v1` 컨텍스트를 공유합니다. 새 메이저 버전은 새 컨텍스트 URI(예: `.../v2`)를 도입합니다.
+- **`@context`** -- 스키마 네임스페이스 URI. 모든 v1.x 문서는 `https://openknowledgepulse.org/schema/v1` 컨텍스트를 공유합니다. 새 메이저 버전은 새 컨텍스트 URI(예: `.../v2`)를 도입합니다.
 - **`@type`** -- 유형 식별자. `Trace`, `Pattern`, `SOP` 중 하나.
 
 ## KnowledgeUnit 유형
@@ -57,14 +57,14 @@ KnowledgePulse는 스키마에 시맨틱 버전 관리를 사용하며, 각 버�
 ### 마이너 버전 (예: 1.0.0 → 1.1.0)
 
 - **추가만 가능** -- 새로운 선택적 필드가 도입될 수 있음.
-- `@context` URI **변경 없음** (여전히 `https://knowledgepulse.dev/schema/v1`).
+- `@context` URI **변경 없음** (여전히 `https://openknowledgepulse.org/schema/v1`).
 - 기존 필드가 삭제되거나 의미가 변경되지 않음.
 - 기존 소비자가 계속 작동; 새 필드를 단순히 무시.
 
 ### 메이저 버전 (예: v1 → v2)
 
 - 호환성이 깨지는 변경 -- 필드가 삭제, 이름 변경, 또는 의미가 변경될 수 있음.
-- **새 `@context` URI** (예: `https://knowledgepulse.dev/schema/v2`).
+- **새 `@context` URI** (예: `https://openknowledgepulse.org/schema/v2`).
 - 명시적 마이그레이션 필요.
 
 ## 하위 호환성 규칙

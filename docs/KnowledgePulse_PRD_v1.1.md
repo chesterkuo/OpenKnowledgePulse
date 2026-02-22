@@ -201,7 +201,7 @@ KnowledgeUnit 採用 JSON-LD 實現語義互操作性。TypeScript 型別定義�
 // packages/sdk/src/types/knowledge-unit.ts
 // ⚠️ 此為 Single Source of Truth，由 bun run codegen 生成 JSON Schema
 
-export const KP_CONTEXT = "https://knowledgepulse.dev/schema/v1" as const;
+export const KP_CONTEXT = "https://openknowledgepulse.org/schema/v1" as const;
 
 export type KnowledgeUnitType =
   | "ReasoningTrace"
@@ -308,7 +308,7 @@ export type KnowledgeUnit = ReasoningTrace | ToolCallPattern | ExpertSOP;
 
 #### 3.3.2 Schema 版本演進策略（Schema Versioning & Migration）
 
-`@context` 目前指向 `https://knowledgepulse.dev/schema/v1`。本節定義 schema 從 `v1` 演進至 `v2` 及後續版本的策略。
+`@context` 目前指向 `https://openknowledgepulse.org/schema/v1`。本節定義 schema 從 `v1` 演進至 `v2` 及後續版本的策略。
 
 ##### 版本命名規則
 
@@ -625,7 +625,7 @@ export interface CaptureConfig {
   privacyLevel?:    PrivacyLevel;  // 預設 "aggregated"
   visibility?:      Visibility;    // 預設 "network"
   domain:           string;        // 必填：知識領域
-  registryUrl?:     string;        // 預設 https://registry.knowledgepulse.dev
+  registryUrl?:     string;        // 預設 https://registry.openknowledgepulse.org
 }
 
 export class KPCapture {
@@ -658,7 +658,7 @@ export class KPCapture {
   }
 
   private async contribute(data: unknown): Promise<void> {
-    await fetch(`${this.config.registryUrl ?? "https://registry.knowledgepulse.dev"}/v1/knowledge`, {
+    await fetch(`${this.config.registryUrl ?? "https://registry.openknowledgepulse.org"}/v1/knowledge`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...data, visibility: this.config.visibility }),
@@ -789,7 +789,7 @@ export class KPRetrieval {
     });
 
     const res = await fetch(
-      `${this.config.registryUrl ?? "https://registry.knowledgepulse.dev"}/v1/knowledge?${params}`
+      `${this.config.registryUrl ?? "https://registry.openknowledgepulse.org"}/v1/knowledge?${params}`
     );
     return res.json() as Promise<KnowledgeUnit[]>;
   }
@@ -1130,7 +1130,7 @@ console.log("✅ JSON Schema 已從 TypeScript 型別生成");
 
 ```bash
 # CLI 工具（Bun single binary，無需 runtime）
-curl -fsSL https://knowledgepulse.dev/install.sh | sh
+curl -fsSL https://openknowledgepulse.org/install.sh | sh
 # 或
 bun add -g @knowledgepulse/cli
 
@@ -1184,7 +1184,7 @@ const result = await wrappedAgent("分析 TSMC Q4 2025 財報");
 # 在 MCP 客戶端設定中加入 KP Server
 mcp_config = {
     "knowledgepulse": {
-        "url": "https://registry.knowledgepulse.dev/mcp",
+        "url": "https://registry.openknowledgepulse.org/mcp",
         "transport": "http"
     }
 }

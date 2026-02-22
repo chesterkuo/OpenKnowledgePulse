@@ -92,7 +92,7 @@ const result = await wrappedAgent("分析台积电 2025 Q4 财报");
 # LangGraph / CrewAI / AutoGen 通过 MCP HTTP 访问 KnowledgePulse
 mcp_config = {
     "knowledgepulse": {
-        "url": "https://registry.knowledgepulse.dev/mcp",
+        "url": "https://registry.openknowledgepulse.org/mcp",
         "transport": "http"
     }
 }
@@ -111,7 +111,7 @@ git clone https://github.com/chesterkuo/OpenKnowledgePulse
 cd knowledgepulse
 bun install
 bun run registry/src/index.ts
-# Registry API: http://localhost:8080
+# Registry API: http://localhost:3000
 ```
 
 ## 架构

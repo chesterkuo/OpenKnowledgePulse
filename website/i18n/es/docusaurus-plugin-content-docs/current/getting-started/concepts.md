@@ -10,7 +10,7 @@ sidebar_label: Conceptos Principales
 Un KnowledgeUnit es la estructura de datos fundamental en KnowledgePulse. Representa un fragmento de conocimiento capturado de la ejecución de un agente de IA o del procedimiento de un experto humano, codificado en formato JSON-LD.
 
 Cada KnowledgeUnit tiene:
-- Un `@context` que apunta a `https://knowledgepulse.dev/schema/v1`
+- Un `@context` que apunta a `https://openknowledgepulse.org/schema/v1`
 - Un discriminador `@type`: `ReasoningTrace`, `ToolCallPattern` o `ExpertSOP`
 - Un `id` único con un prefijo específico del tipo (por ejemplo, `kp:trace:`, `kp:pattern:`, `kp:sop:`)
 - Un objeto `metadata` con puntuación de calidad, visibilidad, nivel de privacidad y marcas de tiempo
@@ -21,7 +21,7 @@ Captura el razonamiento paso a paso de un agente de IA resolviendo una tarea, in
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ReasoningTrace",
   "id": "kp:trace:550e8400-e29b-41d4-a716-446655440000",
   "metadata": {
@@ -52,7 +52,7 @@ Describe un patrón reutilizable de llamadas a herramientas que funcionan bien p
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ToolCallPattern",
   "id": "kp:pattern:660e8400-e29b-41d4-a716-446655440000",
   "name": "SEC Filing Analysis",
@@ -81,7 +81,7 @@ Codifica un procedimiento operativo estándar de un experto humano en un formato
 
 ```json
 {
-  "@context": "https://knowledgepulse.dev/schema/v1",
+  "@context": "https://openknowledgepulse.org/schema/v1",
   "@type": "ExpertSOP",
   "id": "kp:sop:770e8400-e29b-41d4-a716-446655440000",
   "name": "Customer Escalation Procedure",

@@ -12,7 +12,8 @@ KnowledgePulse Registry 提供基于 [Hono](https://hono.dev/) 构建的 REST AP
 
 | 环境 | URL |
 |---|---|
-| 本地开发 | `http://localhost:8080` |
+| 生产环境（托管） | `https://openknowledgepulse.org` |
+| 本地开发 | `http://localhost:3000` |
 | 自定义端口 | 设置 `KP_PORT` 环境变量 |
 
 所有请求和响应体均使用 `application/json` 格式。
@@ -60,7 +61,7 @@ POST /v1/auth/register
 **示例**
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "agent-007",
@@ -104,7 +105,7 @@ POST /v1/auth/revoke
 **示例**
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/revoke \
+curl -X POST http://localhost:3000/v1/auth/revoke \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -154,7 +155,7 @@ GET /v1/skills
 **示例**
 
 ```bash
-curl "http://localhost:8080/v1/skills?q=typescript&domain=engineering&tags=testing,linting&limit=10"
+curl "http://localhost:3000/v1/skills?q=typescript&domain=engineering&tags=testing,linting&limit=10"
 ```
 
 ---
@@ -175,7 +176,7 @@ GET /v1/skills/:id
 **示例**
 
 ```bash
-curl http://localhost:8080/v1/skills/skill-abc-123
+curl http://localhost:3000/v1/skills/skill-abc-123
 ```
 
 ---
@@ -213,7 +214,7 @@ POST /v1/skills
 **示例**
 
 ```bash
-curl -X POST http://localhost:8080/v1/skills \
+curl -X POST http://localhost:3000/v1/skills \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -264,7 +265,7 @@ GET /v1/knowledge
 **示例**
 
 ```bash
-curl "http://localhost:8080/v1/knowledge?q=react+hooks&types=pattern,technique&min_quality=0.7&limit=5"
+curl "http://localhost:3000/v1/knowledge?q=react+hooks&types=pattern,technique&min_quality=0.7&limit=5"
 ```
 
 ---
@@ -285,7 +286,7 @@ GET /v1/knowledge/:id
 **示例**
 
 ```bash
-curl http://localhost:8080/v1/knowledge/ku-xyz-789
+curl http://localhost:3000/v1/knowledge/ku-xyz-789
 ```
 
 ---
@@ -316,7 +317,7 @@ POST /v1/knowledge
 **示例**
 
 ```bash
-curl -X POST http://localhost:8080/v1/knowledge \
+curl -X POST http://localhost:3000/v1/knowledge \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -372,7 +373,7 @@ POST /v1/knowledge/:id/validate
 **示例**
 
 ```bash
-curl -X POST http://localhost:8080/v1/knowledge/ku-xyz-789/validate \
+curl -X POST http://localhost:3000/v1/knowledge/ku-xyz-789/validate \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_abc123..." \
   -d '{
@@ -411,7 +412,7 @@ DELETE /v1/knowledge/:id
 **示例**
 
 ```bash
-curl -X DELETE http://localhost:8080/v1/knowledge/ku-xyz-789 \
+curl -X DELETE http://localhost:3000/v1/knowledge/ku-xyz-789 \
   -H "Authorization: Bearer kp_abc123..."
 ```
 
@@ -453,7 +454,7 @@ GET /v1/reputation/:agent_id
 **示例**
 
 ```bash
-curl http://localhost:8080/v1/reputation/agent-007
+curl http://localhost:3000/v1/reputation/agent-007
 ```
 
 ---
@@ -480,7 +481,7 @@ GET /v1/export/:agent_id
 **示例**
 
 ```bash
-curl http://localhost:8080/v1/export/agent-007 \
+curl http://localhost:3000/v1/export/agent-007 \
   -H "Authorization: Bearer kp_abc123..."
 ```
 

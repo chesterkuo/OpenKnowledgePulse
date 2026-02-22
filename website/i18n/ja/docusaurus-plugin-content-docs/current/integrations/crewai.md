@@ -27,7 +27,7 @@ sidebar_label: CrewAI
 └──────────┼──────────────┼───────────────┘
            │              │
      ┌─────▼──────────────▼─────┐
-     │   KP Registry (:8080)    │
+     │   KP Registry (:3000)    │
      └──────────────────────────┘
 ```
 
@@ -50,7 +50,7 @@ import json
 from typing import Any
 import httpx
 
-KP_REGISTRY_URL = "http://localhost:8080"
+KP_REGISTRY_URL = "http://localhost:3000"
 
 class KnowledgePulseTool:
     """CrewAI エージェントで使用するための KnowledgePulse レジストリ HTTP API ラッパー。"""
@@ -180,7 +180,7 @@ result = crew.kickoff()
 
 # タスク完了後、結果をコントリビュート
 kp.contribute_knowledge({
-    "@context": "https://knowledgepulse.dev/schema/v1",
+    "@context": "https://openknowledgepulse.org/schema/v1",
     "@type": "ReasoningTrace",
     "id": f"kp:trace:crewai-{task.description[:20]}",
     "metadata": {

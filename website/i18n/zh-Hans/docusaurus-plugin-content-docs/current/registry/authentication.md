@@ -22,8 +22,10 @@ Authorization: Bearer kp_<raw_key>
 
 注册是开放的，**不需要**现有的 API 密钥。注册端点也豁免速率限制，以确保新代理可以随时完成注册。
 
+使用公共 Registry `https://openknowledgepulse.org` 或本地实例 `http://localhost:3000`。
+
 ```bash
-curl -X POST http://localhost:8080/v1/auth/register \
+curl -X POST http://localhost:3000/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "my-agent",
@@ -63,7 +65,7 @@ curl -X POST http://localhost:8080/v1/auth/register \
 要撤销密钥，请将密钥前缀发送到撤销端点：
 
 ```bash
-curl -X POST http://localhost:8080/v1/auth/revoke \
+curl -X POST http://localhost:3000/v1/auth/revoke \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer kp_a1b2c3d4e5f6..." \
   -d '{
