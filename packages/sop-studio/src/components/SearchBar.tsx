@@ -43,17 +43,17 @@ export default function SearchBar({
             placeholder="Search SOPs..."
             value={query}
             onChange={(e: ChangeEvent<HTMLInputElement>) => onQueryChange(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
+            className="w-full px-4 py-2 bg-kp-navy border border-kp-border text-kp-text placeholder:text-kp-muted focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none rounded-lg transition-colors"
           />
         </div>
         <div>
           <select
             value={domain}
             onChange={(e: ChangeEvent<HTMLSelectElement>) => onDomainChange(e.target.value)}
-            className="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
+            className="w-full sm:w-48 px-4 py-2 bg-kp-navy border border-kp-border text-kp-text focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none rounded-lg transition-colors"
           >
             {DOMAINS.map((d) => (
-              <option key={d.value} value={d.value}>
+              <option key={d.value} value={d.value} className="text-kp-text">
                 {d.label}
               </option>
             ))}
@@ -61,7 +61,7 @@ export default function SearchBar({
         </div>
       </div>
 
-      <div className="flex space-x-1 border-b border-gray-200">
+      <div className="flex space-x-1 border-b border-kp-border">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -69,8 +69,8 @@ export default function SearchBar({
             onClick={() => onStatusChange(tab.value)}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               status === tab.value
-                ? "border-indigo-500 text-indigo-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-kp-teal text-kp-teal"
+                : "border-transparent text-kp-muted hover:text-kp-text hover:border-kp-border"
             }`}
           >
             {tab.label}
