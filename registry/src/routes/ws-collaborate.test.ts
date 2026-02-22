@@ -1,10 +1,33 @@
-import { beforeEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { Hono } from "hono";
 import {
   CollaborationManager,
+  type CollaborationMessage,
   createWebSocketHandler,
   wsCollaborateRoutes,
+  wsConnectionMap,
 } from "./ws-collaborate.js";
+
+// ── Mock WebSocket helper ────────────────────────────────
+
+/** Create a minimal mock WebSocket for testing broadcast behavior */
+function createMockWebSocket(sopId: string, agentId: string): {
+  ws: WebSocket;
+  sent: string[];
+} {
+  const sent: string[] = [];
+  const ws = {
+    readyState: WebSocket.OPEN,
+    data: { sopId, agentId },
+    send(data: string) {
+      sent.push(data);
+    },
+    close() {
+      (this as { readyState: number }).readyState = WebSocket.CLOSED;
+    },
+  } as unknown as WebSocket;
+  return { ws, sent };
+}
 
 // ── CollaborationManager Unit Tests ─────────────────────
 
@@ -409,6 +432,361 @@ describe("createWebSocketHandler", () => {
     expect(handler).toBeDefined();
     // Verify the manager is used (indirectly through join)
     expect(manager.getRoomCount()).toBe(0);
+  });
+});
+
+// ── WebSocket Broadcast Tests ────────────────────────────
+
+describe("WebSocket broadcast", () => {
+  let manager: CollaborationManager;
+  let handler: ReturnType<typeof createWebSocketHandler>;
+
+  beforeEach(() => {
+    manager = new CollaborationManager();
+    handler = createWebSocketHandler(manager);
+    // Clear the module-level connection map before each test
+    wsConnectionMap.clear();
+  });
+
+  afterEach(() => {
+    wsConnectionMap.clear();
+  });
+
+  // ── open handler broadcast ──────────────────────────────
+
+  describe("open handler — join broadcast", () => {
+    test("should send join message to the connecting client", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      handler.open(ws1);
+
+      expect(sent1).toHaveLength(1);
+      const msg = JSON.parse(sent1[0]!) as CollaborationMessage;
+      expect(msg.type).toBe("join");
+      expect(msg.sopId).toBe("sop-1");
+      expect(msg.agentId).toBe("agent-a");
+    });
+
+    test("should broadcast join message to existing peers when a new peer joins", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      handler.open(ws1);
+      // ws1 got its own join message
+      expect(sent1).toHaveLength(1);
+
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      handler.open(ws2);
+
+      // ws2 gets its own join confirmation
+      expect(sent2).toHaveLength(1);
+      const ws2JoinMsg = JSON.parse(sent2[0]!) as CollaborationMessage;
+      expect(ws2JoinMsg.type).toBe("join");
+      expect(ws2JoinMsg.agentId).toBe("agent-b");
+
+      // ws1 should have received the broadcast of agent-b joining
+      expect(sent1).toHaveLength(2);
+      const broadcastMsg = JSON.parse(sent1[1]!) as CollaborationMessage;
+      expect(broadcastMsg.type).toBe("join");
+      expect(broadcastMsg.agentId).toBe("agent-b");
+    });
+
+    test("should not broadcast join to peers in different rooms", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      handler.open(ws1);
+
+      const { ws: ws2 } = createMockWebSocket("sop-2", "agent-b");
+      handler.open(ws2);
+
+      // ws1 should only have its own join message, not agent-b's join to a different room
+      expect(sent1).toHaveLength(1);
+    });
+
+    test("should register the WebSocket in the connection map", () => {
+      const { ws: ws1 } = createMockWebSocket("sop-1", "agent-a");
+      handler.open(ws1);
+
+      expect(wsConnectionMap.size).toBe(1);
+    });
+  });
+
+  // ── message handler broadcast ───────────────────────────
+
+  describe("message handler — relay to room peers", () => {
+    test("should broadcast update messages to all peers except sender", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      const { ws: ws3, sent: sent3 } = createMockWebSocket("sop-1", "agent-c");
+      handler.open(ws1);
+      handler.open(ws2);
+      handler.open(ws3);
+
+      // Clear join messages
+      sent1.length = 0;
+      sent2.length = 0;
+      sent3.length = 0;
+
+      // agent-a sends an update
+      const updateMsg = JSON.stringify({
+        type: "update",
+        sopId: "sop-1",
+        payload: { data: "hello" },
+        timestamp: new Date().toISOString(),
+      });
+      handler.message(ws1, updateMsg);
+
+      // sender (ws1) should NOT receive the broadcast
+      expect(sent1).toHaveLength(0);
+
+      // ws2 and ws3 should each receive the update
+      expect(sent2).toHaveLength(1);
+      expect(sent3).toHaveLength(1);
+
+      const relayed = JSON.parse(sent2[0]!) as CollaborationMessage;
+      expect(relayed.type).toBe("update");
+      expect(relayed.agentId).toBe("agent-a");
+      expect(relayed.sopId).toBe("sop-1");
+    });
+
+    test("should broadcast sync messages to all peers except sender", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      handler.open(ws1);
+      handler.open(ws2);
+      sent1.length = 0;
+      sent2.length = 0;
+
+      const syncMsg = JSON.stringify({
+        type: "sync",
+        sopId: "sop-1",
+        payload: { version: 5 },
+        timestamp: new Date().toISOString(),
+      });
+      handler.message(ws1, syncMsg);
+
+      expect(sent1).toHaveLength(0);
+      expect(sent2).toHaveLength(1);
+      const relayed = JSON.parse(sent2[0]!) as CollaborationMessage;
+      expect(relayed.type).toBe("sync");
+    });
+
+    test("should broadcast cursor messages to all peers except sender", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      handler.open(ws1);
+      handler.open(ws2);
+      sent1.length = 0;
+      sent2.length = 0;
+
+      const cursorMsg = JSON.stringify({
+        type: "cursor",
+        sopId: "sop-1",
+        payload: { x: 100, y: 200 },
+        timestamp: new Date().toISOString(),
+      });
+      handler.message(ws2, cursorMsg);
+
+      // sender (ws2) should not receive
+      expect(sent2).toHaveLength(0);
+      // ws1 should receive the cursor
+      expect(sent1).toHaveLength(1);
+      const relayed = JSON.parse(sent1[0]!) as CollaborationMessage;
+      expect(relayed.type).toBe("cursor");
+      expect(relayed.agentId).toBe("agent-b");
+    });
+
+    test("should not broadcast non-relayable message types", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      handler.open(ws1);
+      handler.open(ws2);
+      sent1.length = 0;
+      sent2.length = 0;
+
+      const joinMsg = JSON.stringify({
+        type: "join",
+        sopId: "sop-1",
+        timestamp: new Date().toISOString(),
+      });
+      handler.message(ws1, joinMsg);
+
+      // Neither should receive anything for a non-relay type
+      expect(sent1).toHaveLength(0);
+      expect(sent2).toHaveLength(0);
+    });
+
+    test("should send error back to sender for invalid JSON", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      handler.open(ws1);
+      handler.open(ws2);
+      sent1.length = 0;
+      sent2.length = 0;
+
+      handler.message(ws1, "not valid json{{{");
+
+      // Error goes to sender only
+      expect(sent1).toHaveLength(1);
+      const errMsg = JSON.parse(sent1[0]!) as CollaborationMessage;
+      expect(errMsg.type).toBe("error");
+
+      // Other peer should not receive the error
+      expect(sent2).toHaveLength(0);
+    });
+
+    test("single peer in room receives no broadcast (edge case)", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      handler.open(ws1);
+      sent1.length = 0;
+
+      const updateMsg = JSON.stringify({
+        type: "update",
+        sopId: "sop-1",
+        payload: { data: "solo" },
+        timestamp: new Date().toISOString(),
+      });
+      handler.message(ws1, updateMsg);
+
+      // No broadcast to self
+      expect(sent1).toHaveLength(0);
+    });
+
+    test("should not send to peers with closed WebSocket", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      handler.open(ws1);
+      handler.open(ws2);
+      sent1.length = 0;
+      sent2.length = 0;
+
+      // Simulate ws2 having a closed connection (readyState != OPEN)
+      (ws2 as unknown as { readyState: number }).readyState = WebSocket.CLOSED;
+
+      const updateMsg = JSON.stringify({
+        type: "update",
+        sopId: "sop-1",
+        payload: { data: "test" },
+        timestamp: new Date().toISOString(),
+      });
+      handler.message(ws1, updateMsg);
+
+      // ws2 should not receive anything since its readyState is CLOSED
+      expect(sent2).toHaveLength(0);
+      // sender also should not receive
+      expect(sent1).toHaveLength(0);
+    });
+
+    test("should not send to peers in a different room", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      const { ws: ws3, sent: sent3 } = createMockWebSocket("sop-2", "agent-c");
+      handler.open(ws1);
+      handler.open(ws2);
+      handler.open(ws3);
+      sent1.length = 0;
+      sent2.length = 0;
+      sent3.length = 0;
+
+      const updateMsg = JSON.stringify({
+        type: "update",
+        sopId: "sop-1",
+        payload: { data: "room-1-only" },
+        timestamp: new Date().toISOString(),
+      });
+      handler.message(ws1, updateMsg);
+
+      // ws2 (same room) should receive
+      expect(sent2).toHaveLength(1);
+      // ws3 (different room) should NOT receive
+      expect(sent3).toHaveLength(0);
+    });
+  });
+
+  // ── close handler broadcast ─────────────────────────────
+
+  describe("close handler — leave broadcast", () => {
+    test("should broadcast leave message to remaining peers when a peer disconnects", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2, sent: sent2 } = createMockWebSocket("sop-1", "agent-b");
+      const { ws: ws3, sent: sent3 } = createMockWebSocket("sop-1", "agent-c");
+      handler.open(ws1);
+      handler.open(ws2);
+      handler.open(ws3);
+      sent1.length = 0;
+      sent2.length = 0;
+      sent3.length = 0;
+
+      // agent-b disconnects
+      handler.close(ws2);
+
+      // ws1 and ws3 should receive the leave message
+      expect(sent1).toHaveLength(1);
+      expect(sent3).toHaveLength(1);
+
+      const leaveMsg = JSON.parse(sent1[0]!) as CollaborationMessage;
+      expect(leaveMsg.type).toBe("leave");
+      expect(leaveMsg.agentId).toBe("agent-b");
+      expect(leaveMsg.sopId).toBe("sop-1");
+
+      // ws2 (the one who left) should not receive
+      expect(sent2).toHaveLength(0);
+    });
+
+    test("should not broadcast leave to peers in different rooms", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2 } = createMockWebSocket("sop-1", "agent-b");
+      const { ws: ws3, sent: sent3 } = createMockWebSocket("sop-2", "agent-c");
+      handler.open(ws1);
+      handler.open(ws2);
+      handler.open(ws3);
+      sent1.length = 0;
+      sent3.length = 0;
+
+      handler.close(ws2);
+
+      // ws1 (same room) should get leave
+      expect(sent1).toHaveLength(1);
+      // ws3 (different room) should not
+      expect(sent3).toHaveLength(0);
+    });
+
+    test("should handle last peer leaving (no one to broadcast to)", () => {
+      const { ws: ws1, sent: sent1 } = createMockWebSocket("sop-1", "agent-a");
+      handler.open(ws1);
+      sent1.length = 0;
+
+      // No crash when the only peer leaves
+      handler.close(ws1);
+      expect(sent1).toHaveLength(0);
+      expect(manager.getRoomCount()).toBe(0);
+    });
+
+    test("should clean up connection map on close", () => {
+      const { ws: ws1 } = createMockWebSocket("sop-1", "agent-a");
+      handler.open(ws1);
+      expect(wsConnectionMap.size).toBe(1);
+
+      handler.close(ws1);
+      expect(wsConnectionMap.size).toBe(0);
+    });
+
+    test("should remove peer from manager on close", () => {
+      const { ws: ws1 } = createMockWebSocket("sop-1", "agent-a");
+      const { ws: ws2 } = createMockWebSocket("sop-1", "agent-b");
+      handler.open(ws1);
+      handler.open(ws2);
+      expect(manager.getPeerCount("sop-1")).toBe(2);
+
+      handler.close(ws1);
+      expect(manager.getPeerCount("sop-1")).toBe(1);
+      expect(manager.isAgentInRoom("sop-1", "agent-a")).toBe(false);
+      expect(manager.isAgentInRoom("sop-1", "agent-b")).toBe(true);
+    });
+
+    test("should handle close for unknown WebSocket gracefully", () => {
+      const { ws: unknownWs } = createMockWebSocket("sop-1", "agent-a");
+      // Don't call open, just close directly
+      handler.close(unknownWs);
+      // Should not throw
+      expect(wsConnectionMap.size).toBe(0);
+    });
   });
 });
 

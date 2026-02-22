@@ -189,6 +189,30 @@ const wsConnections = new WeakMap<
   { connectionId: string; sopId: string; agentId: string }
 >();
 
+/** Map from connectionId to WebSocket instance for broadcast lookups */
+export const wsConnectionMap = new Map<string, WebSocket>();
+
+/**
+ * Broadcast a message to all WebSocket connections in a room, optionally
+ * excluding a specific connection (typically the sender).
+ */
+function broadcastToRoom(
+  manager: CollaborationManager,
+  sopId: string,
+  message: CollaborationMessage,
+  excludeConnectionId?: string,
+): void {
+  const roomConnIds = manager.getRoomConnectionIds(sopId);
+  const payload = JSON.stringify(message);
+  for (const connId of roomConnIds) {
+    if (connId === excludeConnectionId) continue;
+    const peerWs = wsConnectionMap.get(connId);
+    if (peerWs && peerWs.readyState === WebSocket.OPEN) {
+      peerWs.send(payload);
+    }
+  }
+}
+
 /**
  * Creates a Bun-compatible WebSocket handler object.
  * This should be passed to `Bun.serve({ websocket: ... })`.
@@ -203,9 +227,14 @@ export function createWebSocketHandler(manager: CollaborationManager = collabora
 
       const connectionId = manager.join(sopId, agentId);
       wsConnections.set(ws, { connectionId, sopId, agentId });
+      wsConnectionMap.set(connectionId, ws);
 
-      // Send presence to the newly connected client
-      ws.send(JSON.stringify(manager.buildJoinMessage(sopId, agentId)));
+      // Send join confirmation to the newly connected client
+      const joinMsg = manager.buildJoinMessage(sopId, agentId);
+      ws.send(JSON.stringify(joinMsg));
+
+      // Broadcast join notification to all existing peers in the room
+      broadcastToRoom(manager, sopId, joinMsg, connectionId);
     },
 
     message(ws: WebSocket, message: string | Buffer) {
@@ -217,7 +246,7 @@ export function createWebSocketHandler(manager: CollaborationManager = collabora
           typeof message === "string" ? message : message.toString(),
         ) as CollaborationMessage;
 
-        // Relay update/sync/cursor messages to room peers
+        // Relay update/sync/cursor messages to all room peers except sender
         if (parsed.type === "update" || parsed.type === "sync" || parsed.type === "cursor") {
           const outgoing: CollaborationMessage = {
             ...parsed,
@@ -226,11 +255,7 @@ export function createWebSocketHandler(manager: CollaborationManager = collabora
             timestamp: new Date().toISOString(),
           };
 
-          // Note: In a real deployment, you'd iterate over all WebSocket connections
-          // in the room and send to each. This handler provides the structure;
-          // the actual broadcast requires access to the WebSocket set which is
-          // managed by the Bun server runtime.
-          ws.send(JSON.stringify(outgoing));
+          broadcastToRoom(manager, meta.sopId, outgoing, meta.connectionId);
         }
       } catch {
         ws.send(
@@ -248,11 +273,16 @@ export function createWebSocketHandler(manager: CollaborationManager = collabora
       const meta = wsConnections.get(ws);
       if (!meta) return;
 
+      // Build leave message before removing the peer so the count is accurate after removal
       manager.leave(meta.connectionId);
-      wsConnections.delete(ws);
+      const leaveMsg = manager.buildLeaveMessage(meta.sopId, meta.agentId);
 
-      // Note: leave broadcast would be sent to remaining room peers
-      // via the server's connection tracking in production.
+      // Broadcast leave notification to remaining room peers
+      broadcastToRoom(manager, meta.sopId, leaveMsg);
+
+      // Clean up maps
+      wsConnectionMap.delete(meta.connectionId);
+      wsConnections.delete(ws);
     },
   };
 }
