@@ -12,6 +12,7 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import "@xyflow/react/dist/style.css";
@@ -95,6 +96,7 @@ function createBlankSOP(): StoredSOP {
 function EditorInner() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const isNew = id === "new";
 
   const [storedSOP, setStoredSOP] = useState<StoredSOP | null>(null);
@@ -223,7 +225,7 @@ function EditorInner() {
         };
         setStoredSOP(result.data);
         setDirty(false);
-        toast.success("SOP created successfully");
+        toast.success(t("editor.sopCreated"));
         navigate(`/editor/${result.data.id}`, { replace: true });
       } else {
         const result = (await api.updateSOP(storedSOP.id, updatedSOP)) as {
@@ -231,19 +233,19 @@ function EditorInner() {
         };
         setStoredSOP(result.data);
         setDirty(false);
-        toast.success("SOP saved successfully");
+        toast.success(t("editor.sopSaved"));
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save SOP");
     } finally {
       setSaving(false);
     }
-  }, [storedSOP, nodes, edges, isNew, navigate]);
+  }, [storedSOP, nodes, edges, isNew, navigate, t]);
 
   // Export SKILL.md
   const handleExport = useCallback(async () => {
     if (!storedSOP?.id || isNew) {
-      toast.error("Save the SOP first before exporting");
+      toast.error(t("editor.saveFirst"));
       return;
     }
 
@@ -261,16 +263,16 @@ function EditorInner() {
       a.download = `${storedSOP.sop.name || "sop"}.SKILL.md`;
       a.click();
       URL.revokeObjectURL(url);
-      toast.success("SKILL.md exported");
+      toast.success(t("editor.skillExported"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to export SKILL.md");
     }
-  }, [storedSOP, isNew]);
+  }, [storedSOP, isNew, t]);
 
   // Submit for review
   const handleSubmitReview = useCallback(async () => {
     if (!storedSOP?.id || isNew) {
-      toast.error("Save the SOP first before submitting for review");
+      toast.error(t("editor.saveFirstReview"));
       return;
     }
 
@@ -280,11 +282,11 @@ function EditorInner() {
         status: "pending_review",
       })) as { data: StoredSOP };
       setStoredSOP(result.data);
-      toast.success("Submitted for review");
+      toast.success(t("editor.submittedReview"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to submit for review");
     }
-  }, [storedSOP, isNew]);
+  }, [storedSOP, isNew, t]);
 
   // Delete SOP
   const handleDelete = useCallback(async () => {
@@ -293,18 +295,18 @@ function EditorInner() {
       return;
     }
 
-    if (!window.confirm("Are you sure you want to delete this SOP?")) {
+    if (!window.confirm(t("editor.deleteConfirm"))) {
       return;
     }
 
     try {
       await api.deleteSOP(storedSOP.id);
-      toast.success("SOP deleted");
+      toast.success(t("editor.sopDeleted"));
       navigate("/");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to delete SOP");
     }
-  }, [storedSOP, isNew, navigate]);
+  }, [storedSOP, isNew, navigate, t]);
 
   // Add a new step node
   const handleAddStep = useCallback(() => {
@@ -379,13 +381,13 @@ function EditorInner() {
           ),
         );
         setSelectedNode(null);
-        toast.info("Node deleted");
+        toast.info(t("editor.nodeDeleted"));
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleSave, selectedNode, setNodes, setEdges]);
+  }, [handleSave, selectedNode, setNodes, setEdges, t]);
 
   const miniMapNodeColor = useCallback((node: Node) => {
     switch (node.type) {
@@ -408,7 +410,7 @@ function EditorInner() {
       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kp-teal mx-auto mb-4" />
-          <p className="text-kp-muted">Loading SOP...</p>
+          <p className="text-kp-muted">{t("editor.loadingSOP")}</p>
         </div>
       </div>
     );
@@ -424,7 +426,7 @@ function EditorInner() {
             onClick={() => navigate("/")}
             className="px-4 py-2 bg-kp-teal text-white rounded-md hover:bg-kp-teal/90 text-sm"
           >
-            Back to Dashboard
+            {t("common.backToDashboard")}
           </button>
         </div>
       </div>
@@ -441,13 +443,13 @@ function EditorInner() {
             onClick={() => navigate("/")}
             className="text-kp-muted hover:text-kp-text text-sm"
           >
-            &larr; Back
+            &larr; {t("common.back")}
           </button>
           <h1 className="text-lg font-semibold text-kp-heading truncate max-w-md">
-            {storedSOP?.sop.name || "Untitled SOP"}
+            {storedSOP?.sop.name || t("editor.untitledSOP")}
           </h1>
           {dirty && (
-            <span className="inline-block w-2 h-2 rounded-full bg-kp-orange" title="Unsaved changes" />
+            <span className="inline-block w-2 h-2 rounded-full bg-kp-orange" title={t("editor.unsavedChanges")} />
           )}
           {storedSOP?.status && (
             <span
@@ -461,7 +463,7 @@ function EditorInner() {
                       : "bg-kp-navy text-kp-muted"
               }`}
             >
-              {storedSOP.status.replace("_", " ")}
+              {t(`status.${storedSOP.status}`)}
             </span>
           )}
         </div>
@@ -472,21 +474,21 @@ function EditorInner() {
             onClick={handleAddStep}
             className="px-3 py-1.5 text-xs font-medium border border-kp-blue/50 text-kp-blue bg-kp-blue/10 rounded-md hover:bg-kp-blue/20"
           >
-            + Step
+            {t("editor.addStep")}
           </button>
           <button
             type="button"
             onClick={handleAddCondition}
             className="px-3 py-1.5 text-xs font-medium border border-kp-orange/50 text-kp-orange bg-kp-orange/10 rounded-md hover:bg-kp-orange/20"
           >
-            + Condition
+            {t("editor.addCondition")}
           </button>
           <button
             type="button"
             onClick={handleAddTool}
             className="px-3 py-1.5 text-xs font-medium border border-kp-green/50 text-kp-green bg-kp-green/10 rounded-md hover:bg-kp-green/20"
           >
-            + Tool
+            {t("editor.addTool")}
           </button>
 
           <div className="w-px h-6 bg-kp-border mx-1" />
@@ -497,28 +499,28 @@ function EditorInner() {
             disabled={saving}
             className="px-4 py-1.5 text-sm font-medium bg-kp-teal text-white rounded-md hover:bg-kp-teal/90 disabled:opacity-50"
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? t("editor.saving") : t("common.save")}
           </button>
           <button
             type="button"
             onClick={handleExport}
             className="px-3 py-1.5 text-sm font-medium border border-kp-border text-kp-text rounded-md hover:bg-kp-panel"
           >
-            Export SKILL.md
+            {t("editor.exportSkill")}
           </button>
           <button
             type="button"
             onClick={handleSubmitReview}
             className="px-3 py-1.5 text-sm font-medium border border-kp-border text-kp-text rounded-md hover:bg-kp-panel"
           >
-            Submit for Review
+            {t("editor.submitReview")}
           </button>
           <button
             type="button"
             onClick={handleDelete}
             className="px-3 py-1.5 text-sm font-medium border border-kp-error/50 text-kp-error rounded-md hover:bg-kp-error/10"
           >
-            Delete
+            {t("common.delete")}
           </button>
         </div>
       </div>

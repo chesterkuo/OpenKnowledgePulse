@@ -1,20 +1,5 @@
 import type { ChangeEvent } from "react";
-
-const DOMAINS = [
-  { value: "", label: "All Domains" },
-  { value: "general", label: "General" },
-  { value: "finance", label: "Finance" },
-  { value: "medical", label: "Medical" },
-  { value: "engineering", label: "Engineering" },
-  { value: "legal", label: "Legal" },
-];
-
-const ACCESS_TABS = [
-  { value: "", label: "All" },
-  { value: "free", label: "Free" },
-  { value: "org", label: "Org" },
-  { value: "subscription", label: "Subscription" },
-] as const;
+import { useTranslation } from "react-i18next";
 
 interface MarketplaceFiltersProps {
   query: string;
@@ -33,13 +18,31 @@ export default function MarketplaceFilters({
   onDomainChange,
   onAccessModelChange,
 }: MarketplaceFiltersProps) {
+  const { t } = useTranslation();
+
+  const DOMAINS = [
+    { value: "", label: t("domains.all") },
+    { value: "general", label: t("domains.general") },
+    { value: "finance", label: t("domains.finance") },
+    { value: "medical", label: t("domains.medical") },
+    { value: "engineering", label: t("domains.engineering") },
+    { value: "legal", label: t("domains.legal") },
+  ];
+
+  const ACCESS_TABS = [
+    { value: "", label: t("accessModel.all") },
+    { value: "free", label: t("accessModel.free") },
+    { value: "org", label: t("accessModel.org") },
+    { value: "subscription", label: t("accessModel.subscription") },
+  ] as const;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
           <input
             type="text"
-            placeholder="Search listings..."
+            placeholder={t("marketplace.searchPlaceholder")}
             value={query}
             onChange={(e: ChangeEvent<HTMLInputElement>) => onQueryChange(e.target.value)}
             className="w-full px-4 py-2 bg-kp-navy border border-kp-border text-kp-text placeholder:text-kp-muted focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none rounded-lg transition-colors"

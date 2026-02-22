@@ -1,21 +1,5 @@
 import type { ChangeEvent } from "react";
-
-const DOMAINS = [
-  { value: "", label: "All Domains" },
-  { value: "general", label: "General" },
-  { value: "finance", label: "Finance" },
-  { value: "medical", label: "Medical" },
-  { value: "engineering", label: "Engineering" },
-  { value: "legal", label: "Legal" },
-];
-
-const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "draft", label: "Draft" },
-  { value: "pending_review", label: "Pending" },
-  { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
-] as const;
+import { useTranslation } from "react-i18next";
 
 interface SearchBarProps {
   query: string;
@@ -34,13 +18,32 @@ export default function SearchBar({
   onDomainChange,
   onStatusChange,
 }: SearchBarProps) {
+  const { t } = useTranslation();
+
+  const DOMAINS = [
+    { value: "", label: t("domains.all") },
+    { value: "general", label: t("domains.general") },
+    { value: "finance", label: t("domains.finance") },
+    { value: "medical", label: t("domains.medical") },
+    { value: "engineering", label: t("domains.engineering") },
+    { value: "legal", label: t("domains.legal") },
+  ];
+
+  const STATUS_TABS = [
+    { value: "", label: t("status.all") },
+    { value: "draft", label: t("status.draft") },
+    { value: "pending_review", label: t("status.pending") },
+    { value: "approved", label: t("status.approved") },
+    { value: "rejected", label: t("status.rejected") },
+  ] as const;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
           <input
             type="text"
-            placeholder="Search SOPs..."
+            placeholder={t("dashboard.searchPlaceholder")}
             value={query}
             onChange={(e: ChangeEvent<HTMLInputElement>) => onQueryChange(e.target.value)}
             className="w-full px-4 py-2 bg-kp-navy border border-kp-border text-kp-text placeholder:text-kp-muted focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none rounded-lg transition-colors"

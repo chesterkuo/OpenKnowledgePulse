@@ -1,0 +1,8 @@
+{
+  "label": "SOP スタジオ",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "ビジュアルエディタで標準作業手順書を構築、編集、共同作業できます。"
+  }
+}

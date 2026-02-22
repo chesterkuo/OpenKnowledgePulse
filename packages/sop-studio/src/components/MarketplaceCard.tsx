@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 export interface MarketplaceListing {
   id: string;
   knowledge_unit_id: string;
@@ -12,21 +14,23 @@ export interface MarketplaceListing {
   updated_at: string;
 }
 
-const ACCESS_STYLES: Record<
-  MarketplaceListing["access_model"],
-  { bg: string; text: string; label: string }
-> = {
-  free: { bg: "bg-kp-green/15", text: "text-kp-green", label: "Free" },
-  org: { bg: "bg-kp-blue/15", text: "text-kp-blue", label: "Org" },
-  subscription: { bg: "bg-kp-orange/15", text: "text-kp-orange", label: "Subscription" },
-};
-
 interface MarketplaceCardProps {
   listing: MarketplaceListing;
   onClick: (listing: MarketplaceListing) => void;
 }
 
 export default function MarketplaceCard({ listing, onClick }: MarketplaceCardProps) {
+  const { t } = useTranslation();
+
+  const ACCESS_STYLES: Record<
+    MarketplaceListing["access_model"],
+    { bg: string; text: string; label: string }
+  > = {
+    free: { bg: "bg-kp-green/15", text: "text-kp-green", label: t("accessModel.free") },
+    org: { bg: "bg-kp-blue/15", text: "text-kp-blue", label: t("accessModel.org") },
+    subscription: { bg: "bg-kp-orange/15", text: "text-kp-orange", label: t("accessModel.subscription") },
+  };
+
   const style = ACCESS_STYLES[listing.access_model];
 
   return (
@@ -57,15 +61,15 @@ export default function MarketplaceCard({ listing, onClick }: MarketplaceCardPro
 
         <div className="flex items-center justify-between text-sm">
           <span className="text-kp-teal font-mono font-semibold">
-            {listing.price_credits === 0 ? "Free" : `${listing.price_credits} credits`}
+            {listing.price_credits === 0 ? t("common.free") : t("marketplace.creditsAmount", { amount: listing.price_credits })}
           </span>
           <span className="text-kp-muted text-xs">
-            {listing.purchases} purchase{listing.purchases !== 1 ? "s" : ""}
+            {t("common.purchases", { count: listing.purchases })}
           </span>
         </div>
 
         <div className="text-xs text-kp-muted/70 pt-1">
-          Listed {new Date(listing.created_at).toLocaleDateString()}
+          {t("common.listed", { date: new Date(listing.created_at).toLocaleDateString() })}
         </div>
       </div>
     </button>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 interface StoredSOP {
@@ -28,21 +29,6 @@ interface StoredSOP {
   updated_at: string;
 }
 
-const STATUS_STYLES: Record<StoredSOP["status"], { bg: string; text: string; label: string }> = {
-  draft: { bg: "bg-kp-navy", text: "text-kp-muted", label: "Draft" },
-  pending_review: {
-    bg: "bg-kp-orange/15",
-    text: "text-kp-orange",
-    label: "Pending Review",
-  },
-  approved: {
-    bg: "bg-kp-green/15",
-    text: "text-kp-green",
-    label: "Approved",
-  },
-  rejected: { bg: "bg-kp-error/15", text: "text-kp-error", label: "Rejected" },
-};
-
 function QualityScoreIndicator({ score }: { score: number }) {
   const percentage = Math.round(score * 100);
   let color = "text-kp-error";
@@ -58,6 +44,23 @@ interface SOPCardProps {
 
 export default function SOPCard({ sop }: SOPCardProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const STATUS_STYLES: Record<StoredSOP["status"], { bg: string; text: string; label: string }> = {
+    draft: { bg: "bg-kp-navy", text: "text-kp-muted", label: t("status.draft") },
+    pending_review: {
+      bg: "bg-kp-orange/15",
+      text: "text-kp-orange",
+      label: t("status.pending_review"),
+    },
+    approved: {
+      bg: "bg-kp-green/15",
+      text: "text-kp-green",
+      label: t("status.approved"),
+    },
+    rejected: { bg: "bg-kp-error/15", text: "text-kp-error", label: t("status.rejected") },
+  };
+
   const statusStyle = STATUS_STYLES[sop.status];
 
   return (
@@ -86,14 +89,14 @@ export default function SOPCard({ sop }: SOPCardProps) {
           <div className="flex items-center space-x-4">
             <span className="text-kp-muted">v{sop.version}</span>
             <div className="flex items-center space-x-1">
-              <span className="text-kp-muted">Quality:</span>
+              <span className="text-kp-muted">{t("sopCard.quality")}</span>
               <QualityScoreIndicator score={sop.sop.metadata.quality_score} />
             </div>
           </div>
         </div>
 
         <div className="text-xs text-kp-muted/70 pt-1">
-          Updated {new Date(sop.updated_at).toLocaleDateString()}
+          {t("common.updated", { date: new Date(sop.updated_at).toLocaleDateString() })}
         </div>
       </div>
     </button>

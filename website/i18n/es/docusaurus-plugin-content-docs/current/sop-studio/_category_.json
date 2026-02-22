@@ -1,0 +1,8 @@
+{
+  "label": "SOP Studio",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "Construye, edita y colabora en Procedimientos Operativos Estándar con un editor visual."
+  }
+}

@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface RegistryConfig {
   url: string;
@@ -27,6 +28,7 @@ function loadLLMConfig(): LLMConfig {
 }
 
 export default function Settings() {
+  const { t } = useTranslation();
   const [registry, setRegistry] = useState<RegistryConfig>(loadRegistryConfig);
   const [llm, setLlm] = useState<LLMConfig>(loadLLMConfig);
 
@@ -63,18 +65,18 @@ export default function Settings() {
         setTestStatus("success");
         setTestMessage(
           data
-            ? `Connected successfully. Status: ${(data as { status?: string }).status || "ok"}`
-            : "Connected successfully.",
+            ? t("settings.connectedStatus", { status: (data as { status?: string }).status || "ok" })
+            : t("settings.connectedSuccess"),
         );
       } else {
         setTestStatus("error");
-        setTestMessage(`Connection failed: HTTP ${res.status} ${res.statusText}`);
+        setTestMessage(t("settings.connectionFailed", { status: res.status, statusText: res.statusText }));
       }
     } catch (err) {
       setTestStatus("error");
-      setTestMessage(`Connection failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setTestMessage(t("settings.connectionError", { error: err instanceof Error ? err.message : "Unknown error" }));
     }
-  }, [registry]);
+  }, [registry, t]);
 
   // LLM config handlers
   const handleLlmSave = useCallback(() => {
@@ -88,31 +90,31 @@ export default function Settings() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-kp-heading">Settings</h1>
+        <h1 className="text-2xl font-bold text-kp-heading">{t("settings.title")}</h1>
         <p className="mt-1 text-sm text-kp-muted">
-          Configure your registry connection and LLM preferences.
+          {t("settings.subtitle")}
         </p>
       </div>
 
       {/* Registry Connection */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">Registry Connection</h2>
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("settings.registryConnection")}</h2>
 
         <div className="space-y-4">
           <div>
             <label htmlFor="registry-url" className="block text-sm font-medium text-kp-muted mb-1">
-              Registry URL
+              {t("settings.registryUrl")}
             </label>
             <input
               id="registry-url"
               type="url"
               value={registry.url}
               onChange={(e) => setRegistry((prev) => ({ ...prev, url: e.target.value }))}
-              placeholder="http://localhost:8080"
+              placeholder={t("settings.registryUrlPlaceholder")}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
             <p className="mt-1 text-xs text-kp-muted/60">
-              Leave empty to use the dev proxy (recommended for local development).
+              {t("settings.registryUrlHelp")}
             </p>
           </div>
 
@@ -121,14 +123,14 @@ export default function Settings() {
               htmlFor="registry-api-key"
               className="block text-sm font-medium text-kp-muted mb-1"
             >
-              API Key
+              {t("settings.apiKey")}
             </label>
             <input
               id="registry-api-key"
               type="password"
               value={registry.apiKey}
               onChange={(e) => setRegistry((prev) => ({ ...prev, apiKey: e.target.value }))}
-              placeholder="Enter your API key"
+              placeholder={t("settings.apiKeyPlaceholder")}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
@@ -139,7 +141,7 @@ export default function Settings() {
               onClick={handleRegistrySave}
               className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90 transition-colors"
             >
-              Save
+              {t("common.save")}
             </button>
             <button
               type="button"
@@ -168,13 +170,13 @@ export default function Settings() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Testing...
+                  {t("settings.testing")}
                 </>
               ) : (
-                "Test Connection"
+                t("settings.testConnection")
               )}
             </button>
-            {registrySaved && <span className="text-sm text-kp-green font-medium">Saved</span>}
+            {registrySaved && <span className="text-sm text-kp-green font-medium">{t("common.saved")}</span>}
           </div>
 
           {/* Test result */}
@@ -231,15 +233,15 @@ export default function Settings() {
 
       {/* LLM Configuration */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">LLM Configuration</h2>
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("settings.llmConfig")}</h2>
         <p className="text-sm text-kp-muted mb-4">
-          Configure the LLM provider used for document extraction on the Import page.
+          {t("settings.llmConfigDesc")}
         </p>
 
         <div className="space-y-4">
           <div>
             <label htmlFor="llm-provider" className="block text-sm font-medium text-kp-muted mb-1">
-              Provider
+              {t("settings.provider")}
             </label>
             <select
               id="llm-provider"
@@ -254,7 +256,7 @@ export default function Settings() {
 
           <div>
             <label htmlFor="llm-api-key" className="block text-sm font-medium text-kp-muted mb-1">
-              API Key
+              {t("settings.apiKeyLabel")}
             </label>
             <input
               id="llm-api-key"
@@ -268,7 +270,7 @@ export default function Settings() {
 
           <div>
             <label htmlFor="llm-model" className="block text-sm font-medium text-kp-muted mb-1">
-              Model Override
+              {t("settings.modelOverride")}
             </label>
             <input
               id="llm-model"
@@ -283,7 +285,7 @@ export default function Settings() {
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
             <p className="mt-1 text-xs text-kp-muted/60">
-              Leave empty to use the default model for the selected provider.
+              {t("settings.modelOverrideHelp")}
             </p>
           </div>
 
@@ -293,30 +295,28 @@ export default function Settings() {
               onClick={handleLlmSave}
               className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90 transition-colors"
             >
-              Save
+              {t("common.save")}
             </button>
-            {llmSaved && <span className="text-sm text-kp-green font-medium">Saved</span>}
+            {llmSaved && <span className="text-sm text-kp-green font-medium">{t("common.saved")}</span>}
           </div>
         </div>
       </div>
 
       {/* Danger Zone */}
       <div className="bg-kp-panel rounded-lg border border-kp-error/30 p-6">
-        <h2 className="text-lg font-semibold text-kp-error mb-4">Danger Zone</h2>
+        <h2 className="text-lg font-semibold text-kp-error mb-4">{t("settings.dangerZone")}</h2>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-kp-heading">Clear all settings</p>
+            <p className="text-sm font-medium text-kp-heading">{t("settings.clearAllSettings")}</p>
             <p className="text-xs text-kp-muted">
-              Remove all stored configuration from localStorage.
+              {t("settings.clearAllDesc")}
             </p>
           </div>
           <button
             type="button"
             onClick={() => {
               if (
-                window.confirm(
-                  "Are you sure you want to clear all settings? This cannot be undone.",
-                )
+                window.confirm(t("settings.clearConfirm"))
               ) {
                 localStorage.removeItem("kp_registry_url");
                 localStorage.removeItem("kp_api_key");
@@ -331,7 +331,7 @@ export default function Settings() {
             }}
             className="px-4 py-2 border border-kp-error/50 text-sm font-medium rounded-md text-kp-error hover:bg-kp-error/10 transition-colors"
           >
-            Clear All
+            {t("settings.clearAll")}
           </button>
         </div>
       </div>

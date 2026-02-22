@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import SOPCard from "../components/SOPCard";
 import type { StoredSOP } from "../components/SOPCard";
@@ -14,6 +15,7 @@ interface SOPListResponse {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [sops, setSOPs] = useState<StoredSOP[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -56,9 +58,9 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-kp-heading">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-kp-heading">{t("dashboard.title")}</h1>
           <p className="mt-1 text-sm text-kp-muted">
-            {loading ? "Loading SOPs..." : `${total} SOP${total !== 1 ? "s" : ""} found`}
+            {loading ? t("dashboard.loadingSOPs") : t("dashboard.sopsFound", { count: total })}
           </p>
         </div>
         <button
@@ -69,7 +71,7 @@ export default function Dashboard() {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          New SOP
+          {t("dashboard.newSOP")}
         </button>
       </div>
 
@@ -105,7 +107,7 @@ export default function Dashboard() {
                 onClick={fetchSOPs}
                 className="mt-1 text-sm text-kp-error/80 underline hover:text-kp-error"
               >
-                Try again
+                {t("common.tryAgain")}
               </button>
             </div>
           </div>
@@ -146,11 +148,11 @@ export default function Dashboard() {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-kp-heading">No SOPs found</h3>
+          <h3 className="mt-4 text-lg font-medium text-kp-heading">{t("dashboard.noSOPs")}</h3>
           <p className="mt-1 text-sm text-kp-muted">
             {query || domain || status
-              ? "Try adjusting your search filters."
-              : "Get started by creating your first SOP."}
+              ? t("dashboard.adjustFilters")
+              : t("dashboard.getStarted")}
           </p>
           {!query && !domain && !status && (
             <button
@@ -158,7 +160,7 @@ export default function Dashboard() {
               onClick={() => navigate("/editor/new")}
               className="mt-4 inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-lg hover:bg-kp-teal/90 transition-colors"
             >
-              Create SOP
+              {t("dashboard.createSOP")}
             </button>
           )}
         </div>

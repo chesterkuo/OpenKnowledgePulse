@@ -1,6 +1,6 @@
 <div align="center">
 
-**English** | [简体中文](README.zh-Hans.md)
+**English** | [简体中文](README.zh-Hans.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md)
 
 <!-- Octo animated banner (SMIL animation, works on GitHub) -->
 <img src="assets/octo-banner.svg" alt="KnowledgePulse Octo Banner" width="800"/>

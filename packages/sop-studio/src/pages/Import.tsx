@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 
@@ -48,6 +49,7 @@ Return ONLY valid JSON — an array of step objects. No markdown, no explanation
 
 export default function Import() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [sopName, setSopName] = useState("");
@@ -75,12 +77,12 @@ export default function Import() {
         setDocumentText(e.target?.result as string);
       };
       reader.onerror = () => {
-        setFileError("Failed to read file");
+        setFileError(t("import.readFailed"));
       };
       reader.readAsText(file);
     } else if (file.name.endsWith(".docx") || file.name.endsWith(".pdf")) {
       setFileError(
-        `Direct .${file.name.split(".").pop()} parsing is not available in the browser. Please copy and paste your document text into the text area below.`,
+        t("import.docxWarning", { ext: file.name.split(".").pop() }),
       );
     } else {
       // Try reading as text for other file types
@@ -89,11 +91,11 @@ export default function Import() {
         setDocumentText(e.target?.result as string);
       };
       reader.onerror = () => {
-        setFileError("Failed to read file. Try pasting the text directly.");
+        setFileError(t("import.readFailedAlt"));
       };
       reader.readAsText(file);
     }
-  }, []);
+  }, [t]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -133,11 +135,11 @@ export default function Import() {
 
   const handleExtract = useCallback(async () => {
     if (!documentText.trim()) {
-      setExtractError("Please provide document text to extract from.");
+      setExtractError(t("import.provideText"));
       return;
     }
     if (!llmConfig.apiKey) {
-      setExtractError("Please provide an LLM API key.");
+      setExtractError(t("import.provideKey"));
       return;
     }
 
@@ -223,25 +225,25 @@ export default function Import() {
 
       const parsed = JSON.parse(jsonStr) as DecisionTreeStep[];
       if (!Array.isArray(parsed)) {
-        throw new Error("Expected a JSON array of decision tree steps");
+        throw new Error(t("import.expectedArray"));
       }
 
       setExtractedTree(parsed);
       setExtractedJson(JSON.stringify(parsed, null, 2));
     } catch (err) {
-      setExtractError(err instanceof Error ? err.message : "Extraction failed");
+      setExtractError(err instanceof Error ? err.message : t("import.extractionFailed"));
     } finally {
       setExtracting(false);
     }
-  }, [documentText, llmConfig]);
+  }, [documentText, llmConfig, t]);
 
   const handleSave = useCallback(async () => {
     if (!extractedTree || extractedTree.length === 0) {
-      setSaveError("No decision tree to save. Extract one first.");
+      setSaveError(t("import.noTree"));
       return;
     }
     if (!sopName.trim()) {
-      setSaveError("Please provide an SOP name.");
+      setSaveError(t("import.provideName"));
       return;
     }
 
@@ -274,48 +276,48 @@ export default function Import() {
       };
       navigate(`/editor/${result.data.id}`);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Failed to save SOP");
+      setSaveError(err instanceof Error ? err.message : t("import.failedSave"));
     } finally {
       setSaving(false);
     }
-  }, [extractedTree, sopName, domain, navigate]);
+  }, [extractedTree, sopName, domain, navigate, t]);
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-kp-heading">Import Document</h1>
+        <h1 className="text-2xl font-bold text-kp-heading">{t("import.title")}</h1>
         <p className="mt-1 text-sm text-kp-muted">
-          Upload or paste a document to extract a decision tree using an LLM.
+          {t("import.subtitle")}
         </p>
       </div>
 
       {/* SOP Name and Domain */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">SOP Details</h2>
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("import.sopDetails")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="sop-name" className="block text-sm font-medium text-kp-muted mb-1">
-              SOP Name
+              {t("import.sopName")}
             </label>
             <input
               id="sop-name"
               type="text"
               value={sopName}
               onChange={(e) => setSopName(e.target.value)}
-              placeholder="e.g., Customer Onboarding Process"
+              placeholder={t("import.sopNamePlaceholder")}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
           <div>
             <label htmlFor="sop-domain" className="block text-sm font-medium text-kp-muted mb-1">
-              Domain
+              {t("import.domain")}
             </label>
             <input
               id="sop-domain"
               type="text"
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
-              placeholder="e.g., customer-support"
+              placeholder={t("import.domainPlaceholder")}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
@@ -324,7 +326,7 @@ export default function Import() {
 
       {/* File Upload */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">Document Source</h2>
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("import.documentSource")}</h2>
 
         <div
           onDrop={handleDrop}
@@ -348,17 +350,17 @@ export default function Import() {
             />
           </svg>
           <p className="mt-2 text-sm text-kp-text">
-            Drag and drop a file here, or{" "}
+            {t("import.dragDrop")}{" "}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="text-kp-teal hover:text-kp-cyan font-medium"
             >
-              browse
+              {t("import.browse")}
             </button>
           </p>
           <p className="mt-1 text-xs text-kp-muted/60">
-            Supports .txt files directly. For .docx and .pdf, paste content below.
+            {t("import.fileSupport")}
           </p>
           <input
             ref={fileInputRef}
@@ -369,7 +371,7 @@ export default function Import() {
           />
           {fileName && (
             <p className="mt-3 text-sm text-kp-text">
-              Selected: <span className="font-medium">{fileName}</span>
+              {t("import.selected")} <span className="font-medium">{fileName}</span>
             </p>
           )}
         </div>
@@ -382,31 +384,31 @@ export default function Import() {
 
         <div className="mt-4">
           <label htmlFor="document-text" className="block text-sm font-medium text-kp-muted mb-1">
-            Document Text
+            {t("import.documentText")}
           </label>
           <textarea
             id="document-text"
             value={documentText}
             onChange={(e) => setDocumentText(e.target.value)}
-            placeholder="Paste your document text here..."
+            placeholder={t("import.pastePlaceholder")}
             rows={12}
             className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text font-mono rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
           />
           <p className="mt-1 text-xs text-kp-muted">
             {documentText.length > 0
-              ? `${documentText.length.toLocaleString()} characters`
-              : "No text provided yet"}
+              ? t("import.characters", { count: documentText.length })
+              : t("import.noTextYet")}
           </p>
         </div>
       </div>
 
       {/* LLM Configuration */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">LLM Configuration</h2>
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("import.llmConfig")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label htmlFor="llm-provider" className="block text-sm font-medium text-kp-muted mb-1">
-              Provider
+              {t("import.provider")}
             </label>
             <select
               id="llm-provider"
@@ -420,7 +422,7 @@ export default function Import() {
           </div>
           <div>
             <label htmlFor="llm-api-key" className="block text-sm font-medium text-kp-muted mb-1">
-              API Key
+              {t("import.apiKey")}
             </label>
             <input
               id="llm-api-key"
@@ -433,7 +435,7 @@ export default function Import() {
           </div>
           <div>
             <label htmlFor="llm-model" className="block text-sm font-medium text-kp-muted mb-1">
-              Model
+              {t("import.model")}
             </label>
             <input
               id="llm-model"
@@ -476,10 +478,10 @@ export default function Import() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              Extracting...
+              {t("import.extracting")}
             </>
           ) : (
-            "Extract Decision Tree"
+            t("import.extractTree")
           )}
         </button>
 
@@ -490,9 +492,9 @@ export default function Import() {
       {extractedJson && (
         <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-kp-heading">Extracted Decision Tree</h2>
+            <h2 className="text-lg font-semibold text-kp-heading">{t("import.extractedTree")}</h2>
             <span className="text-sm text-kp-muted">
-              {extractedTree?.length || 0} step{(extractedTree?.length || 0) !== 1 ? "s" : ""}
+              {t("import.steps", { count: extractedTree?.length || 0 })}
             </span>
           </div>
           <textarea
@@ -504,7 +506,7 @@ export default function Import() {
                 setExtractedTree(parsed);
                 setExtractError(null);
               } catch {
-                setExtractError("Invalid JSON in decision tree");
+                setExtractError(t("import.invalidJson"));
               }
             }}
             rows={16}
@@ -519,12 +521,12 @@ export default function Import() {
               disabled={saving || !extractedTree || !sopName.trim()}
               className="inline-flex items-center px-6 py-2.5 bg-kp-green text-white text-sm font-medium rounded-lg hover:bg-kp-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {saving ? "Saving..." : "Save as Draft"}
+              {saving ? t("import.savingDraft") : t("import.saveAsDraft")}
             </button>
             {saveError && <p className="text-sm text-kp-error">{saveError}</p>}
             {!sopName.trim() && extractedTree && (
               <p className="text-sm text-kp-orange">
-                Please enter an SOP name above before saving.
+                {t("import.enterName")}
               </p>
             )}
           </div>

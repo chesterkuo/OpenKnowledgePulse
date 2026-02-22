@@ -1,12 +1,27 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu";
 import Dashboard from "./pages/Dashboard";
 import Editor from "./pages/Editor";
 import Import from "./pages/Import";
 import Marketplace from "./pages/Marketplace";
 import Settings from "./pages/Settings";
 import TestSandbox from "./pages/TestSandbox";
+
+const LANGUAGES = [
+  { code: "en", label: "EN" },
+  { code: "zh-Hans", label: "中文" },
+  { code: "ja", label: "日本語" },
+  { code: "ko", label: "한국어" },
+  { code: "es", label: "ES" },
+] as const;
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `transition-colors pb-[1.125rem] ${
@@ -17,6 +32,10 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  const currentLanguageLabel =
+    LANGUAGES.find((l) => l.code === i18n.language)?.label ?? "EN";
 
   return (
     <div className="min-h-screen bg-kp-dark">
@@ -49,33 +68,73 @@ export default function App() {
               {/* Desktop links */}
               <div className="hidden md:flex items-center space-x-6 h-16 pt-[2px]">
                 <NavLink to="/" className={navLinkClass} end>
-                  Dashboard
+                  {t("nav.dashboard")}
                 </NavLink>
                 <NavLink to="/editor/new" className={navLinkClass}>
-                  Editor
+                  {t("nav.editor")}
                 </NavLink>
                 <NavLink to="/import" className={navLinkClass}>
-                  Import
+                  {t("nav.import")}
                 </NavLink>
                 <NavLink to="/marketplace" className={navLinkClass}>
-                  Marketplace
+                  {t("nav.marketplace")}
                 </NavLink>
                 {/* Test sandbox requires an ID param, e.g. /test/some-id */}
                 <NavLink to="/test/sandbox" className={navLinkClass}>
-                  Test
+                  {t("nav.test")}
                 </NavLink>
                 <NavLink to="/settings" className={navLinkClass}>
-                  Settings
+                  {t("nav.settings")}
                 </NavLink>
               </div>
             </div>
 
-            {/* Right side: help + hamburger */}
+            {/* Right side: language toggle + help + hamburger */}
             <div className="flex items-center space-x-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="text-kp-muted hover:text-kp-teal transition-colors text-xs font-mono px-2 py-1 rounded border border-kp-border hover:border-kp-teal/50 flex items-center gap-1.5"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M2 12h20" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                    {currentLanguageLabel}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {LANGUAGES.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() => i18n.changeLanguage(lang.code)}
+                      className={
+                        i18n.language === lang.code
+                          ? "text-kp-teal font-semibold"
+                          : ""
+                      }
+                    >
+                      {lang.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <button
                 type="button"
                 className="text-kp-muted hover:text-kp-teal transition-colors w-8 h-8 flex items-center justify-center rounded-full border border-kp-border"
-                aria-label="Help"
+                aria-label={t("nav.help")}
               >
                 ?
               </button>
@@ -85,7 +144,7 @@ export default function App() {
                 type="button"
                 className="md:hidden text-kp-muted hover:text-kp-teal transition-colors"
                 onClick={() => setMenuOpen((v) => !v)}
-                aria-label="Toggle menu"
+                aria-label={t("nav.toggleMenu")}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   {menuOpen ? (
@@ -109,22 +168,22 @@ export default function App() {
           {menuOpen && (
             <div className="md:hidden pb-4 flex flex-col space-y-3">
               <NavLink to="/" className={navLinkClass} end onClick={() => setMenuOpen(false)}>
-                Dashboard
+                {t("nav.dashboard")}
               </NavLink>
               <NavLink to="/editor/new" className={navLinkClass} onClick={() => setMenuOpen(false)}>
-                Editor
+                {t("nav.editor")}
               </NavLink>
               <NavLink to="/import" className={navLinkClass} onClick={() => setMenuOpen(false)}>
-                Import
+                {t("nav.import")}
               </NavLink>
               <NavLink to="/marketplace" className={navLinkClass} onClick={() => setMenuOpen(false)}>
-                Marketplace
+                {t("nav.marketplace")}
               </NavLink>
               <NavLink to="/test/sandbox" className={navLinkClass} onClick={() => setMenuOpen(false)}>
-                Test
+                {t("nav.test")}
               </NavLink>
               <NavLink to="/settings" className={navLinkClass} onClick={() => setMenuOpen(false)}>
-                Settings
+                {t("nav.settings")}
               </NavLink>
             </div>
           )}

@@ -1,5 +1,6 @@
 import type { Node } from "@xyflow/react";
 import { type ChangeEvent, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import type { ConditionNodeData, StepNodeData, ToolNodeData } from "../lib/sop-to-flow";
 
 interface PropertyPanelProps {
@@ -8,10 +9,12 @@ interface PropertyPanelProps {
 }
 
 export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPanelProps) {
+  const { t } = useTranslation();
+
   if (!selectedNode) {
     return (
       <div className="w-80 border-l border-kp-border bg-kp-navy p-6 flex items-center justify-center">
-        <p className="text-kp-muted text-sm text-center">Select a node to edit its properties</p>
+        <p className="text-kp-muted text-sm text-center">{t("propertyPanel.selectNode")}</p>
       </div>
     );
   }
@@ -19,7 +22,7 @@ export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPa
   return (
     <div className="w-80 border-l border-kp-border bg-kp-navy overflow-y-auto">
       <div className="p-4 border-b border-kp-border">
-        <h3 className="font-semibold text-kp-heading">Properties</h3>
+        <h3 className="font-semibold text-kp-heading">{t("propertyPanel.properties")}</h3>
         <p className="text-xs text-kp-muted mt-1">ID: {selectedNode.id}</p>
       </div>
       <div className="p-4">
@@ -44,6 +47,7 @@ function StepNodeProperties({
   node: Node;
   onUpdate: (id: string, data: Record<string, unknown>) => void;
 }) {
+  const { t } = useTranslation();
   const data = node.data as StepNodeData;
 
   const handleChange = useCallback(
@@ -57,11 +61,11 @@ function StepNodeProperties({
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-block w-3 h-3 rounded-full bg-kp-blue" />
-        <span className="text-sm font-medium text-kp-text">Step Node</span>
+        <span className="text-sm font-medium text-kp-text">{t("propertyPanel.stepNode")}</span>
       </div>
       <div>
         <label htmlFor="step-name" className="block text-sm font-medium text-kp-muted mb-1">
-          Step Name
+          {t("propertyPanel.stepName")}
         </label>
         <input
           id="step-name"
@@ -73,7 +77,7 @@ function StepNodeProperties({
       </div>
       <div>
         <label htmlFor="step-instruction" className="block text-sm font-medium text-kp-muted mb-1">
-          Instruction
+          {t("propertyPanel.instruction")}
         </label>
         <textarea
           id="step-instruction"
@@ -96,6 +100,7 @@ function ConditionNodeProperties({
   node: Node;
   onUpdate: (id: string, data: Record<string, unknown>) => void;
 }) {
+  const { t } = useTranslation();
   const data = node.data as ConditionNodeData;
   const criteriaEntries = Object.entries(data.criteria || {});
   const conditionEntries = Object.entries(data.conditions || {});
@@ -162,29 +167,29 @@ function ConditionNodeProperties({
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-block w-3 h-3 rounded-full bg-kp-orange" />
-        <span className="text-sm font-medium text-kp-text">Condition Node</span>
+        <span className="text-sm font-medium text-kp-text">{t("propertyPanel.conditionNode")}</span>
       </div>
 
       {/* Criteria editor */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-kp-muted">Criteria</label>
+          <label className="block text-sm font-medium text-kp-muted">{t("propertyPanel.criteria")}</label>
           <button
             type="button"
             onClick={addCriteria}
             className="text-xs text-kp-teal hover:text-kp-cyan"
           >
-            + Add
+            {t("propertyPanel.add")}
           </button>
         </div>
         {criteriaEntries.length === 0 && (
-          <p className="text-xs text-kp-muted">No criteria defined</p>
+          <p className="text-xs text-kp-muted">{t("propertyPanel.noCriteria")}</p>
         )}
         {criteriaEntries.map(([key, value], idx) => (
           <div key={idx} className="flex gap-1 mb-2 items-start">
             <input
               type="text"
-              placeholder="Key"
+              placeholder={t("propertyPanel.keyPlaceholder")}
               value={key}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateCriteria(key, e.target.value, value)
@@ -193,7 +198,7 @@ function ConditionNodeProperties({
             />
             <input
               type="text"
-              placeholder="Value"
+              placeholder={t("propertyPanel.valuePlaceholder")}
               value={value}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateCriteria(key, key, e.target.value)
@@ -204,7 +209,7 @@ function ConditionNodeProperties({
               type="button"
               onClick={() => removeCriteria(key)}
               className="text-kp-error/60 hover:text-kp-error px-1 py-1.5 text-xs"
-              title="Remove"
+              title={t("propertyPanel.remove")}
             >
               X
             </button>
@@ -215,24 +220,24 @@ function ConditionNodeProperties({
       {/* Conditions editor */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-kp-muted">Conditions</label>
+          <label className="block text-sm font-medium text-kp-muted">{t("propertyPanel.conditions")}</label>
           <button
             type="button"
             onClick={addCondition}
             className="text-xs text-kp-teal hover:text-kp-cyan"
           >
-            + Add
+            {t("propertyPanel.add")}
           </button>
         </div>
         {conditionEntries.length === 0 && (
-          <p className="text-xs text-kp-muted">No conditions defined</p>
+          <p className="text-xs text-kp-muted">{t("propertyPanel.noConditions")}</p>
         )}
         {conditionEntries.map(([key, value], idx) => (
           <div key={idx} className="border border-kp-border rounded p-2 mb-2 space-y-1">
             <div className="flex gap-1 items-center">
               <input
                 type="text"
-                placeholder="Condition name"
+                placeholder={t("propertyPanel.conditionNamePlaceholder")}
                 value={key}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   updateCondition(key, e.target.value, value.action, value.sla_min)
@@ -243,14 +248,14 @@ function ConditionNodeProperties({
                 type="button"
                 onClick={() => removeCondition(key)}
                 className="text-kp-error/60 hover:text-kp-error px-1 text-xs"
-                title="Remove"
+                title={t("propertyPanel.remove")}
               >
                 X
               </button>
             </div>
             <input
               type="text"
-              placeholder="Action (next step name)"
+              placeholder={t("propertyPanel.actionPlaceholder")}
               value={value.action}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateCondition(key, key, e.target.value, value.sla_min)
@@ -259,7 +264,7 @@ function ConditionNodeProperties({
             />
             <input
               type="number"
-              placeholder="SLA (minutes, optional)"
+              placeholder={t("propertyPanel.slaPlaceholder")}
               value={value.sla_min ?? ""}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateCondition(
@@ -285,6 +290,7 @@ function ToolNodeProperties({
   node: Node;
   onUpdate: (id: string, data: Record<string, unknown>) => void;
 }) {
+  const { t } = useTranslation();
   const data = node.data as ToolNodeData;
 
   const handleChange = useCallback(
@@ -298,11 +304,11 @@ function ToolNodeProperties({
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
         <span className="inline-block w-3 h-3 rounded-full bg-kp-green" />
-        <span className="text-sm font-medium text-kp-text">Tool Node</span>
+        <span className="text-sm font-medium text-kp-text">{t("propertyPanel.toolNode")}</span>
       </div>
       <div>
         <label htmlFor="tool-name" className="block text-sm font-medium text-kp-muted mb-1">
-          Tool Name
+          {t("propertyPanel.toolName")}
         </label>
         <input
           id="tool-name"
@@ -314,7 +320,7 @@ function ToolNodeProperties({
       </div>
       <div>
         <label htmlFor="tool-when" className="block text-sm font-medium text-kp-muted mb-1">
-          When (trigger condition)
+          {t("propertyPanel.whenTrigger")}
         </label>
         <textarea
           id="tool-when"

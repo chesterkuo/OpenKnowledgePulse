@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 
@@ -24,6 +25,7 @@ interface StoredSOP {
 export default function TestSandbox() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [sop, setSop] = useState<StoredSOP | null>(null);
   const [loading, setLoading] = useState(true);
@@ -118,7 +120,7 @@ export default function TestSandbox() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kp-teal mx-auto mb-4" />
-          <p className="text-kp-muted">Loading SOP...</p>
+          <p className="text-kp-muted">{t("test.loadingSOP")}</p>
         </div>
       </div>
     );
@@ -128,13 +130,13 @@ export default function TestSandbox() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <p className="text-kp-error mb-4">{error || "SOP not found"}</p>
+          <p className="text-kp-error mb-4">{error || t("test.sopNotFound")}</p>
           <button
             type="button"
             onClick={() => navigate("/")}
             className="px-4 py-2 bg-kp-teal text-white rounded-md hover:bg-kp-teal/90 text-sm"
           >
-            Back to Dashboard
+            {t("common.backToDashboard")}
           </button>
         </div>
       </div>
@@ -151,12 +153,11 @@ export default function TestSandbox() {
             onClick={() => navigate("/")}
             className="text-sm text-kp-muted hover:text-kp-text mb-1"
           >
-            &larr; Back to Dashboard
+            &larr; {t("common.backToDashboard")}
           </button>
-          <h1 className="text-2xl font-bold text-kp-heading">Test Sandbox</h1>
+          <h1 className="text-2xl font-bold text-kp-heading">{t("test.title")}</h1>
           <p className="text-sm text-kp-muted">
-            {sop.sop.name} — {decisionTree.length} step
-            {decisionTree.length !== 1 ? "s" : ""}
+            {sop.sop.name} — {t("import.steps", { count: decisionTree.length })}
           </p>
         </div>
         <button
@@ -172,7 +173,7 @@ export default function TestSandbox() {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          Reset
+          {t("common.reset")}
         </button>
       </div>
 
@@ -181,7 +182,7 @@ export default function TestSandbox() {
         <div className="lg:col-span-1">
           <div className="bg-kp-panel rounded-lg border border-kp-border p-4">
             <h2 className="text-sm font-semibold text-kp-heading uppercase tracking-wider mb-3">
-              Steps
+              {t("test.steps")}
             </h2>
             <div className="space-y-1">
               {decisionTree.map((step, index) => {
@@ -233,7 +234,7 @@ export default function TestSandbox() {
             {/* Test case status */}
             <div className="mt-4 pt-4 border-t border-kp-border">
               <h3 className="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-2">
-                Coverage
+                {t("test.coverage")}
               </h3>
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-kp-navy rounded-full h-2">
@@ -269,13 +270,15 @@ export default function TestSandbox() {
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <h2 className="mt-4 text-xl font-bold text-kp-heading">Test Complete</h2>
+              <h2 className="mt-4 text-xl font-bold text-kp-heading">{t("test.testComplete")}</h2>
               <p className="mt-2 text-kp-muted">
-                Visited {visitedSteps.size} of {decisionTree.length} steps (
-                {decisionTree.length > 0
-                  ? Math.round((visitedSteps.size / decisionTree.length) * 100)
-                  : 0}
-                % coverage)
+                {t("test.visitedSteps", {
+                  visited: visitedSteps.size,
+                  total: decisionTree.length,
+                  percentage: decisionTree.length > 0
+                    ? Math.round((visitedSteps.size / decisionTree.length) * 100)
+                    : 0,
+                })}
               </p>
               <div className="mt-6 flex items-center justify-center gap-3">
                 <button
@@ -283,14 +286,14 @@ export default function TestSandbox() {
                   onClick={handleReset}
                   className="px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90"
                 >
-                  Run Again
+                  {t("test.runAgain")}
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate(`/editor/${id}`)}
                   className="px-4 py-2 border border-kp-border text-sm font-medium rounded-md text-kp-text hover:bg-kp-panel"
                 >
-                  Open in Editor
+                  {t("test.openInEditor")}
                 </button>
               </div>
             </div>
@@ -301,7 +304,7 @@ export default function TestSandbox() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-kp-blue/15 text-kp-blue mb-2">
-                      Step {currentStepIndex + 1} of {decisionTree.length}
+                      {t("test.stepOf", { current: currentStepIndex + 1, total: decisionTree.length })}
                     </span>
                     <h2 className="text-xl font-bold text-kp-heading">{currentStep.step}</h2>
                   </div>
@@ -314,7 +317,7 @@ export default function TestSandbox() {
                 {/* Criteria */}
                 {currentStep.criteria && Object.keys(currentStep.criteria).length > 0 && (
                   <div className="mt-4 bg-kp-navy rounded-md p-4">
-                    <h3 className="text-sm font-semibold text-kp-muted mb-2">Criteria</h3>
+                    <h3 className="text-sm font-semibold text-kp-muted mb-2">{t("propertyPanel.criteria")}</h3>
                     <dl className="space-y-1">
                       {Object.entries(currentStep.criteria).map(([key, value]) => (
                         <div key={key} className="flex gap-2 text-sm">
@@ -329,7 +332,7 @@ export default function TestSandbox() {
                 {/* Tool Suggestions */}
                 {currentStep.tool_suggestions && currentStep.tool_suggestions.length > 0 && (
                   <div className="mt-4 bg-kp-green/10 rounded-md p-4">
-                    <h3 className="text-sm font-semibold text-kp-green mb-2">Tool Suggestions</h3>
+                    <h3 className="text-sm font-semibold text-kp-green mb-2">{t("propertyPanel.toolNode")}</h3>
                     <ul className="space-y-1">
                       {currentStep.tool_suggestions.map((tool) => (
                         <li key={tool.name} className="flex items-start gap-2 text-sm">
@@ -347,7 +350,7 @@ export default function TestSandbox() {
                 {hasConditions ? (
                   <div>
                     <h3 className="text-sm font-semibold text-kp-heading mb-3">
-                      Choose a condition to proceed:
+                      {t("test.chooseCondition")}
                     </h3>
                     <div className="space-y-2">
                       {Object.entries(currentStep.conditions!).map(([condKey, condValue]) => (
@@ -362,9 +365,9 @@ export default function TestSandbox() {
                               {condKey}
                             </span>
                             <span className="block text-xs text-kp-muted mt-0.5">
-                              Go to: {condValue.action}
+                              {t("test.goTo", { target: condValue.action })}
                               {condValue.sla_min !== undefined &&
-                                ` (SLA: ${condValue.sla_min} min)`}
+                                ` (${t("test.sla", { minutes: condValue.sla_min })})`}
                             </span>
                           </div>
                           <svg
@@ -391,7 +394,7 @@ export default function TestSandbox() {
                       onClick={handleNextStep}
                       className="inline-flex items-center px-5 py-2.5 bg-kp-teal text-white text-sm font-medium rounded-lg hover:bg-kp-teal/90 transition-colors"
                     >
-                      {currentStepIndex >= decisionTree.length - 1 ? "Finish" : "Next Step"}
+                      {currentStepIndex >= decisionTree.length - 1 ? t("test.finish") : t("test.nextStep")}
                       <svg
                         className="ml-2 w-4 h-4"
                         fill="none"
@@ -412,14 +415,14 @@ export default function TestSandbox() {
             </>
           ) : (
             <div className="bg-kp-panel rounded-lg border border-kp-border p-8 text-center">
-              <p className="text-kp-muted">No decision tree steps found in this SOP.</p>
+              <p className="text-kp-muted">{t("test.noSteps")}</p>
             </div>
           )}
 
           {/* Condition History */}
           {conditionHistory.length > 0 && (
             <div className="bg-kp-panel rounded-lg border border-kp-border p-4">
-              <h3 className="text-sm font-semibold text-kp-heading mb-3">Decision History</h3>
+              <h3 className="text-sm font-semibold text-kp-heading mb-3">{t("test.decisionHistory")}</h3>
               <div className="space-y-2">
                 {conditionHistory.map((entry, index) => (
                   <div
@@ -430,11 +433,11 @@ export default function TestSandbox() {
                       {index + 1}
                     </span>
                     <span className="text-kp-muted">
-                      At{" "}
+                      {t("test.atStep")}{" "}
                       <span className="font-medium text-kp-heading">
                         {decisionTree[entry.stepIndex]?.step || `Step ${entry.stepIndex + 1}`}
                       </span>
-                      , chose <span className="font-medium text-kp-teal">{entry.condition}</span>{" "}
+                      , {t("test.chose")} <span className="font-medium text-kp-teal">{entry.condition}</span>{" "}
                       &#8594; <span className="font-medium text-kp-heading">{entry.action}</span>
                     </span>
                   </div>
