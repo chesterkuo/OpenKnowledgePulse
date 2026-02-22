@@ -1,50 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap");
 
 :root {
-  --ifm-color-primary: #12B5A8;
-  --ifm-color-primary-dark: #0FA89C;
-  --ifm-color-primary-darker: #0E9E93;
-  --ifm-color-primary-darkest: #0B8279;
-  --ifm-color-primary-light: #15C2B4;
-  --ifm-color-primary-lighter: #16C8BA;
-  --ifm-color-primary-lightest: #1ADACE;
-  --ifm-font-family-base: 'Outfit', system-ui, sans-serif;
-  --ifm-font-family-monospace: 'JetBrains Mono', ui-monospace, monospace;
-  --ifm-heading-font-family: 'Outfit', system-ui, sans-serif;
+  --ifm-color-primary: #12b5a8;
+  --ifm-color-primary-dark: #0fa89c;
+  --ifm-color-primary-darker: #0e9e93;
+  --ifm-color-primary-darkest: #0b8279;
+  --ifm-color-primary-light: #15c2b4;
+  --ifm-color-primary-lighter: #16c8ba;
+  --ifm-color-primary-lightest: #1adace;
+  --ifm-font-family-base: "Outfit", system-ui, sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", ui-monospace, monospace;
+  --ifm-heading-font-family: "Outfit", system-ui, sans-serif;
   --ifm-code-font-size: 95%;
   --ifm-heading-font-weight: 700;
   /* KP brand tokens */
-  --kp-blue: #1E7EC8;
-  --kp-green: #18A06A;
-  --kp-teal: #12B5A8;
-  --kp-orange: #E07A20;
-  --kp-cyan: #4ADEFF;
-  --kp-dark: #050D16;
+  --kp-blue: #1e7ec8;
+  --kp-green: #18a06a;
+  --kp-teal: #12b5a8;
+  --kp-orange: #e07a20;
+  --kp-cyan: #4adeff;
+  --kp-dark: #050d16;
   --kp-navy: #081828;
-  --kp-panel: #0C1A28;
+  --kp-panel: #0c1a28;
   --kp-border: #163248;
-  --kp-text: #C8DDF0;
-  --kp-muted: #4A7FA5;
-  --kp-heading: #EEF6FF;
+  --kp-text: #c8ddf0;
+  --kp-muted: #4a7fa5;
+  --kp-heading: #eef6ff;
 }
 
-[data-theme='dark'] {
-  --ifm-color-primary: #12B5A8;
-  --ifm-color-primary-dark: #0FA89C;
-  --ifm-color-primary-darker: #0E9E93;
-  --ifm-color-primary-darkest: #0B8279;
-  --ifm-color-primary-light: #15C2B4;
-  --ifm-color-primary-lighter: #16C8BA;
-  --ifm-color-primary-lightest: #1ADACE;
-  --ifm-background-color: #050D16;
-  --ifm-background-surface-color: #0C1A28;
+[data-theme="dark"] {
+  --ifm-color-primary: #12b5a8;
+  --ifm-color-primary-dark: #0fa89c;
+  --ifm-color-primary-darker: #0e9e93;
+  --ifm-color-primary-darkest: #0b8279;
+  --ifm-color-primary-light: #15c2b4;
+  --ifm-color-primary-lighter: #16c8ba;
+  --ifm-color-primary-lightest: #1adace;
+  --ifm-background-color: #050d16;
+  --ifm-background-surface-color: #0c1a28;
   --ifm-navbar-background-color: #081828;
-  --ifm-footer-background-color: #050D16;
-  --ifm-card-background-color: #0C1A28;
+  --ifm-footer-background-color: #050d16;
+  --ifm-card-background-color: #0c1a28;
   --ifm-toc-border-color: #163248;
   --ifm-color-emphasis-300: #163248;
   --ifm-hr-border-color: #163248;
-  --ifm-code-background: #0C1A28;
+  --ifm-code-background: #0c1a28;
   --ifm-table-stripe-background: rgba(12, 26, 40, 0.5);
   --ifm-table-border-color: #163248;
 }
@@ -54,7 +54,7 @@
   border-bottom: 1px solid var(--kp-border);
 }
 .navbar__title {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 500;
   letter-spacing: 0.5px;
 }
@@ -68,8 +68,8 @@
 }
 
 /* Code blocks */
-[data-theme='dark'] pre {
-  background-color: #0C1A28 !important;
+[data-theme="dark"] pre {
+  background-color: #0c1a28 !important;
   border: 1px solid var(--kp-border);
 }
 
@@ -78,7 +78,7 @@
   border-top: 1px solid var(--kp-border);
 }
 .footer__title {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -86,8 +86,10 @@
 }
 
 /* Docs content */
-.markdown h1, .markdown h2, .markdown h3 {
-  font-family: 'Outfit', system-ui, sans-serif;
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  font-family: "Outfit", system-ui, sans-serif;
 }
 
 /* Table of contents */

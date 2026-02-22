@@ -111,10 +111,18 @@ export default function ComparisonTable(): JSX.Element {
               {rows.map((r) => (
                 <tr key={r.feature}>
                   <td style={tdFeatureStyle}>{r.feature}</td>
-                  <td style={tdStyle}><Cell mark={r.kp} /></td>
-                  <td style={tdStyle}><Cell mark={r.skills} /></td>
-                  <td style={tdStyle}><Cell mark={r.langchain} /></td>
-                  <td style={tdStyle}><Cell mark={r.mem0} /></td>
+                  <td style={tdStyle}>
+                    <Cell mark={r.kp} />
+                  </td>
+                  <td style={tdStyle}>
+                    <Cell mark={r.skills} />
+                  </td>
+                  <td style={tdStyle}>
+                    <Cell mark={r.langchain} />
+                  </td>
+                  <td style={tdStyle}>
+                    <Cell mark={r.mem0} />
+                  </td>
                 </tr>
               ))}
             </tbody>

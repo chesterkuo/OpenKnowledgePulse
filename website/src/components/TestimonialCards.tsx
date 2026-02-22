@@ -35,24 +35,21 @@ const testimonials: Testimonial[] = [
   {
     initials: "AK",
     color: "var(--kp-teal)",
-    quote:
-      "KnowledgePulse transformed how our AI agents share knowledge across the team.",
+    quote: "KnowledgePulse transformed how our AI agents share knowledge across the team.",
     name: "Alex Kim",
     role: "ML Engineer",
   },
   {
     initials: "SR",
     color: "var(--kp-blue)",
-    quote:
-      "The SOP Studio lets us capture expert processes that were previously undocumented.",
+    quote: "The SOP Studio lets us capture expert processes that were previously undocumented.",
     name: "Sarah Rodriguez",
     role: "Operations Lead",
   },
   {
     initials: "JC",
     color: "var(--kp-orange)",
-    quote:
-      "Finally, a knowledge protocol that works across different AI frameworks.",
+    quote: "Finally, a knowledge protocol that works across different AI frameworks.",
     name: "James Chen",
     role: "AI Architect",
   },

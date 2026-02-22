@@ -58,11 +58,16 @@ export default function CodeExample(): JSX.Element {
             {"\n\n"}
             <Comment text="# Capture knowledge in 3 lines" />
             {"\n"}
-            <Keyword text="import" /> {"{ "}<Fn text="KPCapture" />{" }"} <Keyword text="from" /> <Str text={'"@knowledgepulse/sdk"'} />;
-            {"\n"}
-            <Keyword text="const" /> capture = <Keyword text="new" /> <Fn text="KPCapture" />{"({ domain: "}<Str text={'"analysis"'} />{" })"};
-            {"\n"}
-            <Keyword text="const" /> unit = <Keyword text="await" /> capture.<Fn text="extract" />(agentTrace);
+            <Keyword text="import" /> {"{ "}
+            <Fn text="KPCapture" />
+            {" }"} <Keyword text="from" /> <Str text={'"@knowledgepulse/sdk"'} />;{"\n"}
+            <Keyword text="const" /> capture = <Keyword text="new" /> <Fn text="KPCapture" />
+            {"({ domain: "}
+            <Str text={'"analysis"'} />
+            {" })"};{"\n"}
+            <Keyword text="const" /> unit = <Keyword text="await" /> capture.
+            <Fn text="extract" />
+            (agentTrace);
           </code>
         </pre>
       </div>

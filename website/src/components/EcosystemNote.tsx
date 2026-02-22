@@ -38,14 +38,21 @@ export default function EcosystemNote(): JSX.Element {
     <section style={sectionStyle}>
       <div style={panelStyle}>
         <p style={lineStyle}>
-          <span style={accentStyle}>OpenClaw</span>{" "}
-          <span style={mutedStyle}>&mdash;</span> Lobster. Strong claws, executes tasks.
+          <span style={accentStyle}>OpenClaw</span> <span style={mutedStyle}>&mdash;</span> Lobster.
+          Strong claws, executes tasks.
         </p>
         <p style={lineStyle}>
-          <span style={accentStyle}>KnowledgePulse</span>{" "}
-          <span style={mutedStyle}>&mdash;</span> Octo. 8 arms, shares intelligence.
+          <span style={accentStyle}>KnowledgePulse</span> <span style={mutedStyle}>&mdash;</span>{" "}
+          Octo. 8 arms, shares intelligence.
         </p>
-        <p style={{ ...lineStyle, marginTop: "0.75rem", fontWeight: 600, color: "var(--kp-heading)" }}>
+        <p
+          style={{
+            ...lineStyle,
+            marginTop: "0.75rem",
+            fontWeight: 600,
+            color: "var(--kp-heading)",
+          }}
+        >
           Lobster acts. Octo learns.
         </p>
       </div>

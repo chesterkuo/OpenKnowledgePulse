@@ -44,9 +44,7 @@ function LayerBar({ num, name, color, highlight }: Layer) {
         display: "flex",
         alignItems: "center",
         gap: "1rem",
-        border: highlight
-          ? `1px solid rgba(224,122,32,0.25)`
-          : `1px solid var(--kp-border)`,
+        border: highlight ? "1px solid rgba(224,122,32,0.25)" : "1px solid var(--kp-border)",
         borderLeftWidth: 4,
         borderLeftStyle: "solid",
         borderLeftColor: color,

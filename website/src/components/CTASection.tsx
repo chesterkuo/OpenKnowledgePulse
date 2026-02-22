@@ -61,9 +61,7 @@ export default function CTASection(): JSX.Element {
     <section style={sectionStyle}>
       <div style={containerStyle}>
         <h2 style={headingStyle}>Ready to share what you learn?</h2>
-        <p style={subStyle}>
-          Start capturing and sharing AI knowledge today.
-        </p>
+        <p style={subStyle}>Start capturing and sharing AI knowledge today.</p>
         <div style={btnRowStyle}>
           <Link to="/docs/getting-started/quickstart" style={primaryBtnStyle}>
             Get Started
