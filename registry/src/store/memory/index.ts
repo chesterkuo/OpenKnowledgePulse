@@ -4,6 +4,7 @@ import { MemoryAuditLogStore } from "./audit-log-store.js";
 import { MemoryCreditStore } from "./credit-store.js";
 import { MemoryKnowledgeStore } from "./knowledge-store.js";
 import { MemoryMarketplaceStore } from "./marketplace-store.js";
+import { MemoryProviderStore } from "./provider-store.js";
 import { MemoryRateLimitStore } from "./rate-limit-store.js";
 import { MemoryReputationStore } from "./reputation-store.js";
 import { MemorySkillStore } from "./skill-store.js";
@@ -20,6 +21,7 @@ export function createMemoryStore(): AllStores {
     marketplace: new MemoryMarketplaceStore(),
     rateLimit: new MemoryRateLimitStore(),
     auditLog: new MemoryAuditLogStore(),
+    providers: new MemoryProviderStore(),
   };
 }
 
@@ -32,3 +34,4 @@ export { MemorySopStore } from "./sop-store.js";
 export { MemoryCreditStore } from "./credit-store.js";
 export { MemoryMarketplaceStore } from "./marketplace-store.js";
 export { MemoryAuditLogStore } from "./audit-log-store.js";
+export { MemoryProviderStore } from "./provider-store.js";

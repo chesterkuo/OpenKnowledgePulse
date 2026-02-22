@@ -230,5 +230,17 @@ export function createDatabase(path = ":memory:"): Database {
     )
   `);
 
+  // ── Providers table ─────────────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS providers (
+      id TEXT PRIMARY KEY,
+      url TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'unknown',
+      last_heartbeat TEXT,
+      registered_at TEXT NOT NULL
+    )
+  `);
+
   return db;
 }

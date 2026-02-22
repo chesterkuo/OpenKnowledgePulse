@@ -222,6 +222,16 @@ CREATE INDEX IF NOT EXISTS idx_audit_action
 CREATE INDEX IF NOT EXISTS idx_audit_timestamp
   ON audit_log (timestamp);
 
+-- 17. providers
+CREATE TABLE IF NOT EXISTS providers (
+  id              TEXT PRIMARY KEY,
+  url             TEXT NOT NULL UNIQUE,
+  name            TEXT NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'unknown',
+  last_heartbeat  TIMESTAMPTZ,
+  registered_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- ── Full-Text Search ──────────────────────────────────
 
 -- Skills: tsvector column + GIN index + trigger

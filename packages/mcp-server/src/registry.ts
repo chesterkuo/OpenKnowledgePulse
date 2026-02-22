@@ -40,6 +40,8 @@ export interface RegistryBridge {
   }): Promise<{ validated: boolean }>;
 
   getReputation(agentId: string): Promise<{ score: number; contributions: number }>;
+
+  discoverProviders(): Promise<Array<{ url: string; name: string; status: string }>>;
 }
 
 export class ProxyRegistryBridge implements RegistryBridge {
@@ -143,6 +145,16 @@ export class ProxyRegistryBridge implements RegistryBridge {
     const body = (await res.json()) as { data: { score: number; contributions: number } };
     return body.data;
   }
+
+  async discoverProviders(): Promise<Array<{ url: string; name: string; status: string }>> {
+    const res = await fetch(`${this.baseUrl}/v1/providers`, {
+      headers: this.headers(),
+    });
+    const body = (await res.json()) as {
+      data: Array<{ url: string; name: string; status: string }>;
+    };
+    return body.data;
+  }
 }
 
 export function createRegistryBridge(): RegistryBridge {
@@ -210,5 +222,9 @@ class StandaloneRegistryBridge implements RegistryBridge {
 
   async getReputation(_agentId: string): Promise<{ score: number; contributions: number }> {
     return { score: 0, contributions: 0 };
+  }
+
+  async discoverProviders(): Promise<Array<{ url: string; name: string; status: string }>> {
+    return [];
   }
 }

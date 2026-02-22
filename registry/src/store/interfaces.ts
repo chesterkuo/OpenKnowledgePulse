@@ -272,6 +272,26 @@ export interface RateLimitStore {
   record429(identifier: string): Promise<void>;
 }
 
+// ── Provider Discovery ───────────────────────────────
+
+export interface ProviderRecord {
+  id: string;
+  url: string;
+  name: string;
+  status: "active" | "inactive" | "unknown";
+  last_heartbeat: string | null;
+  registered_at: string;
+}
+
+export interface ProviderStore {
+  register(provider: Omit<ProviderRecord, "id" | "registered_at">): Promise<ProviderRecord>;
+  getAll(): Promise<ProviderRecord[]>;
+  getById(id: string): Promise<ProviderRecord | undefined>;
+  updateHeartbeat(id: string): Promise<boolean>;
+  updateStatus(id: string, status: ProviderRecord["status"]): Promise<boolean>;
+  delete(id: string): Promise<boolean>;
+}
+
 export interface AllStores {
   skills: SkillStore;
   knowledge: KnowledgeStore;
@@ -282,4 +302,5 @@ export interface AllStores {
   marketplace: MarketplaceStore;
   rateLimit: RateLimitStore;
   auditLog: AuditLogStore;
+  providers: ProviderStore;
 }
