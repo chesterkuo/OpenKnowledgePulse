@@ -340,13 +340,13 @@ function EditorInner() {
   const miniMapNodeColor = useCallback((node: Node) => {
     switch (node.type) {
       case "stepNode":
-        return "#3b82f6";
+        return "#1E7EC8";
       case "conditionNode":
-        return "#f97316";
+        return "#E07A20";
       case "toolNode":
-        return "#22c55e";
+        return "#18A06A";
       default:
-        return "#6b7280";
+        return "#4A7FA5";
     }
   }, []);
 
@@ -357,8 +357,8 @@ function EditorInner() {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4" />
-          <p className="text-gray-500">Loading SOP...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kp-teal mx-auto mb-4" />
+          <p className="text-kp-muted">Loading SOP...</p>
         </div>
       </div>
     );
@@ -368,11 +368,11 @@ function EditorInner() {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-kp-error mb-4">{error}</p>
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+            className="px-4 py-2 bg-kp-teal text-white rounded-md hover:bg-kp-teal/90 text-sm"
           >
             Back to Dashboard
           </button>
@@ -384,90 +384,90 @@ function EditorInner() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between px-4 py-2 bg-kp-navy border-b border-kp-border">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="text-gray-500 hover:text-gray-700 text-sm"
+            className="text-kp-muted hover:text-kp-text text-sm"
           >
             &larr; Back
           </button>
-          <h1 className="text-lg font-semibold text-gray-900 truncate max-w-md">
+          <h1 className="text-lg font-semibold text-kp-heading truncate max-w-md">
             {storedSOP?.sop.name || "Untitled SOP"}
           </h1>
           {storedSOP?.status && (
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 storedSOP.status === "approved"
-                  ? "bg-green-100 text-green-800"
+                  ? "bg-kp-green/15 text-kp-green"
                   : storedSOP.status === "pending_review"
-                    ? "bg-yellow-100 text-yellow-800"
+                    ? "bg-kp-orange/15 text-kp-orange"
                     : storedSOP.status === "rejected"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-gray-100 text-gray-600"
+                      ? "bg-kp-error/15 text-kp-error"
+                      : "bg-kp-navy text-kp-muted"
               }`}
             >
               {storedSOP.status.replace("_", " ")}
             </span>
           )}
           {statusMessage && (
-            <span className="text-xs text-green-600 font-medium">{statusMessage}</span>
+            <span className="text-xs text-kp-green font-medium">{statusMessage}</span>
           )}
-          {error && <span className="text-xs text-red-600 font-medium">{error}</span>}
+          {error && <span className="text-xs text-kp-error font-medium">{error}</span>}
         </div>
         <div className="flex items-center gap-2">
           {/* Add node buttons */}
           <button
             type="button"
             onClick={handleAddStep}
-            className="px-3 py-1.5 text-xs font-medium border border-blue-300 text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100"
+            className="px-3 py-1.5 text-xs font-medium border border-kp-blue/50 text-kp-blue bg-kp-blue/10 rounded-md hover:bg-kp-blue/20"
           >
             + Step
           </button>
           <button
             type="button"
             onClick={handleAddCondition}
-            className="px-3 py-1.5 text-xs font-medium border border-orange-300 text-orange-700 bg-orange-50 rounded-md hover:bg-orange-100"
+            className="px-3 py-1.5 text-xs font-medium border border-kp-orange/50 text-kp-orange bg-kp-orange/10 rounded-md hover:bg-kp-orange/20"
           >
             + Condition
           </button>
           <button
             type="button"
             onClick={handleAddTool}
-            className="px-3 py-1.5 text-xs font-medium border border-green-300 text-green-700 bg-green-50 rounded-md hover:bg-green-100"
+            className="px-3 py-1.5 text-xs font-medium border border-kp-green/50 text-kp-green bg-kp-green/10 rounded-md hover:bg-kp-green/20"
           >
             + Tool
           </button>
 
-          <div className="w-px h-6 bg-gray-300 mx-1" />
+          <div className="w-px h-6 bg-kp-border mx-1" />
 
           <button
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-1.5 text-sm font-medium bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+            className="px-4 py-1.5 text-sm font-medium bg-kp-teal text-white rounded-md hover:bg-kp-teal/90 disabled:opacity-50"
           >
             {saving ? "Saving..." : "Save"}
           </button>
           <button
             type="button"
             onClick={handleExport}
-            className="px-3 py-1.5 text-sm font-medium border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            className="px-3 py-1.5 text-sm font-medium border border-kp-border text-kp-text rounded-md hover:bg-kp-panel"
           >
             Export SKILL.md
           </button>
           <button
             type="button"
             onClick={handleSubmitReview}
-            className="px-3 py-1.5 text-sm font-medium border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            className="px-3 py-1.5 text-sm font-medium border border-kp-border text-kp-text rounded-md hover:bg-kp-panel"
           >
             Submit for Review
           </button>
           <button
             type="button"
             onClick={handleDelete}
-            className="px-3 py-1.5 text-sm font-medium border border-red-300 text-red-600 rounded-md hover:bg-red-50"
+            className="px-3 py-1.5 text-sm font-medium border border-kp-error/50 text-kp-error rounded-md hover:bg-kp-error/10"
           >
             Delete
           </button>

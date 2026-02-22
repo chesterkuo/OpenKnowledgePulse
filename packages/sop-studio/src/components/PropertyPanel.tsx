@@ -10,17 +10,17 @@ interface PropertyPanelProps {
 export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPanelProps) {
   if (!selectedNode) {
     return (
-      <div className="w-80 border-l border-gray-200 bg-white p-6 flex items-center justify-center">
-        <p className="text-gray-400 text-sm text-center">Select a node to edit its properties</p>
+      <div className="w-80 border-l border-kp-border bg-kp-navy p-6 flex items-center justify-center">
+        <p className="text-kp-muted text-sm text-center">Select a node to edit its properties</p>
       </div>
     );
   }
 
   return (
-    <div className="w-80 border-l border-gray-200 bg-white overflow-y-auto">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="font-semibold text-gray-900">Properties</h3>
-        <p className="text-xs text-gray-500 mt-1">ID: {selectedNode.id}</p>
+    <div className="w-80 border-l border-kp-border bg-kp-navy overflow-y-auto">
+      <div className="p-4 border-b border-kp-border">
+        <h3 className="font-semibold text-kp-heading">Properties</h3>
+        <p className="text-xs text-kp-muted mt-1">ID: {selectedNode.id}</p>
       </div>
       <div className="p-4">
         {selectedNode.type === "stepNode" && (
@@ -56,11 +56,11 @@ function StepNodeProperties({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <span className="inline-block w-3 h-3 rounded-full bg-blue-500" />
-        <span className="text-sm font-medium text-gray-700">Step Node</span>
+        <span className="inline-block w-3 h-3 rounded-full bg-kp-blue" />
+        <span className="text-sm font-medium text-kp-text">Step Node</span>
       </div>
       <div>
-        <label htmlFor="step-name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="step-name" className="block text-sm font-medium text-kp-muted mb-1">
           Step Name
         </label>
         <input
@@ -68,11 +68,11 @@ function StepNodeProperties({
           type="text"
           value={data.step || ""}
           onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange("step", e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          className="w-full px-3 py-2 bg-kp-dark border border-kp-border text-kp-text rounded-md text-sm focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none"
         />
       </div>
       <div>
-        <label htmlFor="step-instruction" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="step-instruction" className="block text-sm font-medium text-kp-muted mb-1">
           Instruction
         </label>
         <textarea
@@ -82,7 +82,7 @@ function StepNodeProperties({
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
             handleChange("instruction", e.target.value)
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y"
+          className="w-full px-3 py-2 bg-kp-dark border border-kp-border text-kp-text rounded-md text-sm focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none resize-y"
         />
       </div>
     </div>
@@ -161,24 +161,24 @@ function ConditionNodeProperties({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <span className="inline-block w-3 h-3 rounded-full bg-orange-500" />
-        <span className="text-sm font-medium text-gray-700">Condition Node</span>
+        <span className="inline-block w-3 h-3 rounded-full bg-kp-orange" />
+        <span className="text-sm font-medium text-kp-text">Condition Node</span>
       </div>
 
       {/* Criteria editor */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">Criteria</label>
+          <label className="block text-sm font-medium text-kp-muted">Criteria</label>
           <button
             type="button"
             onClick={addCriteria}
-            className="text-xs text-indigo-600 hover:text-indigo-800"
+            className="text-xs text-kp-teal hover:text-kp-cyan"
           >
             + Add
           </button>
         </div>
         {criteriaEntries.length === 0 && (
-          <p className="text-xs text-gray-400">No criteria defined</p>
+          <p className="text-xs text-kp-muted">No criteria defined</p>
         )}
         {criteriaEntries.map(([key, value], idx) => (
           <div key={idx} className="flex gap-1 mb-2 items-start">
@@ -189,7 +189,7 @@ function ConditionNodeProperties({
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateCriteria(key, e.target.value, value)
               }
-              className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
+              className="flex-1 px-2 py-1.5 bg-kp-dark border border-kp-border text-kp-text rounded text-xs focus:ring-1 focus:ring-kp-teal outline-none"
             />
             <input
               type="text"
@@ -198,12 +198,12 @@ function ConditionNodeProperties({
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateCriteria(key, key, e.target.value)
               }
-              className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
+              className="flex-1 px-2 py-1.5 bg-kp-dark border border-kp-border text-kp-text rounded text-xs focus:ring-1 focus:ring-kp-teal outline-none"
             />
             <button
               type="button"
               onClick={() => removeCriteria(key)}
-              className="text-red-400 hover:text-red-600 px-1 py-1.5 text-xs"
+              className="text-kp-error/60 hover:text-kp-error px-1 py-1.5 text-xs"
               title="Remove"
             >
               X
@@ -215,20 +215,20 @@ function ConditionNodeProperties({
       {/* Conditions editor */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">Conditions</label>
+          <label className="block text-sm font-medium text-kp-muted">Conditions</label>
           <button
             type="button"
             onClick={addCondition}
-            className="text-xs text-indigo-600 hover:text-indigo-800"
+            className="text-xs text-kp-teal hover:text-kp-cyan"
           >
             + Add
           </button>
         </div>
         {conditionEntries.length === 0 && (
-          <p className="text-xs text-gray-400">No conditions defined</p>
+          <p className="text-xs text-kp-muted">No conditions defined</p>
         )}
         {conditionEntries.map(([key, value], idx) => (
-          <div key={idx} className="border border-gray-200 rounded p-2 mb-2 space-y-1">
+          <div key={idx} className="border border-kp-border rounded p-2 mb-2 space-y-1">
             <div className="flex gap-1 items-center">
               <input
                 type="text"
@@ -237,12 +237,12 @@ function ConditionNodeProperties({
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   updateCondition(key, e.target.value, value.action, value.sla_min)
                 }
-                className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
+                className="flex-1 px-2 py-1 bg-kp-dark border border-kp-border text-kp-text rounded text-xs focus:ring-1 focus:ring-kp-teal outline-none"
               />
               <button
                 type="button"
                 onClick={() => removeCondition(key)}
-                className="text-red-400 hover:text-red-600 px-1 text-xs"
+                className="text-kp-error/60 hover:text-kp-error px-1 text-xs"
                 title="Remove"
               >
                 X
@@ -255,7 +255,7 @@ function ConditionNodeProperties({
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateCondition(key, key, e.target.value, value.sla_min)
               }
-              className="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
+              className="w-full px-2 py-1 bg-kp-dark border border-kp-border text-kp-text rounded text-xs focus:ring-1 focus:ring-kp-teal outline-none"
             />
             <input
               type="number"
@@ -269,7 +269,7 @@ function ConditionNodeProperties({
                   e.target.value ? Number(e.target.value) : undefined,
                 )
               }
-              className="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
+              className="w-full px-2 py-1 bg-kp-dark border border-kp-border text-kp-text rounded text-xs focus:ring-1 focus:ring-kp-teal outline-none"
             />
           </div>
         ))}
@@ -297,11 +297,11 @@ function ToolNodeProperties({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <span className="inline-block w-3 h-3 rounded-full bg-green-500" />
-        <span className="text-sm font-medium text-gray-700">Tool Node</span>
+        <span className="inline-block w-3 h-3 rounded-full bg-kp-green" />
+        <span className="text-sm font-medium text-kp-text">Tool Node</span>
       </div>
       <div>
-        <label htmlFor="tool-name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="tool-name" className="block text-sm font-medium text-kp-muted mb-1">
           Tool Name
         </label>
         <input
@@ -309,11 +309,11 @@ function ToolNodeProperties({
           type="text"
           value={data.name || ""}
           onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange("name", e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          className="w-full px-3 py-2 bg-kp-dark border border-kp-border text-kp-text rounded-md text-sm focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none"
         />
       </div>
       <div>
-        <label htmlFor="tool-when" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="tool-when" className="block text-sm font-medium text-kp-muted mb-1">
           When (trigger condition)
         </label>
         <textarea
@@ -321,7 +321,7 @@ function ToolNodeProperties({
           rows={3}
           value={data.when || ""}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleChange("when", e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y"
+          className="w-full px-3 py-2 bg-kp-dark border border-kp-border text-kp-text rounded-md text-sm focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none resize-y"
         />
       </div>
     </div>
