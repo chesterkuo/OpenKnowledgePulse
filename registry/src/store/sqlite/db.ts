@@ -112,5 +112,31 @@ export function createDatabase(path = ":memory:"): Database {
     CREATE INDEX IF NOT EXISTS idx_violations_identifier ON rate_limit_violations (identifier, timestamp)
   `);
 
+  // ── SOPs table ──────────────────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS sops (
+      id TEXT PRIMARY KEY,
+      sop_json TEXT NOT NULL,
+      version INTEGER NOT NULL DEFAULT 1,
+      previous_version_id TEXT,
+      status TEXT NOT NULL DEFAULT 'draft',
+      visibility TEXT NOT NULL DEFAULT 'network',
+      approved_by TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `);
+
+  // ── SOP Versions table ─────────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS sop_versions (
+      sop_id TEXT NOT NULL,
+      version INTEGER NOT NULL,
+      diff_summary TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (sop_id, version)
+    )
+  `);
+
   return db;
 }
