@@ -1,6 +1,6 @@
 <div align="center">
 
-**English** | [简体中文](README.zh-Hans.md)
+[English](README.md) | **简体中文**
 
 <!-- Octo animated banner (SMIL animation, works on GitHub) -->
 <svg width="360" height="56" viewBox="0 0 360 56" xmlns="http://www.w3.org/2000/svg">
@@ -72,71 +72,71 @@
 </svg>
 
 <h1>KnowledgePulse</h1>
-<p><strong>Open AI Knowledge Sharing Protocol &mdash; SKILL.md Compatible</strong></p>
+<p><strong>开放式 AI 知识共享协议 &mdash; SKILL.md 兼容</strong></p>
 
-<!-- Badge row -->
-<img src="https://img.shields.io/badge/license-Apache%202.0-18A06A?style=flat" alt="License"/>
-<img src="https://img.shields.io/badge/runtime-Bun-E07A20?style=flat&logo=bun" alt="Runtime"/>
+<!-- 徽章 -->
+<img src="https://img.shields.io/badge/license-Apache%202.0-18A06A?style=flat" alt="许可证"/>
+<img src="https://img.shields.io/badge/runtime-Bun-E07A20?style=flat&logo=bun" alt="运行时"/>
 <img src="https://img.shields.io/badge/protocol-MCP%20ready-12B5A8?style=flat" alt="MCP"/>
 <img src="https://img.shields.io/badge/SKILL.md-compatible-1E7EC8?style=flat" alt="SKILL.md"/>
-<img src="https://img.shields.io/badge/tests-639%20passing-18A06A?style=flat" alt="Tests"/>
+<img src="https://img.shields.io/badge/tests-639%20passing-18A06A?style=flat" alt="测试"/>
 <img src="https://img.shields.io/github/stars/chesterkuo/OpenKnowledgePulse?style=flat&color=E07A20" alt="Stars"/>
 
-<a href="https://openknowledgepulse.org"><strong>Website</strong></a> · <a href="https://openknowledgepulse.org/docs/getting-started/introduction"><strong>Docs</strong></a> · <a href="https://github.com/chesterkuo/OpenKnowledgePulse"><strong>GitHub</strong></a>
+<a href="https://openknowledgepulse.org"><strong>官网</strong></a> · <a href="https://openknowledgepulse.org/zh-Hans/docs/getting-started/introduction"><strong>文档</strong></a> · <a href="https://github.com/chesterkuo/OpenKnowledgePulse"><strong>GitHub</strong></a>
 
 </div>
 
 ---
 
-KnowledgePulse lets AI agents and human experts share problem-solving experience -- reasoning chains, tool call patterns, and standard operating procedures -- across frameworks and organizations, while protecting data privacy and intellectual property.
+KnowledgePulse 让 AI 智能体和人类专家能够跨框架、跨组织地共享问题解决经验——推理链、工具调用模式和标准操作流程——同时保护数据隐私和知识产权。
 
-Built on a **dual-layer architecture**:
+基于**双层架构**构建：
 
-- **Layer 1** -- Fully compatible with the existing SKILL.md open standard (SkillsMP 200,000+ skills)
-- **Layer 2** -- Dynamic knowledge layer where agent execution experience automatically becomes shareable, verifiable, incentivized KnowledgeUnits
+- **第一层** -- 完全兼容现有 SKILL.md 开放标准（SkillsMP 200,000+ 技能）
+- **第二层** -- 动态知识层，智能体执行经验自动转化为可共享、可验证、有激励的 KnowledgeUnit
 
-> Think of it as **Tesla Fleet Learning for AI agents**: one agent discovers a financial analysis technique, and it automatically becomes a shared asset for the entire ecosystem.
+> 可以将其理解为 **AI 智能体的特斯拉车队学习**：一个智能体发现了某种金融分析技术，它将自动成为整个生态系统的共享资产。
 
-## Features
+## 功能特性
 
-| Module | Description |
-|--------|-------------|
-| **Skill Registry** | Semantic + BM25 hybrid search, one-click install to `~/.claude/skills/` |
-| **Knowledge Capture** | Auto-extract reasoning traces from agent execution (zero config) |
-| **Knowledge Retrieval** | Semantic search + few-shot injection API for downstream agents |
-| **Expert SOP Studio** | Visual decision tree editor for human expert SOPs |
-| **Knowledge Marketplace** | Free / org-gated / subscription / pay-per-use knowledge exchange |
-| **KP-REP Reputation** | Soulbound reputation system with verifiable credentials (Ed25519) |
+| 模块 | 说明 |
+|------|------|
+| **技能注册中心** | 语义 + BM25 混合搜索，一键安装到 `~/.claude/skills/` |
+| **知识捕获** | 从智能体执行过程中自动提取推理链（零配置） |
+| **知识检索** | 语义搜索 + few-shot 注入 API |
+| **专家 SOP 工作室** | 可视化决策树编辑器 |
+| **知识市场** | 免费 / 组织内 / 订阅 / 按次付费的知识交换 |
+| **KP-REP 声誉** | 灵魂绑定声誉系统，支持可验证凭证（Ed25519） |
 
-## Quick Start
+## 快速开始
 
-### Install
+### 安装
 
 ```bash
-# CLI tool
+# CLI 工具
 bun add -g @knowledgepulse/cli
 
 # TypeScript SDK
 bun add @knowledgepulse/sdk
 
-# MCP Server
+# MCP 服务器
 bun add @knowledgepulse/mcp
 ```
 
-### Search & Install Skills
+### 搜索和安装技能
 
 ```bash
-# Search for skills
+# 搜索技能
 kp search "financial analysis"
 
-# Install skill (auto-generates SKILL.md to ~/.claude/skills/)
+# 安装技能（自动生成 SKILL.md 到 ~/.claude/skills/）
 kp install financial-report-analyzer
 
-# Validate SKILL.md format
+# 验证 SKILL.md 格式
 kp validate ./my-skill.md
 ```
 
-### Enable Knowledge Capture (TypeScript)
+### 启用知识捕获（TypeScript）
 
 ```typescript
 import { KPCapture } from "@knowledgepulse/sdk";
@@ -147,15 +147,15 @@ const capture = new KPCapture({
   valueThreshold: 0.75,
 });
 
-// Wrap your existing agent -- knowledge is shared automatically
+// 包装你的现有智能体——知识将自动共享
 const wrappedAgent = capture.wrap(yourExistingAgentFn);
-const result = await wrappedAgent("Analyze TSMC Q4 2025 earnings");
+const result = await wrappedAgent("分析台积电 2025 Q4 财报");
 ```
 
-### Python Frameworks via MCP (No Python SDK Needed)
+### Python 框架通过 MCP 接入（无需 Python SDK）
 
 ```python
-# LangGraph / CrewAI / AutoGen access KnowledgePulse via MCP HTTP
+# LangGraph / CrewAI / AutoGen 通过 MCP HTTP 访问 KnowledgePulse
 mcp_config = {
     "knowledgepulse": {
         "url": "https://registry.knowledgepulse.dev/mcp",
@@ -163,14 +163,14 @@ mcp_config = {
     }
 }
 
-# Agent can call KP MCP tools directly
+# 智能体可以直接调用 KP MCP 工具
 result = agent.run(
-    "Analyze earnings report",
+    "分析财报",
     tools=["kp_search_skill", "kp_search_knowledge"]
 )
 ```
 
-### Self-Host the Registry
+### 自托管注册中心
 
 ```bash
 git clone https://github.com/chesterkuo/OpenKnowledgePulse
@@ -180,159 +180,159 @@ bun run registry/src/index.ts
 # Registry API: http://localhost:8080
 ```
 
-## Architecture
+## 架构
 
 ```
 +-------------------------------------------------------------------+
-|                    KnowledgePulse Protocol Stack                   |
+|                    KnowledgePulse 协议栈                            |
 +-------------------------------------------------------------------+
-|  Layer 5: Governance & Incentive                                  |
-|           KP-REP Reputation SBT . Quality Verification            |
+|  第五层：治理与激励                                                  |
+|           KP-REP 声誉 SBT · 质量验证                               |
 +-------------------------------------------------------------------+
-|  Layer 4: Privacy & Security                                      |
-|           Aggregated Sharing . Differential Privacy . ACL         |
+|  第四层：隐私与安全                                                  |
+|           聚合共享 · 差分隐私 · 访问控制                              |
 +-------------------------------------------------------------------+
-|  Layer 3: Discovery & Exchange                                    |
-|           Knowledge Registry . MCP Server . REST API              |
+|  第三层：发现与交换                                                  |
+|           知识注册中心 · MCP 服务器 · REST API                       |
 +-------------------------------------------------------------------+
-|  Layer 2: KnowledgeUnit Layer  <-- core differentiation           |
-|           ReasoningTrace . ToolCallPattern . ExpertSOP            |
+|  第二层：KnowledgeUnit 层  <-- 核心差异化                            |
+|           ReasoningTrace · ToolCallPattern · ExpertSOP              |
 +-------------------------------------------------------------------+
-|  Layer 1: SKILL.md Compatibility  <-- existing ecosystem          |
-|           SkillsMP / SkillHub / Smithery / Claude Code / Codex    |
+|  第一层：SKILL.md 兼容层  <-- 现有生态                               |
+|           SkillsMP / SkillHub / Smithery / Claude Code / Codex      |
 +-------------------------------------------------------------------+
 ```
 
-## Monorepo Structure
+## 仓库结构
 
 ```
 knowledgepulse/
   packages/
-    sdk/           @knowledgepulse/sdk    -- types, capture, retrieve, scoring
-    mcp-server/    @knowledgepulse/mcp    -- 6 MCP tools, dual-mode bridge
-    cli/           @knowledgepulse/cli    -- search, install, validate, contribute
-    sop-studio/    SOP Studio React SPA   -- visual decision tree editor
-  registry/        Hono REST API server   -- auth, rate limiting, SQLite/memory stores
-  specs/           JSON Schema, codegen, SKILL.md extension spec
-  examples/        SDK usage, MCP client, LangGraph integration
-  website/         Docusaurus 3 docs      -- bilingual (en + zh-Hans)
+    sdk/           @knowledgepulse/sdk    -- 类型、捕获、检索、评分
+    mcp-server/    @knowledgepulse/mcp    -- 6 个 MCP 工具，双模桥接
+    cli/           @knowledgepulse/cli    -- 搜索、安装、验证、贡献
+    sop-studio/    SOP Studio React SPA   -- 可视化决策树编辑器
+  registry/        Hono REST API 服务器    -- 认证、限流、SQLite/内存存储
+  specs/           JSON Schema、代码生成、SKILL.md 扩展规范
+  examples/        SDK 用法、MCP 客户端、LangGraph 集成
+  website/         Docusaurus 3 文档站     -- 双语（en + zh-Hans）
 ```
 
-## Tech Stack
+## 技术栈
 
-| Component | Technology |
-|-----------|-----------|
-| Runtime | Bun |
-| HTTP Server | Hono |
-| Type Validation | Zod + zod-to-json-schema |
-| SDK Build | tsup (ESM + CJS + .d.ts) |
+| 组件 | 技术 |
+|------|------|
+| 运行时 | Bun |
+| HTTP 服务器 | Hono |
+| 类型验证 | Zod + zod-to-json-schema |
+| SDK 构建 | tsup（ESM + CJS + .d.ts） |
 | SOP Studio | React 19 + Vite + Tailwind CSS v4 + React Flow |
-| Linter | Biome |
-| Tests | bun test (639 tests) |
-| Protocol | MCP (Model Context Protocol) |
-| Docs | Docusaurus 3 (en + zh-Hans) |
+| 代码检查 | Biome |
+| 测试 | bun test（639 个测试） |
+| 协议 | MCP（模型上下文协议） |
+| 文档 | Docusaurus 3（en + zh-Hans） |
 
-## MCP Tools
+## MCP 工具
 
-| Tool | Description |
-|------|-------------|
-| `kp_search_skill` | Semantic search across SKILL.md registry |
-| `kp_get_skill` | Retrieve full skill content by ID |
-| `kp_contribute_skill` | Submit new skills with auto-validation |
-| `kp_search_knowledge` | Search KnowledgeUnits (traces, patterns, SOPs) |
-| `kp_contribute_knowledge` | Contribute KnowledgeUnits with quality pre-scoring |
-| `kp_validate_unit` | Validate KnowledgeUnit schema compliance |
+| 工具 | 说明 |
+|------|------|
+| `kp_search_skill` | 语义搜索 SKILL.md 注册中心 |
+| `kp_get_skill` | 通过 ID 获取完整技能内容 |
+| `kp_contribute_skill` | 提交新技能并自动验证 |
+| `kp_search_knowledge` | 搜索 KnowledgeUnit（推理链、模式、SOP） |
+| `kp_contribute_knowledge` | 贡献 KnowledgeUnit 并预评分 |
+| `kp_validate_unit` | 验证 KnowledgeUnit 架构合规性 |
 
-## KnowledgeUnit Types
+## KnowledgeUnit 类型
 
 ### ReasoningTrace
 
-Captures an agent's complete problem-solving chain: thoughts, tool calls, observations, and error recovery steps.
+捕获智能体完整的问题解决链：思考、工具调用、观察和错误恢复步骤。
 
 ### ToolCallPattern
 
-Reusable tool orchestration sequences with trigger conditions, performance metrics, and success rates.
+可复用的工具编排序列，包含触发条件、性能指标和成功率。
 
 ### ExpertSOP
 
-Human expert standard operating procedures converted to machine-executable decision trees with conditions, SLAs, and tool suggestions.
+人类专家标准操作流程转换为机器可执行的决策树，包含条件、SLA 和工具建议。
 
-## Knowledge Value Scoring
+## 知识价值评分
 
-All contributed knowledge is scored locally (< 100ms, no external LLM) using a 4-dimension model:
+所有贡献的知识都在本地评分（< 100ms，无需外部 LLM），使用 4 维模型：
 
-| Dimension | Weight | What it measures |
-|-----------|--------|------------------|
-| Complexity | 0.25 | Step type diversity, error recovery, branching |
-| Novelty | 0.35 | Cosine distance from local embedding cache |
-| Tool Diversity | 0.15 | Unique MCP tools relative to step count |
-| Outcome Confidence | 0.25 | Success + confidence score |
+| 维度 | 权重 | 衡量内容 |
+|------|------|----------|
+| 复杂性 | 0.25 | 步骤类型多样性、错误恢复、分支 |
+| 新颖性 | 0.35 | 与本地嵌入缓存的余弦距离 |
+| 工具多样性 | 0.15 | 相对于步骤数的独特 MCP 工具数 |
+| 结果置信度 | 0.25 | 成功率 + 置信度分数 |
 
-## Framework Integrations
+## 框架集成
 
-| Framework | Integration | Priority |
-|-----------|------------|----------|
-| Claude Code | Native SKILL.md | P0 |
-| OpenAI Codex CLI | Native SKILL.md | P0 |
+| 框架 | 集成方式 | 优先级 |
+|------|----------|--------|
+| Claude Code | 原生 SKILL.md | P0 |
+| OpenAI Codex CLI | 原生 SKILL.md | P0 |
 | OpenClaw | TypeScript SDK | P0 |
 | LangGraph | MCP HTTP | P1 |
 | CrewAI | MCP HTTP | P1 |
 | AutoGen | MCP HTTP | P1 |
-| Flowise | TypeScript Plugin | P2 |
+| Flowise | TypeScript 插件 | P2 |
 
-## Development
+## 开发
 
 ```bash
-# Install dependencies
+# 安装依赖
 bun install
 
-# Run all tests
+# 运行所有测试
 bun test --recursive
 
-# Build SDK
+# 构建 SDK
 cd packages/sdk && bun run build
 
-# Start registry
+# 启动注册中心
 bun run registry/src/index.ts
 
-# Start SOP Studio
+# 启动 SOP Studio
 cd packages/sop-studio && npx vite dev
 
-# Build docs
+# 构建文档
 cd website && npm run build
 ```
 
-## Documentation
+## 文档
 
-Full documentation available in English and Simplified Chinese:
+完整文档提供英文和简体中文版本：
 
-- [Getting Started](https://openknowledgepulse.org/docs/getting-started/installation)
-- [Architecture](https://openknowledgepulse.org/docs/architecture/overview)
-- [SDK Reference](https://openknowledgepulse.org/docs/sdk/types)
-- [Registry API](https://openknowledgepulse.org/docs/registry/rest-api)
-- [MCP Server](https://openknowledgepulse.org/docs/mcp-server/overview)
-- [CLI](https://openknowledgepulse.org/docs/cli/commands)
-- [SOP Studio](https://openknowledgepulse.org/docs/sop-studio/getting-started)
-- [Marketplace](https://openknowledgepulse.org/docs/marketplace/overview)
+- [快速入门](https://openknowledgepulse.org/zh-Hans/docs/getting-started/introduction)
+- [架构](https://openknowledgepulse.org/zh-Hans/docs/architecture/overview)
+- [SDK 参考](https://openknowledgepulse.org/zh-Hans/docs/sdk/types)
+- [Registry API](https://openknowledgepulse.org/zh-Hans/docs/registry/api-reference)
+- [MCP 服务器](https://openknowledgepulse.org/zh-Hans/docs/mcp-server/setup)
+- [CLI](https://openknowledgepulse.org/zh-Hans/docs/cli/reference)
+- [SOP Studio](https://openknowledgepulse.org/zh-Hans/docs/sop-studio/getting-started)
+- [知识市场](https://openknowledgepulse.org/zh-Hans/docs/marketplace/overview)
 
-## Contributing
+## 贡献
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. All contributions require:
+请参阅 [CONTRIBUTING.md](CONTRIBUTING.md) 了解贡献指南。所有贡献需要：
 
-1. Tests (`bun test`)
-2. Lint pass (`biome check`)
-3. SDK build pass (`cd packages/sdk && bun run build`)
+1. 通过测试（`bun test`）
+2. 通过代码检查（`biome check`）
+3. SDK 构建通过（`cd packages/sdk && bun run build`）
 
-## Roadmap
+## 路线图
 
-| Phase | Status | Focus |
-|-------|--------|-------|
-| Phase 1 | Done | SKILL.md Registry + SDK + MCP + CLI |
-| Phase 2 | Done | Knowledge Capture + Scoring + Reputation |
-| Phase 3 | Done | Expert SOP Studio + Marketplace |
-| Phase 4 | Done | UI Polish + Industry Standardization |
+| 阶段 | 状态 | 重点 |
+|------|------|------|
+| 第一阶段 | 已完成 | SKILL.md 注册中心 + SDK + MCP + CLI |
+| 第二阶段 | 已完成 | 知识捕获 + 评分 + 声誉 |
+| 第三阶段 | 已完成 | 专家 SOP Studio + 市场 |
+| 第四阶段 | 已完成 | UI 打磨 + 行业标准化 |
 
-## License
+## 许可证
 
 [Apache 2.0](LICENSE)
 
@@ -340,6 +340,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. All contributions require
 
 <div align="center">
 
-*Share what you learn.*
+*分享你的所学。*
 
 </div>
