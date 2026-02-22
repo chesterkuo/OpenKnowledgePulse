@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { Checkpoint, SkillCandidate } from "./types.js";
 
 /**
@@ -47,7 +47,7 @@ export class CheckpointManager {
   save(checkpoint: Checkpoint): void {
     this.checkpoint = checkpoint;
     this.checkpoint.last_updated = new Date().toISOString();
-    Bun.write(this.filePath, JSON.stringify(this.checkpoint, null, 2));
+    writeFileSync(this.filePath, JSON.stringify(this.checkpoint, null, 2));
   }
 
   /**

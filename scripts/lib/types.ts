@@ -31,6 +31,7 @@ export interface SkillCandidate {
   reason?: string;
   skillId?: string;
   qualityScore?: number;
+  domain?: string;
 }
 
 export interface ImportStats {

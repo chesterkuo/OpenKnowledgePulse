@@ -66,7 +66,7 @@ export class Reporter {
         key: c.key,
         skillId: c.skillId,
         qualityScore: c.qualityScore,
-        domain: undefined as string | undefined,
+        domain: c.domain ?? "general",
       }));
 
     const report = {
@@ -111,11 +111,7 @@ export class Reporter {
     for (const candidate of Object.values(candidates)) {
       if (candidate.status !== "imported") continue;
 
-      // Domain is stored in reason field as "domain:xxx" or we infer from key
-      // Since SkillCandidate doesn't have a domain field, we look for it in
-      // the reason or default to "general". The orchestrator is expected to
-      // store domain info; here we parse what's available.
-      const domain = extractDomain(candidate);
+      const domain = candidate.domain ?? "general";
       domainCounts[domain] = (domainCounts[domain] || 0) + 1;
       total++;
     }
@@ -127,19 +123,6 @@ export class Reporter {
       .slice(0, topN)
       .map(([domain, count]) => [domain, Math.round((count / total) * 100)]);
   }
-}
-
-/**
- * Extract domain from a SkillCandidate.
- *
- * The orchestrator stores domain as `reason` prefixed with "domain:" on
- * imported candidates, or we fall back to "general".
- */
-function extractDomain(candidate: SkillCandidate): string {
-  if (candidate.reason && candidate.reason.startsWith("domain:")) {
-    return candidate.reason.slice(7);
-  }
-  return "general";
 }
 
 // ------------------------------------------------------------------
