@@ -30,6 +30,7 @@ import { classifyDomain } from "./lib/domain-classifier.js";
 import { enrichSkillMd } from "./lib/enricher.js";
 import { CheckpointManager } from "./lib/checkpoint.js";
 import { Reporter } from "./lib/reporter.js";
+import { synthesizeFrontmatter } from "./lib/frontmatter-synthesizer.js";
 import type { ImportConfig, Checkpoint, ImportStats, SkillCandidate } from "./lib/types.js";
 // SDK imports (relative paths since scripts/ is not a workspace member):
 import {
@@ -213,6 +214,16 @@ async function processCandidate(
       }
       throw err;
     }
+
+    // (c2) Synthesize frontmatter if missing
+    const synthesized = synthesizeFrontmatter(content, repoFullName, repoMeta.topics);
+    if (synthesized === null) {
+      log(config, `[skip] ${key}: content too minimal to synthesize frontmatter`);
+      checkpointMgr.updateCandidate(key, { status: "skipped", reason: "content too minimal" });
+      stats.skipped_validation++;
+      return;
+    }
+    content = synthesized;
 
     // (d) validateSkillMd(content) — skip if invalid
     const validation = validateSkillMd(content);

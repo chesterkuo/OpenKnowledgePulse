@@ -3,6 +3,7 @@ import { computeQualityScore } from "./lib/quality-scorer.js";
 import { classifyDomain } from "./lib/domain-classifier.js";
 import { enrichSkillMd } from "./lib/enricher.js";
 import { RateLimiter } from "./lib/rate-limiter.js";
+import { synthesizeFrontmatter } from "./lib/frontmatter-synthesizer.js";
 import { parseSkillMd } from "../packages/sdk/src/skill-md.js";
 import type { RepoMetadata } from "./lib/types.js";
 
@@ -253,5 +254,127 @@ describe("RateLimiter", () => {
 
     // Clean up: we don't want the test to hang, so we won't await the full delay.
     // The test has verified the limiter blocks when over limit.
+  });
+});
+
+// ── synthesizeFrontmatter ───────────────────────────────────────────────────
+
+describe("synthesizeFrontmatter", () => {
+  test("already has frontmatter — returns original content unchanged", () => {
+    const content = `---
+name: Existing Skill
+description: Already has frontmatter
+version: "1.0.0"
+---
+
+## Instructions
+
+Do the thing.`;
+    const result = synthesizeFrontmatter(content, "owner/repo", ["ai"]);
+    expect(result).toBe(content);
+  });
+
+  test("plain markdown with H1 heading — synthesizes frontmatter with name from heading", () => {
+    const content = `# My Awesome Skill
+
+This is a description paragraph for the skill.
+
+## Instructions
+
+Follow these steps.`;
+    const result = synthesizeFrontmatter(content, "owner/repo", []);
+    expect(result).not.toBeNull();
+    expect(result).toContain('name: "My Awesome Skill"');
+    expect(result).toContain("---");
+    // Original content should be preserved after frontmatter
+    expect(result).toContain("# My Awesome Skill");
+    expect(result).toContain("## Instructions");
+  });
+
+  test("plain markdown with only H2 headings — uses first H2 as name", () => {
+    const content = `## Getting Started
+
+This guide helps you get started quickly.
+
+## Steps
+
+Step one, step two.`;
+    const result = synthesizeFrontmatter(content, "owner/repo", []);
+    expect(result).not.toBeNull();
+    expect(result).toContain('name: "Getting Started"');
+  });
+
+  test("no headings at all — derives name from repo name", () => {
+    const content = `This is a plain document without any headings but has enough content to be synthesized into a skill document.`;
+    const result = synthesizeFrontmatter(content, "owner/my-cool-tool", []);
+    expect(result).not.toBeNull();
+    expect(result).toContain('name: "My Cool Tool"');
+  });
+
+  test("extracts first paragraph as description (truncated to 200 chars if longer)", () => {
+    const longParagraph = "A".repeat(250);
+    const content = `# Test Skill
+
+${longParagraph}
+
+## More content`;
+    const result = synthesizeFrontmatter(content, "owner/repo", []);
+    expect(result).not.toBeNull();
+    // The description should be truncated — it won't contain the full 250-char string
+    // Parse out the description line
+    const descMatch = result!.match(/description: "([^"]*)"/);
+    expect(descMatch).not.toBeNull();
+    expect(descMatch![1]!.length).toBeLessThanOrEqual(210); // 200 + "..."
+  });
+
+  test("includes repo topics as tags", () => {
+    const content = `# Skill With Tags
+
+A skill that should receive tags from repo topics.
+
+## Instructions
+
+Do something.`;
+    const result = synthesizeFrontmatter(content, "owner/repo", ["AI", "Machine-Learning", "ai"]);
+    expect(result).not.toBeNull();
+    expect(result).toContain("tags:");
+    expect(result).toContain("  - ai");
+    expect(result).toContain("  - machine-learning");
+    // "ai" should appear only once (deduped after lowercasing)
+    const aiMatches = result!.match(/  - ai$/gm);
+    expect(aiMatches).not.toBeNull();
+    expect(aiMatches!.length).toBe(1);
+  });
+
+  test("minimal content (empty or <20 chars) — returns null", () => {
+    expect(synthesizeFrontmatter("", "owner/repo", [])).toBeNull();
+    expect(synthesizeFrontmatter("too short", "owner/repo", [])).toBeNull();
+    expect(synthesizeFrontmatter("   ", "owner/repo", [])).toBeNull();
+  });
+
+  test("synthesized content passes parseSkillMd() — round-trip validation", () => {
+    const content = `# Round Trip Skill
+
+This skill tests that synthesized frontmatter produces valid SKILL.md format.
+
+## Instructions
+
+Follow the instructions carefully.
+
+## Notes
+
+Additional notes here.`;
+    const result = synthesizeFrontmatter(content, "testorg/test-repo", ["typescript", "testing"]);
+    expect(result).not.toBeNull();
+
+    // Should not throw
+    const parsed = parseSkillMd(result!);
+    expect(parsed.frontmatter.name).toBe("Round Trip Skill");
+    expect(parsed.frontmatter.description).toContain("synthesized frontmatter");
+    expect(parsed.frontmatter.author).toBe("testorg");
+    expect(parsed.frontmatter.tags).toContain("typescript");
+    expect(parsed.frontmatter.tags).toContain("testing");
+    expect(parsed.body).toContain("## Instructions");
+    expect(parsed.body).toContain("## Notes");
   });
 });
