@@ -118,6 +118,14 @@ export interface ReputationStore {
   recordVote(vote: ValidationVote): Promise<void>;
   getVotes(): Promise<ValidationVote[]>;
   canVote(agentId: string): Promise<boolean>;
+  getBadges(agentId: string): Promise<DomainBadge[]>;
+  grantBadge(badge: DomainBadge): Promise<void>;
+  hasBadge(agentId: string, domain: string, level: BadgeLevel): Promise<boolean>;
+  createProposal(proposal: CertificationProposal): Promise<CertificationProposal>;
+  getProposal(proposalId: string): Promise<CertificationProposal | undefined>;
+  getOpenProposals(): Promise<CertificationProposal[]>;
+  addVoteToProposal(proposalId: string, vote: CertificationProposal["votes"][0]): Promise<void>;
+  updateProposalStatus(proposalId: string, status: CertificationProposal["status"]): Promise<void>;
 }
 
 export interface ApiKeyStore {
