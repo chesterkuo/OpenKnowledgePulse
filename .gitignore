@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Docusaurus
+website/.docusaurus/
+website/build/
+
+# Bun
+bun.lock
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Server config
+nginx/
+
+# Generated
+specs/knowledge-unit-schema.json
