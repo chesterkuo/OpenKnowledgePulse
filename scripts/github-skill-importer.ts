@@ -476,6 +476,13 @@ async function main(): Promise<void> {
 
     try {
       for await (const result of github.discoverSkillFiles()) {
+        // Filter: only accept files named exactly SKILL.md (case-insensitive)
+        // GitHub's filename: search does partial matching, so "natural-skill.md" etc. slip through
+        const basename = result.filePath.split("/").pop() ?? "";
+        if (basename.toLowerCase() !== "skill.md") {
+          continue;
+        }
+
         const key = `${result.fullName}:${result.filePath}`;
 
         // Skip if already in checkpoint (from a previous partial run)

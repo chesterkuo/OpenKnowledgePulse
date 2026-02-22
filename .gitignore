@@ -48,3 +48,8 @@ marketing/
 # GitHub SKILL.md importer
 scripts/.github-import-checkpoint.json
 scripts/.github-import-report-*.json
+
+# SQLite (local dev)
+knowledgepulse.db
+knowledgepulse.db-shm
+knowledgepulse.db-wal
