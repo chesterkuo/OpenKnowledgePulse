@@ -13,6 +13,11 @@ import { reputationRoutes } from "./routes/reputation.js";
 import { skillRoutes } from "./routes/skills.js";
 import { marketplaceRoutes } from "./routes/marketplace.js";
 import { sopRoutes } from "./routes/sop.js";
+import {
+  wsCollaborateRoutes,
+  collaborationManager,
+  createWebSocketHandler,
+} from "./routes/ws-collaborate.js";
 import { createMemoryStore } from "./store/memory/index.js";
 
 const config = loadConfig();
@@ -38,13 +43,17 @@ app.route("/v1/reputation", reputationRoutes(stores));
 app.route("/v1/export", exportRoutes(stores));
 app.route("/v1/auth", authRoutes(stores));
 app.route("/v1/sop", sopRoutes(stores));
+app.route("/v1/sop", wsCollaborateRoutes(collaborationManager));
 app.route("/v1/marketplace", marketplaceRoutes(stores));
 
 console.log(`KnowledgePulse Registry running on port ${config.port}`);
 
+const websocketHandler = createWebSocketHandler(collaborationManager);
+
 export default {
   port: config.port,
   fetch: app.fetch,
+  websocket: websocketHandler,
 };
 
-export { app, stores };
+export { app, stores, collaborationManager, websocketHandler };
