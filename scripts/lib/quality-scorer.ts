@@ -22,7 +22,7 @@ const AI_KEYWORDS = new Set([
 ]);
 
 /** Permissive licenses (score 1.0) */
-const PERMISSIVE_LICENSES = new Set(["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD"]);
+const PERMISSIVE_LICENSES = new Set(["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause"]);
 
 /** Copyleft licenses (score 0.7) */
 const COPYLEFT_LICENSES = new Set(["GPL-2.0", "GPL-3.0", "LGPL-2.1", "LGPL-3.0", "MPL-2.0", "AGPL-3.0"]);

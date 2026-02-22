@@ -116,6 +116,12 @@ export class GitHubClient {
           }>;
         };
 
+        if (data.incomplete_results) {
+          console.warn(
+            `[search] Incomplete results for query="${query}" page=${page} (${data.total_count} total)`,
+          );
+        }
+
         if (data.items.length === 0) {
           // No more results for this size range
           break;
