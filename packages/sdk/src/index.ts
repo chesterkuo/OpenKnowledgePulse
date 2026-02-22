@@ -48,6 +48,9 @@ export {
   sha256,
   sanitizeSkillMd,
   type SanitizeResult,
+  classifyInjectionRisk,
+  type InjectionAssessment,
+  type ClassifierOptions,
 } from "./utils/index.js";
 
 // Errors

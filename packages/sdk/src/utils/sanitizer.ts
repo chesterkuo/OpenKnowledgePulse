@@ -1,4 +1,5 @@
 import { SanitizationError } from "../errors.js";
+import { classifyInjectionRisk, type InjectionAssessment } from "./injection-classifier.js";
 
 // Invisible Unicode characters to reject (PRD Section 3.5.1 T-2)
 const INVISIBLE_CHARS =
@@ -10,19 +11,10 @@ const HTML_TAG = /<\/?[a-zA-Z][^>]*>/g;
 // HTML comment pattern
 const HTML_COMMENT = /<!--[\s\S]*?-->/g;
 
-// Common prompt injection patterns
-const INJECTION_PATTERNS = [
-  /ignore\s+(all\s+)?previous\s+instructions/i,
-  /you\s+are\s+now\s+/i,
-  /system\s*:\s*/i,
-  /\[INST\]/i,
-  /<\|im_start\|>/i,
-  /<<SYS>>/i,
-];
-
 export interface SanitizeResult {
   content: string;
   warnings: string[];
+  injectionAssessment?: InjectionAssessment;
 }
 
 export function sanitizeSkillMd(content: string): SanitizeResult {
@@ -51,14 +43,19 @@ export function sanitizeSkillMd(content: string): SanitizeResult {
   // Normalize Unicode to NFC
   sanitized = sanitized.normalize("NFC");
 
-  // Check for prompt injection patterns
-  for (const pattern of INJECTION_PATTERNS) {
-    if (pattern.test(sanitized)) {
-      throw new SanitizationError(
-        `Content contains suspected prompt injection pattern: ${pattern.source}`,
-      );
-    }
+  // Run injection classifier (scoring model) — replaces the old hard-coded
+  // INJECTION_PATTERNS array with a richer, scored pattern set.
+  const assessment = classifyInjectionRisk(sanitized);
+  if (assessment.verdict === "rejected") {
+    throw new SanitizationError(
+      `Content flagged as potential prompt injection (risk score: ${assessment.score.toFixed(2)}). Matched patterns: ${assessment.patterns.join(", ")}`,
+    );
+  }
+  if (assessment.verdict === "suspicious") {
+    warnings.push(
+      `Injection risk assessment: suspicious (score: ${assessment.score.toFixed(2)}). Patterns: ${assessment.patterns.join(", ")}`,
+    );
   }
 
-  return { content: sanitized, warnings };
+  return { content: sanitized, warnings, injectionAssessment: assessment };
 }
