@@ -18,10 +18,10 @@ import {
   createWebSocketHandler,
   wsCollaborateRoutes,
 } from "./routes/ws-collaborate.js";
-import { createMemoryStore } from "./store/memory/index.js";
+import { createStore } from "./store/factory.js";
 
 const config = loadConfig();
-const stores = createMemoryStore();
+const stores = await createStore();
 
 const app = new Hono();
 
