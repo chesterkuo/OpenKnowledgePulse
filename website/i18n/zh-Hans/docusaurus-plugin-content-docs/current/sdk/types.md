@@ -229,6 +229,95 @@ interface SkillMdKpExtension {
 }
 ```
 
+## SOP 导入类型
+
+SDK 提供了用于从文档导入 SOP 的类型和函数。这些类型由 SOP 工作室的文档导入功能使用，也可以独立使用。
+
+### LLMConfig
+
+文档提取过程中使用的 LLM 提供商配置：
+
+```ts
+interface LLMConfig {
+  provider: "openai" | "anthropic" | "ollama";
+  apiKey: string;              // 你的提供商 API 密钥
+  model: string;               // 模型标识符（例如 "gpt-4o"）
+  baseUrl?: string;            // 自定义端点（Ollama 必填）
+  temperature?: number;        // 0.0 到 1.0（默认：0.2）
+}
+```
+
+### ParseResult
+
+`parseDocx` 和 `parsePdf` 解析文档后返回的结果：
+
+```ts
+interface ParseResult {
+  text: string;                // 完整的纯文本内容
+  sections: Array<{
+    heading: string;
+    content: string;
+    level: number;             // 标题级别（1-6）
+  }>;
+  tables: Array<{
+    headers: string[];
+    rows: string[][];
+  }>;
+  metadata: {
+    title?: string;
+    author?: string;
+    pageCount?: number;
+  };
+}
+```
+
+### ExtractionResult
+
+`extractDecisionTree` 经过 LLM 提取后返回的结果：
+
+```ts
+interface ExtractionResult {
+  name: string;                // 检测到的 SOP 名称
+  domain: string;              // 检测到的领域
+  description: string;         // 生成的描述
+  decision_tree: Array<{       // 兼容 ExpertSOP 的决策树
+    step: string;
+    instruction: string;
+    criteria?: Record<string, string>;
+    conditions?: Record<string, {
+      action: string;
+      sla_min?: number;
+    }>;
+    tool_suggestions?: Array<{
+      name: string;
+      when: string;
+    }>;
+  }>;
+  confidence: number;          // 0.0 到 1.0
+  warnings: string[];          // 提取问题或歧义
+}
+```
+
+### 文档解析函数
+
+```ts
+import { parseDocx, parsePdf, extractDecisionTree } from "@knowledgepulse/sdk";
+
+// 解析 DOCX 文件
+const docxResult: ParseResult = await parseDocx(buffer);
+
+// 解析 PDF 文件
+const pdfResult: ParseResult = await parsePdf(buffer);
+
+// 使用 LLM 提取决策树
+const extraction: ExtractionResult = await extractDecisionTree(pdfResult, {
+  provider: "openai",
+  apiKey: "sk-...",
+  model: "gpt-4o",
+  temperature: 0.2,
+});
+```
+
 ## Zod 模式
 
 上述每种类型都有对应的 Zod 模式用于运行时验证。这些模式从 `@knowledgepulse/sdk` 导出，可以直接与 `safeParse` 或 `parse` 一起使用。
