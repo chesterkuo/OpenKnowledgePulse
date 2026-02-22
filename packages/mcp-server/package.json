@@ -1,17 +1,44 @@
 {
   "name": "@knowledgepulse/mcp",
-  "version": "1.0.0",
-  "description": "KnowledgePulse MCP Server — kp_* tools for AI agents",
+  "version": "0.1.0",
+  "description": "KnowledgePulse MCP Server — 6 tools for AI agent knowledge sharing",
   "type": "module",
+  "main": "./src/index.ts",
+  "files": ["src", "package.json"],
   "scripts": {
-    "dev": "bun run --watch src/index.ts",
-    "build": "echo 'MCP server runs directly via Bun'"
+    "start": "bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts"
   },
+  "keywords": [
+    "knowledgepulse",
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "agent",
+    "knowledge-sharing"
+  ],
+  "homepage": "https://openknowledgepulse.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chesterkuo/OpenKnowledgePulse",
+    "directory": "packages/mcp-server"
+  },
+  "bugs": {
+    "url": "https://github.com/chesterkuo/OpenKnowledgePulse/issues"
+  },
+  "author": "Summer Lab",
   "dependencies": {
-    "@knowledgepulse/sdk": "workspace:*",
+    "@knowledgepulse/sdk": "^0.1.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "hono": "^4.4.0",
+    "ioredis": "^5.9.3",
     "zod": "^3.23.0"
   },
-  "license": "Apache-2.0"
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  }
 }
