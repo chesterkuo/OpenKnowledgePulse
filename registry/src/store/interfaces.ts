@@ -81,6 +81,10 @@ export interface ApiKeyRecord {
   revoked_at?: string;
 }
 
+// ── Quarantine Status ─────────────────────────────────
+
+export type QuarantineStatus = "flagged" | "quarantined" | "cleared" | null;
+
 // ── Store Interfaces ───────────────────────────────────
 
 export interface SkillStore {
@@ -108,6 +112,8 @@ export interface KnowledgeStore {
   }): Promise<PaginatedResult<StoredKnowledgeUnit>>;
   delete(id: string): Promise<boolean>;
   getByAgentId(agentId: string): Promise<StoredKnowledgeUnit[]>;
+  setQuarantineStatus?(id: string, status: QuarantineStatus): Promise<void>;
+  getQuarantineStatus?(id: string): Promise<QuarantineStatus>;
 }
 
 export interface ReputationStore {
@@ -292,6 +298,44 @@ export interface ProviderStore {
   delete(id: string): Promise<boolean>;
 }
 
+// ── Security Reports ─────────────────────────────────
+
+export interface SecurityReport {
+  id: string;
+  unit_id: string;
+  reporter_id: string;
+  reason: string;
+  created_at: string;
+}
+
+export interface SecurityReportStore {
+  report(unitId: string, reporterId: string, reason: string): Promise<SecurityReport>;
+  getReportsForUnit(unitId: string): Promise<SecurityReport[]>;
+  getReportCount(unitId: string): Promise<number>;
+  getAllReported(): Promise<Array<{ unit_id: string; count: number; status: QuarantineStatus }>>;
+  resolve(unitId: string, verdict: "cleared" | "removed"): Promise<void>;
+}
+
+// ── Subscriptions ────────────────────────────────────
+
+export interface SubscriptionRecord {
+  id: string;
+  agent_id: string;
+  domain: string;
+  credits_per_month: number;
+  started_at: string;
+  expires_at: string;
+  status: "active" | "expired" | "cancelled";
+}
+
+export interface SubscriptionStore {
+  subscribe(agentId: string, domain: string, creditsPerMonth: number): Promise<SubscriptionRecord>;
+  unsubscribe(id: string): Promise<boolean>;
+  getActive(agentId: string): Promise<SubscriptionRecord[]>;
+  hasAccess(agentId: string, domain: string): Promise<boolean>;
+  getById(id: string): Promise<SubscriptionRecord | undefined>;
+}
+
 export interface AllStores {
   skills: SkillStore;
   knowledge: KnowledgeStore;
@@ -303,4 +347,6 @@ export interface AllStores {
   rateLimit: RateLimitStore;
   auditLog: AuditLogStore;
   providers: ProviderStore;
+  securityReports: SecurityReportStore;
+  subscriptions: SubscriptionStore;
 }

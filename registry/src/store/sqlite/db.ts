@@ -242,5 +242,47 @@ export function createDatabase(path = ":memory:"): Database {
     )
   `);
 
+  // ── Security Reports table ──────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS security_reports (
+      id TEXT PRIMARY KEY,
+      unit_id TEXT NOT NULL,
+      reporter_id TEXT NOT NULL,
+      reason TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL,
+      UNIQUE(unit_id, reporter_id)
+    )
+  `);
+
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_sr_unit ON security_reports (unit_id)
+  `);
+
+  // ── Subscriptions table ───────────────────────────────
+  db.run(`
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id TEXT PRIMARY KEY,
+      agent_id TEXT NOT NULL,
+      domain TEXT NOT NULL,
+      credits_per_month REAL NOT NULL,
+      started_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active',
+      UNIQUE(agent_id, domain)
+    )
+  `);
+
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_sub_agent ON subscriptions (agent_id)
+  `);
+
+  // ── Quarantine status on knowledge_units ────────────────
+  // SQLite doesn't have ADD COLUMN IF NOT EXISTS, so we use a try/catch approach
+  try {
+    db.run(`ALTER TABLE knowledge_units ADD COLUMN quarantine_status TEXT`);
+  } catch {
+    // Column already exists — ignore
+  }
+
   return db;
 }

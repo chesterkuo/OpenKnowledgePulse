@@ -10,6 +10,8 @@ import { PgMarketplaceStore } from "./marketplace-store.js";
 import { PgRateLimitStore } from "./rate-limit-store.js";
 import { PgAuditLogStore } from "./audit-log-store.js";
 import { PgProviderStore } from "./provider-store.js";
+import { PgSecurityReportStore } from "./security-report-store.js";
+import { PgSubscriptionStore } from "./subscription-store.js";
 
 export async function createPostgresStore(databaseUrl: string): Promise<AllStores> {
   const pool = createPool(databaseUrl);
@@ -25,6 +27,8 @@ export async function createPostgresStore(databaseUrl: string): Promise<AllStore
     rateLimit: new PgRateLimitStore(pool),
     auditLog: new PgAuditLogStore(pool),
     providers: new PgProviderStore(pool),
+    securityReports: new PgSecurityReportStore(pool),
+    subscriptions: new PgSubscriptionStore(pool),
   };
 }
 
@@ -39,4 +43,6 @@ export { PgMarketplaceStore } from "./marketplace-store.js";
 export { PgRateLimitStore } from "./rate-limit-store.js";
 export { PgAuditLogStore } from "./audit-log-store.js";
 export { PgProviderStore } from "./provider-store.js";
+export { PgSecurityReportStore } from "./security-report-store.js";
+export { PgSubscriptionStore } from "./subscription-store.js";
 export { createPool, runMigrations } from "./db.js";

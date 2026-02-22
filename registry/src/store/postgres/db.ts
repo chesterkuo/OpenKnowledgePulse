@@ -232,6 +232,33 @@ CREATE TABLE IF NOT EXISTS providers (
   registered_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- 18. security_reports
+CREATE TABLE IF NOT EXISTS security_reports (
+  id          TEXT PRIMARY KEY,
+  unit_id     TEXT NOT NULL,
+  reporter_id TEXT NOT NULL,
+  reason      TEXT NOT NULL DEFAULT '',
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(unit_id, reporter_id)
+);
+CREATE INDEX IF NOT EXISTS idx_sr_unit ON security_reports (unit_id);
+
+-- quarantine_status on knowledge_units
+ALTER TABLE knowledge_units ADD COLUMN IF NOT EXISTS quarantine_status TEXT;
+
+-- 19. subscriptions
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id                TEXT PRIMARY KEY,
+  agent_id          TEXT NOT NULL,
+  domain            TEXT NOT NULL,
+  credits_per_month REAL NOT NULL,
+  started_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at        TIMESTAMPTZ NOT NULL,
+  status            TEXT NOT NULL DEFAULT 'active',
+  UNIQUE(agent_id, domain)
+);
+CREATE INDEX IF NOT EXISTS idx_sub_agent ON subscriptions (agent_id);
+
 -- ── Full-Text Search ──────────────────────────────────
 
 -- Skills: tsvector column + GIN index + trigger

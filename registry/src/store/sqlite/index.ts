@@ -8,8 +8,10 @@ import { SqliteMarketplaceStore } from "./marketplace-store.js";
 import { SqliteProviderStore } from "./provider-store.js";
 import { SqliteRateLimitStore } from "./rate-limit-store.js";
 import { SqliteReputationStore } from "./reputation-store.js";
+import { SqliteSecurityReportStore } from "./security-report-store.js";
 import { SqliteSkillStore } from "./skill-store.js";
 import { SqliteSopStore } from "./sop-store.js";
+import { SqliteSubscriptionStore } from "./subscription-store.js";
 
 /**
  * Create all stores backed by a single SQLite database.
@@ -32,6 +34,8 @@ export function createSqliteStore(dbPath = ":memory:"): AllStores {
     // Memory fallback for audit log (SQLite implementation deferred)
     auditLog: new MemoryAuditLogStore(),
     providers: new SqliteProviderStore(db),
+    securityReports: new SqliteSecurityReportStore(db),
+    subscriptions: new SqliteSubscriptionStore(db),
   };
 }
 
@@ -45,3 +49,5 @@ export { SqliteSopStore } from "./sop-store.js";
 export { SqliteCreditStore } from "./credit-store.js";
 export { SqliteMarketplaceStore } from "./marketplace-store.js";
 export { SqliteProviderStore } from "./provider-store.js";
+export { SqliteSecurityReportStore } from "./security-report-store.js";
+export { SqliteSubscriptionStore } from "./subscription-store.js";
