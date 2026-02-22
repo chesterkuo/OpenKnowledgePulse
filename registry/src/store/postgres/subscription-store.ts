@@ -38,7 +38,7 @@ export class PgSubscriptionStore implements SubscriptionStore {
 
   async getActive(agentId: string): Promise<SubscriptionRecord[]> {
     const { rows } = await this.pool.query(
-      "SELECT * FROM subscriptions WHERE agent_id = $1 AND status = 'active'",
+      "SELECT * FROM subscriptions WHERE agent_id = $1 AND status = 'active' AND expires_at > NOW()",
       [agentId],
     );
     return rows.map((row: Record<string, unknown>) => this.rowToRecord(row));

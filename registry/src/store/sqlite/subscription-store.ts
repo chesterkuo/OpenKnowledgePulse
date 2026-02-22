@@ -50,11 +50,12 @@ export class SqliteSubscriptionStore implements SubscriptionStore {
   }
 
   async getActive(agentId: string): Promise<SubscriptionRecord[]> {
+    const now = new Date().toISOString();
     const rows = this.db
       .query(
-        "SELECT * FROM subscriptions WHERE agent_id = $agent_id AND status = 'active'",
+        "SELECT * FROM subscriptions WHERE agent_id = $agent_id AND status = 'active' AND expires_at > $now",
       )
-      .all({ $agent_id: agentId }) as Record<string, unknown>[];
+      .all({ $agent_id: agentId, $now: now }) as Record<string, unknown>[];
 
     return rows.map((row) => this.rowToRecord(row));
   }

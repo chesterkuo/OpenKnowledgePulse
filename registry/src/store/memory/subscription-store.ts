@@ -25,6 +25,8 @@ export class MemorySubscriptionStore implements SubscriptionStore {
         existing.expires_at = expiresAt.toISOString();
         return existing;
       }
+      // Remove the old cancelled/expired record before inserting a new one
+      this.byId.delete(existingId);
     }
 
     const record: SubscriptionRecord = {
@@ -51,9 +53,10 @@ export class MemorySubscriptionStore implements SubscriptionStore {
   }
 
   async getActive(agentId: string): Promise<SubscriptionRecord[]> {
+    const now = new Date().toISOString();
     const results: SubscriptionRecord[] = [];
     for (const record of this.byId.values()) {
-      if (record.agent_id === agentId && record.status === "active") {
+      if (record.agent_id === agentId && record.status === "active" && record.expires_at > now) {
         results.push(record);
       }
     }
