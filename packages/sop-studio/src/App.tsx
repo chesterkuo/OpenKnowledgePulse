@@ -1,17 +1,9 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Editor from "./pages/Editor";
-
-function Placeholder({ name }: { name: string }) {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">{name}</h2>
-        <p className="text-gray-500">Coming soon</p>
-      </div>
-    </div>
-  );
-}
+import Import from "./pages/Import";
+import TestSandbox from "./pages/TestSandbox";
+import Settings from "./pages/Settings";
 
 export default function App() {
   return (
@@ -42,9 +34,9 @@ export default function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/editor/new" element={<Editor />} />
           <Route path="/editor/:id" element={<Editor />} />
-          <Route path="/import" element={<Placeholder name="Import" />} />
-          <Route path="/test/:id" element={<Placeholder name="Test Sandbox" />} />
-          <Route path="/settings" element={<Placeholder name="Settings" />} />
+          <Route path="/import" element={<Import />} />
+          <Route path="/test/:id" element={<TestSandbox />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>
     </div>
