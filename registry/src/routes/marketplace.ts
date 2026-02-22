@@ -111,6 +111,21 @@ export function marketplaceRoutes(stores: AllStores) {
       });
     }
 
+    // Subscription-tier listings require active subscription
+    if (listing.access_model === "subscription") {
+      const hasAccess = await stores.subscriptions.hasAccess(auth.agentId!, listing.domain);
+      if (hasAccess) {
+        // Subscription covers this — record access but no charge
+        await stores.marketplace.recordPurchase(id, auth.agentId!);
+        return c.json({ purchased: true, credits_spent: 0, via_subscription: true });
+      }
+      return c.json({
+        error: "Subscription required",
+        domain: listing.domain,
+        message: "Subscribe to this domain via POST /v1/marketplace/subscribe",
+      }, 402);
+    }
+
     // Deduct credits from buyer
     const deducted = await stores.credits.deductCredits(
       auth.agentId!,
@@ -247,6 +262,48 @@ export function marketplaceRoutes(stores: AllStores) {
       reason,
       new_balance: balance,
     });
+  });
+
+  // POST /v1/marketplace/subscribe — Create domain subscription
+  app.post("/subscribe", async (c) => {
+    const auth: AuthContext = c.get("auth");
+    if (!auth.authenticated) return c.json({ error: "Authentication required" }, 401);
+
+    const { domain, credits_per_month } = await c.req.json();
+    if (!domain) return c.json({ error: "domain is required" }, 400);
+
+    const price = credits_per_month ?? Number(process.env.KP_SUBSCRIPTION_DEFAULT_CREDITS ?? 50);
+
+    // Deduct first month
+    const deducted = await stores.credits.deductCredits(
+      auth.agentId!, price, `Subscription: ${domain} (first month)`
+    );
+    if (!deducted) {
+      const balance = await stores.credits.getBalance(auth.agentId!);
+      return c.json({ error: "Insufficient credits", balance, required: price }, 402);
+    }
+
+    const sub = await stores.subscriptions.subscribe(auth.agentId!, domain, price);
+    return c.json({ data: sub }, 201);
+  });
+
+  // DELETE /v1/marketplace/subscribe/:id — Cancel subscription
+  app.delete("/subscribe/:id", async (c) => {
+    const auth: AuthContext = c.get("auth");
+    if (!auth.authenticated) return c.json({ error: "Authentication required" }, 401);
+
+    const cancelled = await stores.subscriptions.unsubscribe(c.req.param("id"));
+    if (!cancelled) return c.json({ error: "Subscription not found" }, 404);
+    return c.json({ cancelled: true });
+  });
+
+  // GET /v1/marketplace/subscriptions — List active subscriptions
+  app.get("/subscriptions", async (c) => {
+    const auth: AuthContext = c.get("auth");
+    if (!auth.authenticated) return c.json({ error: "Authentication required" }, 401);
+
+    const subs = await stores.subscriptions.getActive(auth.agentId!);
+    return c.json({ data: subs });
   });
 
   return app;

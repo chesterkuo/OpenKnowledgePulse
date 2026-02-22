@@ -660,4 +660,130 @@ describe("Marketplace Routes", () => {
       expect(body.new_balance).toBe(500);
     });
   });
+
+  // ── Subscription endpoints ────────────────────────────
+
+  describe("Subscription endpoints", () => {
+    test("POST /v1/marketplace/subscribe creates a subscription", async () => {
+      // Seed credits first
+      await stores.credits.addCredits("agent-1", 200, "seed");
+      const res = await app.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: "devops", credits_per_month: 50 }),
+      });
+      expect(res.status).toBe(201);
+      const body = await res.json();
+      expect(body.data.domain).toBe("devops");
+      expect(body.data.status).toBe("active");
+    });
+
+    test("POST /v1/marketplace/subscribe returns 402 if insufficient credits", async () => {
+      // No credits seeded
+      const res = await app.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: "devops" }),
+      });
+      expect(res.status).toBe(402);
+    });
+
+    test("POST /v1/marketplace/subscribe returns 400 if domain missing", async () => {
+      const res = await app.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      expect(res.status).toBe(400);
+    });
+
+    test("POST /v1/marketplace/subscribe requires auth", async () => {
+      const unauthApp = createUnauthApp(stores);
+      const res = await unauthApp.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: "devops" }),
+      });
+      expect(res.status).toBe(401);
+    });
+
+    test("DELETE /v1/marketplace/subscribe/:id cancels subscription", async () => {
+      await stores.credits.addCredits("agent-1", 200, "seed");
+      const subRes = await app.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: "devops", credits_per_month: 50 }),
+      });
+      const sub = await subRes.json();
+
+      const delRes = await app.request(`/v1/marketplace/subscribe/${sub.data.id}`, {
+        method: "DELETE",
+      });
+      expect(delRes.status).toBe(200);
+      const delBody = await delRes.json();
+      expect(delBody.cancelled).toBe(true);
+    });
+
+    test("DELETE /v1/marketplace/subscribe/:id returns 404 for unknown", async () => {
+      const res = await app.request("/v1/marketplace/subscribe/unknown-id", {
+        method: "DELETE",
+      });
+      expect(res.status).toBe(404);
+    });
+
+    test("GET /v1/marketplace/subscriptions lists active subscriptions", async () => {
+      await stores.credits.addCredits("agent-1", 500, "seed");
+      await app.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: "devops", credits_per_month: 50 }),
+      });
+      await app.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: "security", credits_per_month: 30 }),
+      });
+
+      const res = await app.request("/v1/marketplace/subscriptions");
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.data).toHaveLength(2);
+    });
+
+    test("purchase with subscription access_model succeeds when subscribed", async () => {
+      await stores.credits.addCredits("agent-1", 500, "seed");
+      // Subscribe to devops domain
+      await app.request("/v1/marketplace/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: "devops", credits_per_month: 50 }),
+      });
+      // Create subscription-tier listing
+      const { body: created } = await postListing(app, makeListing({
+        access_model: "subscription",
+        domain: "devops",
+        price_credits: 100,
+      }));
+      // Purchase — should succeed via subscription
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, { method: "POST" });
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.purchased).toBe(true);
+      expect(body.credits_spent).toBe(0);
+      expect(body.via_subscription).toBe(true);
+    });
+
+    test("purchase with subscription access_model returns 402 without subscription", async () => {
+      const { body: created } = await postListing(app, makeListing({
+        access_model: "subscription",
+        domain: "devops",
+        price_credits: 100,
+      }));
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, { method: "POST" });
+      expect(res.status).toBe(402);
+      const body = await res.json();
+      expect(body.error).toBe("Subscription required");
+      expect(body.domain).toBe("devops");
+    });
+  });
 });
