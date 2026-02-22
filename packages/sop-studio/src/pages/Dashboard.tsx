@@ -56,15 +56,15 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-kp-heading">Dashboard</h1>
+          <p className="mt-1 text-sm text-kp-muted">
             {loading ? "Loading SOPs..." : `${total} SOP${total !== 1 ? "s" : ""} found`}
           </p>
         </div>
         <button
           type="button"
           onClick={() => navigate("/editor/new")}
-          className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-lg hover:bg-kp-teal/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kp-teal transition-colors"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -83,10 +83,10 @@ export default function Dashboard() {
       />
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-kp-error/10 border border-kp-error/30 rounded-lg p-4">
           <div className="flex">
             <svg
-              className="w-5 h-5 text-red-400 mr-2 flex-shrink-0"
+              className="w-5 h-5 text-kp-error mr-2 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -99,11 +99,11 @@ export default function Dashboard() {
               />
             </svg>
             <div>
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="text-sm text-kp-error">{error}</p>
               <button
                 type="button"
                 onClick={fetchSOPs}
-                className="mt-1 text-sm text-red-600 underline hover:text-red-800"
+                className="mt-1 text-sm text-kp-error/80 underline hover:text-kp-error"
               >
                 Try again
               </button>
@@ -117,16 +117,16 @@ export default function Dashboard() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 animate-pulse"
+              className="bg-kp-panel rounded-lg border border-kp-border p-5 animate-pulse"
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="h-5 bg-gray-200 rounded w-3/4" />
-                <div className="h-5 bg-gray-200 rounded-full w-16" />
+                <div className="h-5 bg-kp-navy rounded w-3/4" />
+                <div className="h-5 bg-kp-navy rounded-full w-16" />
               </div>
               <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-20" />
-                <div className="h-4 bg-gray-200 rounded w-32" />
-                <div className="h-3 bg-gray-200 rounded w-24" />
+                <div className="h-4 bg-kp-navy rounded w-20" />
+                <div className="h-4 bg-kp-navy rounded w-32" />
+                <div className="h-3 bg-kp-navy rounded w-24" />
               </div>
             </div>
           ))}
@@ -134,7 +134,7 @@ export default function Dashboard() {
       ) : sops.length === 0 ? (
         <div className="text-center py-16">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-kp-muted"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -146,8 +146,8 @@ export default function Dashboard() {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No SOPs found</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <h3 className="mt-4 text-lg font-medium text-kp-heading">No SOPs found</h3>
+          <p className="mt-1 text-sm text-kp-muted">
             {query || domain || status
               ? "Try adjusting your search filters."
               : "Get started by creating your first SOP."}
@@ -156,7 +156,7 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => navigate("/editor/new")}
-              className="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+              className="mt-4 inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-lg hover:bg-kp-teal/90 transition-colors"
             >
               Create SOP
             </button>

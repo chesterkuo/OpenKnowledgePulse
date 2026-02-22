@@ -6,12 +6,12 @@ export type ToolNodeType = Node<ToolNodeData, "toolNode">;
 export default function ToolNode({ data, selected }: NodeProps<ToolNodeType>) {
   return (
     <div
-      className={`rounded-lg shadow-md border-2 bg-white min-w-[200px] max-w-[280px] ${
-        selected ? "border-green-600 ring-2 ring-green-300" : "border-green-400"
+      className={`bg-kp-panel border-l-4 border-l-kp-green border border-kp-border rounded-md shadow-lg shadow-kp-green/10 min-w-[200px] max-w-[280px] ${
+        selected ? "ring-2 ring-kp-green ring-offset-2 ring-offset-kp-dark" : ""
       }`}
     >
-      <Handle type="target" position={Position.Top} className="!bg-green-500 !w-3 !h-3" />
-      <div className="bg-green-500 text-white px-4 py-2 rounded-t-md">
+      <Handle type="target" position={Position.Top} className="!bg-kp-green !w-3 !h-3" />
+      <div className="bg-kp-green/20 text-kp-heading px-4 py-2 rounded-t-md">
         <div className="font-semibold text-sm flex items-center gap-1.5">
           <svg
             className="w-3.5 h-3.5"
@@ -35,8 +35,8 @@ export default function ToolNode({ data, selected }: NodeProps<ToolNodeType>) {
         </div>
       </div>
       <div className="px-4 py-3">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">When</div>
-        <p className="text-gray-700 text-xs leading-relaxed">{data.when || "No trigger defined"}</p>
+        <div className="text-kp-muted font-mono text-xs uppercase tracking-wide mb-1">When</div>
+        <p className="text-kp-text text-xs leading-relaxed">{data.when || "No trigger defined"}</p>
       </div>
       {/* Tool nodes are endpoints - no source handle */}
     </div>

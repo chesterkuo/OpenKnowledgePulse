@@ -283,18 +283,18 @@ export default function Import() {
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Import Document</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-kp-heading">Import Document</h1>
+        <p className="mt-1 text-sm text-kp-muted">
           Upload or paste a document to extract a decision tree using an LLM.
         </p>
       </div>
 
       {/* SOP Name and Domain */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">SOP Details</h2>
+      <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">SOP Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="sop-name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="sop-name" className="block text-sm font-medium text-kp-muted mb-1">
               SOP Name
             </label>
             <input
@@ -303,11 +303,11 @@ export default function Import() {
               value={sopName}
               onChange={(e) => setSopName(e.target.value)}
               placeholder="e.g., Customer Onboarding Process"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
           <div>
-            <label htmlFor="sop-domain" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="sop-domain" className="block text-sm font-medium text-kp-muted mb-1">
               Domain
             </label>
             <input
@@ -316,26 +316,26 @@ export default function Import() {
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               placeholder="e.g., customer-support"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
         </div>
       </div>
 
       {/* File Upload */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Document Source</h2>
+      <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">Document Source</h2>
 
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragActive ? "border-indigo-400 bg-indigo-50" : "border-gray-300 hover:border-gray-400"
+            dragActive ? "border-kp-teal bg-kp-teal/5" : "border-kp-teal/30 bg-kp-navy/50 hover:border-kp-teal/60"
           }`}
         >
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-kp-muted"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -347,17 +347,17 @@ export default function Import() {
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
             />
           </svg>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-kp-text">
             Drag and drop a file here, or{" "}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="text-indigo-600 hover:text-indigo-500 font-medium"
+              className="text-kp-teal hover:text-kp-cyan font-medium"
             >
               browse
             </button>
           </p>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-kp-muted/60">
             Supports .txt files directly. For .docx and .pdf, paste content below.
           </p>
           <input
@@ -368,20 +368,20 @@ export default function Import() {
             className="hidden"
           />
           {fileName && (
-            <p className="mt-3 text-sm text-gray-700">
+            <p className="mt-3 text-sm text-kp-text">
               Selected: <span className="font-medium">{fileName}</span>
             </p>
           )}
         </div>
 
         {fileError && (
-          <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-md p-3">
-            <p className="text-sm text-yellow-800">{fileError}</p>
+          <div className="mt-3 bg-kp-orange/10 border border-kp-orange/30 rounded-md p-3">
+            <p className="text-sm text-kp-orange">{fileError}</p>
           </div>
         )}
 
         <div className="mt-4">
-          <label htmlFor="document-text" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="document-text" className="block text-sm font-medium text-kp-muted mb-1">
             Document Text
           </label>
           <textarea
@@ -390,9 +390,9 @@ export default function Import() {
             onChange={(e) => setDocumentText(e.target.value)}
             placeholder="Paste your document text here..."
             rows={12}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text font-mono rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
           />
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-kp-muted">
             {documentText.length > 0
               ? `${documentText.length.toLocaleString()} characters`
               : "No text provided yet"}
@@ -401,25 +401,25 @@ export default function Import() {
       </div>
 
       {/* LLM Configuration */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">LLM Configuration</h2>
+      <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
+        <h2 className="text-lg font-semibold text-kp-heading mb-4">LLM Configuration</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="llm-provider" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="llm-provider" className="block text-sm font-medium text-kp-muted mb-1">
               Provider
             </label>
             <select
               id="llm-provider"
               value={llmConfig.provider}
               onChange={(e) => handleLLMConfigChange("provider", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal"
             >
               <option value="anthropic">Anthropic</option>
               <option value="openai">OpenAI</option>
             </select>
           </div>
           <div>
-            <label htmlFor="llm-api-key" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="llm-api-key" className="block text-sm font-medium text-kp-muted mb-1">
               API Key
             </label>
             <input
@@ -428,11 +428,11 @@ export default function Import() {
               value={llmConfig.apiKey}
               onChange={(e) => handleLLMConfigChange("apiKey", e.target.value)}
               placeholder="sk-..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
           <div>
-            <label htmlFor="llm-model" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="llm-model" className="block text-sm font-medium text-kp-muted mb-1">
               Model
             </label>
             <input
@@ -441,7 +441,7 @@ export default function Import() {
               value={llmConfig.model}
               onChange={(e) => handleLLMConfigChange("model", e.target.value)}
               placeholder={DEFAULT_MODELS[llmConfig.provider] || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
         </div>
@@ -453,7 +453,7 @@ export default function Import() {
           type="button"
           onClick={handleExtract}
           disabled={extracting || !documentText.trim()}
-          className="inline-flex items-center px-6 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center px-6 py-2.5 bg-kp-orange text-white text-sm font-medium rounded-lg hover:bg-kp-orange/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {extracting ? (
             <>
@@ -483,15 +483,15 @@ export default function Import() {
           )}
         </button>
 
-        {extractError && <p className="text-sm text-red-600">{extractError}</p>}
+        {extractError && <p className="text-sm text-kp-error">{extractError}</p>}
       </div>
 
       {/* Extracted Decision Tree Preview */}
       {extractedJson && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Extracted Decision Tree</h2>
-            <span className="text-sm text-gray-500">
+            <h2 className="text-lg font-semibold text-kp-heading">Extracted Decision Tree</h2>
+            <span className="text-sm text-kp-muted">
               {extractedTree?.length || 0} step{(extractedTree?.length || 0) !== 1 ? "s" : ""}
             </span>
           </div>
@@ -508,7 +508,7 @@ export default function Import() {
               }
             }}
             rows={16}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 bg-kp-dark border border-kp-border text-kp-text font-mono rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal"
           />
 
           {/* Save as Draft */}
@@ -517,13 +517,13 @@ export default function Import() {
               type="button"
               onClick={handleSave}
               disabled={saving || !extractedTree || !sopName.trim()}
-              className="inline-flex items-center px-6 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex items-center px-6 py-2.5 bg-kp-green text-white text-sm font-medium rounded-lg hover:bg-kp-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {saving ? "Saving..." : "Save as Draft"}
             </button>
-            {saveError && <p className="text-sm text-red-600">{saveError}</p>}
+            {saveError && <p className="text-sm text-kp-error">{saveError}</p>}
             {!sopName.trim() && extractedTree && (
-              <p className="text-sm text-yellow-600">
+              <p className="text-sm text-kp-orange">
                 Please enter an SOP name above before saving.
               </p>
             )}

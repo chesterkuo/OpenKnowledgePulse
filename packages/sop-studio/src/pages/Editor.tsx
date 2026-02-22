@@ -13,6 +13,7 @@ import {
 } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import "@xyflow/react/dist/style.css";
 
 import PropertyPanel from "../components/PropertyPanel";
@@ -100,11 +101,13 @@ function EditorInner() {
   const [loading, setLoading] = useState(!isNew);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+
+  const [dirty, setDirty] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
 
   // Load SOP from API
   useEffect(() => {
@@ -114,6 +117,7 @@ function EditorInner() {
       const { nodes: n, edges: e } = sopToFlow(blank.sop.decision_tree);
       setNodes(n);
       setEdges(e);
+      setInitialLoaded(true);
       return;
     }
 
@@ -129,6 +133,7 @@ function EditorInner() {
         const { nodes: n, edges: e } = sopToFlow(data.sop.decision_tree || []);
         setNodes(n);
         setEdges(e);
+        setInitialLoaded(true);
       })
       .catch((err: Error) => {
         setError(err.message || "Failed to load SOP");
@@ -180,11 +185,23 @@ function EditorInner() {
     [setNodes],
   );
 
-  // Show a temporary status message
-  const showStatus = useCallback((msg: string) => {
-    setStatusMessage(msg);
-    setTimeout(() => setStatusMessage(null), 3000);
-  }, []);
+  // Track dirty state after initial load
+  useEffect(() => {
+    if (initialLoaded) {
+      setDirty(true);
+    }
+  }, [nodes, edges, initialLoaded]);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (dirty) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [dirty]);
 
   // Save SOP
   const handleSave = useCallback(async () => {
@@ -205,26 +222,28 @@ function EditorInner() {
           data: StoredSOP;
         };
         setStoredSOP(result.data);
-        showStatus("SOP created successfully");
+        setDirty(false);
+        toast.success("SOP created successfully");
         navigate(`/editor/${result.data.id}`, { replace: true });
       } else {
         const result = (await api.updateSOP(storedSOP.id, updatedSOP)) as {
           data: StoredSOP;
         };
         setStoredSOP(result.data);
-        showStatus("SOP saved successfully");
+        setDirty(false);
+        toast.success("SOP saved successfully");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save SOP");
+      toast.error(err instanceof Error ? err.message : "Failed to save SOP");
     } finally {
       setSaving(false);
     }
-  }, [storedSOP, nodes, edges, isNew, navigate, showStatus]);
+  }, [storedSOP, nodes, edges, isNew, navigate]);
 
   // Export SKILL.md
   const handleExport = useCallback(async () => {
     if (!storedSOP?.id || isNew) {
-      setError("Save the SOP first before exporting");
+      toast.error("Save the SOP first before exporting");
       return;
     }
 
@@ -242,16 +261,16 @@ function EditorInner() {
       a.download = `${storedSOP.sop.name || "sop"}.SKILL.md`;
       a.click();
       URL.revokeObjectURL(url);
-      showStatus("SKILL.md exported");
+      toast.success("SKILL.md exported");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to export SKILL.md");
+      toast.error(err instanceof Error ? err.message : "Failed to export SKILL.md");
     }
-  }, [storedSOP, isNew, showStatus]);
+  }, [storedSOP, isNew]);
 
   // Submit for review
   const handleSubmitReview = useCallback(async () => {
     if (!storedSOP?.id || isNew) {
-      setError("Save the SOP first before submitting for review");
+      toast.error("Save the SOP first before submitting for review");
       return;
     }
 
@@ -261,11 +280,11 @@ function EditorInner() {
         status: "pending_review",
       })) as { data: StoredSOP };
       setStoredSOP(result.data);
-      showStatus("Submitted for review");
+      toast.success("Submitted for review");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit for review");
+      toast.error(err instanceof Error ? err.message : "Failed to submit for review");
     }
-  }, [storedSOP, isNew, showStatus]);
+  }, [storedSOP, isNew]);
 
   // Delete SOP
   const handleDelete = useCallback(async () => {
@@ -280,12 +299,12 @@ function EditorInner() {
 
     try {
       await api.deleteSOP(storedSOP.id);
-      showStatus("SOP deleted");
+      toast.success("SOP deleted");
       navigate("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete SOP");
+      toast.error(err instanceof Error ? err.message : "Failed to delete SOP");
     }
-  }, [storedSOP, isNew, navigate, showStatus]);
+  }, [storedSOP, isNew, navigate]);
 
   // Add a new step node
   const handleAddStep = useCallback(() => {
@@ -337,16 +356,47 @@ function EditorInner() {
     setNodes((nds) => [...nds, newNode]);
   }, [nodes, setNodes]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + S: Save
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+      // Delete/Backspace: Delete selected node
+      if ((e.key === "Delete" || e.key === "Backspace") && selectedNode) {
+        // Don't delete if user is typing in an input/textarea
+        const tag = (e.target as HTMLElement).tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        e.preventDefault();
+        setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
+        setEdges((eds) =>
+          eds.filter(
+            (edge) =>
+              edge.source !== selectedNode.id &&
+              edge.target !== selectedNode.id,
+          ),
+        );
+        setSelectedNode(null);
+        toast.info("Node deleted");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleSave, selectedNode, setNodes, setEdges]);
+
   const miniMapNodeColor = useCallback((node: Node) => {
     switch (node.type) {
       case "stepNode":
-        return "#3b82f6";
+        return "#1E7EC8";
       case "conditionNode":
-        return "#f97316";
+        return "#E07A20";
       case "toolNode":
-        return "#22c55e";
+        return "#18A06A";
       default:
-        return "#6b7280";
+        return "#4A7FA5";
     }
   }, []);
 
@@ -357,8 +407,8 @@ function EditorInner() {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4" />
-          <p className="text-gray-500">Loading SOP...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kp-teal mx-auto mb-4" />
+          <p className="text-kp-muted">Loading SOP...</p>
         </div>
       </div>
     );
@@ -368,11 +418,11 @@ function EditorInner() {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-kp-error mb-4">{error}</p>
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+            className="px-4 py-2 bg-kp-teal text-white rounded-md hover:bg-kp-teal/90 text-sm"
           >
             Back to Dashboard
           </button>
@@ -384,90 +434,89 @@ function EditorInner() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between px-4 py-2 bg-kp-navy border-b border-kp-border">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="text-gray-500 hover:text-gray-700 text-sm"
+            className="text-kp-muted hover:text-kp-text text-sm"
           >
             &larr; Back
           </button>
-          <h1 className="text-lg font-semibold text-gray-900 truncate max-w-md">
+          <h1 className="text-lg font-semibold text-kp-heading truncate max-w-md">
             {storedSOP?.sop.name || "Untitled SOP"}
           </h1>
+          {dirty && (
+            <span className="inline-block w-2 h-2 rounded-full bg-kp-orange" title="Unsaved changes" />
+          )}
           {storedSOP?.status && (
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 storedSOP.status === "approved"
-                  ? "bg-green-100 text-green-800"
+                  ? "bg-kp-green/15 text-kp-green"
                   : storedSOP.status === "pending_review"
-                    ? "bg-yellow-100 text-yellow-800"
+                    ? "bg-kp-orange/15 text-kp-orange"
                     : storedSOP.status === "rejected"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-gray-100 text-gray-600"
+                      ? "bg-kp-error/15 text-kp-error"
+                      : "bg-kp-navy text-kp-muted"
               }`}
             >
               {storedSOP.status.replace("_", " ")}
             </span>
           )}
-          {statusMessage && (
-            <span className="text-xs text-green-600 font-medium">{statusMessage}</span>
-          )}
-          {error && <span className="text-xs text-red-600 font-medium">{error}</span>}
         </div>
         <div className="flex items-center gap-2">
           {/* Add node buttons */}
           <button
             type="button"
             onClick={handleAddStep}
-            className="px-3 py-1.5 text-xs font-medium border border-blue-300 text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100"
+            className="px-3 py-1.5 text-xs font-medium border border-kp-blue/50 text-kp-blue bg-kp-blue/10 rounded-md hover:bg-kp-blue/20"
           >
             + Step
           </button>
           <button
             type="button"
             onClick={handleAddCondition}
-            className="px-3 py-1.5 text-xs font-medium border border-orange-300 text-orange-700 bg-orange-50 rounded-md hover:bg-orange-100"
+            className="px-3 py-1.5 text-xs font-medium border border-kp-orange/50 text-kp-orange bg-kp-orange/10 rounded-md hover:bg-kp-orange/20"
           >
             + Condition
           </button>
           <button
             type="button"
             onClick={handleAddTool}
-            className="px-3 py-1.5 text-xs font-medium border border-green-300 text-green-700 bg-green-50 rounded-md hover:bg-green-100"
+            className="px-3 py-1.5 text-xs font-medium border border-kp-green/50 text-kp-green bg-kp-green/10 rounded-md hover:bg-kp-green/20"
           >
             + Tool
           </button>
 
-          <div className="w-px h-6 bg-gray-300 mx-1" />
+          <div className="w-px h-6 bg-kp-border mx-1" />
 
           <button
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-1.5 text-sm font-medium bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+            className="px-4 py-1.5 text-sm font-medium bg-kp-teal text-white rounded-md hover:bg-kp-teal/90 disabled:opacity-50"
           >
             {saving ? "Saving..." : "Save"}
           </button>
           <button
             type="button"
             onClick={handleExport}
-            className="px-3 py-1.5 text-sm font-medium border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            className="px-3 py-1.5 text-sm font-medium border border-kp-border text-kp-text rounded-md hover:bg-kp-panel"
           >
             Export SKILL.md
           </button>
           <button
             type="button"
             onClick={handleSubmitReview}
-            className="px-3 py-1.5 text-sm font-medium border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            className="px-3 py-1.5 text-sm font-medium border border-kp-border text-kp-text rounded-md hover:bg-kp-panel"
           >
             Submit for Review
           </button>
           <button
             type="button"
             onClick={handleDelete}
-            className="px-3 py-1.5 text-sm font-medium border border-red-300 text-red-600 rounded-md hover:bg-red-50"
+            className="px-3 py-1.5 text-sm font-medium border border-kp-error/50 text-kp-error rounded-md hover:bg-kp-error/10"
           >
             Delete
           </button>

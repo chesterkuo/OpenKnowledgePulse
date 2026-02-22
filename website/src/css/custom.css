@@ -1,51 +1,98 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap");
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #12b5a8;
+  --ifm-color-primary-dark: #0fa89c;
+  --ifm-color-primary-darker: #0e9e93;
+  --ifm-color-primary-darkest: #0b8279;
+  --ifm-color-primary-light: #15c2b4;
+  --ifm-color-primary-lighter: #16c8ba;
+  --ifm-color-primary-lightest: #1adace;
+  --ifm-font-family-base: "Outfit", system-ui, sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", ui-monospace, monospace;
+  --ifm-heading-font-family: "Outfit", system-ui, sans-serif;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-heading-font-weight: 700;
+  /* KP brand tokens */
+  --kp-blue: #1e7ec8;
+  --kp-green: #18a06a;
+  --kp-teal: #12b5a8;
+  --kp-orange: #e07a20;
+  --kp-cyan: #4adeff;
+  --kp-dark: #050d16;
+  --kp-navy: #081828;
+  --kp-panel: #0c1a28;
+  --kp-border: #163248;
+  --kp-text: #c8ddf0;
+  --kp-muted: #4a7fa5;
+  --kp-heading: #eef6ff;
 }
 
 [data-theme="dark"] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #12b5a8;
+  --ifm-color-primary-dark: #0fa89c;
+  --ifm-color-primary-darker: #0e9e93;
+  --ifm-color-primary-darkest: #0b8279;
+  --ifm-color-primary-light: #15c2b4;
+  --ifm-color-primary-lighter: #16c8ba;
+  --ifm-color-primary-lightest: #1adace;
+  --ifm-background-color: #050d16;
+  --ifm-background-surface-color: #0c1a28;
+  --ifm-navbar-background-color: #081828;
+  --ifm-footer-background-color: #050d16;
+  --ifm-card-background-color: #0c1a28;
+  --ifm-toc-border-color: #163248;
+  --ifm-color-emphasis-300: #163248;
+  --ifm-hr-border-color: #163248;
+  --ifm-code-background: #0c1a28;
+  --ifm-table-stripe-background: rgba(12, 26, 40, 0.5);
+  --ifm-table-border-color: #163248;
 }
 
-.hero {
-  padding: 4rem 0;
-  text-align: center;
+/* Navbar styling */
+.navbar {
+  border-bottom: 1px solid var(--kp-border);
+}
+.navbar__title {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
-.hero__title {
-  font-size: 3rem;
+/* Sidebar */
+.menu__link {
+  font-size: 0.9rem;
+}
+.menu__link--active {
+  border-left: 2px solid var(--kp-teal);
 }
 
-.features {
-  display: flex;
-  align-items: stretch;
-  padding: 2rem 0;
-  width: 100%;
+/* Code blocks */
+[data-theme="dark"] pre {
+  background-color: #0c1a28 !important;
+  border: 1px solid var(--kp-border);
 }
 
-.feature {
-  flex: 1;
-  padding: 1rem;
+/* Footer */
+.footer {
+  border-top: 1px solid var(--kp-border);
+}
+.footer__title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--kp-muted);
 }
 
-.feature h3 {
-  font-size: 1.25rem;
+/* Docs content */
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  font-family: "Outfit", system-ui, sans-serif;
 }
 
-.feature p {
-  font-size: 1rem;
+/* Table of contents */
+.table-of-contents__link--active {
+  color: var(--kp-teal);
 }

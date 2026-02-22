@@ -5,7 +5,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 const config: Config = {
   title: "KnowledgePulse",
   tagline: "Open AI Knowledge-Sharing Protocol",
-  favicon: "img/logo.svg",
+  favicon: "img/octo-favicon.svg",
 
   url: "https://knowledgepulse.dev",
   baseUrl: "/",
@@ -47,6 +47,11 @@ const config: Config = {
   ],
 
   themeConfig: {
+    colorMode: {
+      defaultMode: "dark",
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },
     navbar: {
       title: "KnowledgePulse",
       logo: {
