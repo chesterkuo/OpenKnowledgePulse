@@ -7,6 +7,7 @@ import type {
 } from "./types/knowledge-unit.js";
 import { KP_CONTEXT } from "./types/knowledge-unit.js";
 import { generateTraceId } from "./utils/id.js";
+import { cleanPii } from "./utils/pii-cleaner.js";
 
 export interface CaptureConfig {
   autoCapture?: boolean; // default true
@@ -113,6 +114,21 @@ export class KPCapture {
     trace.metadata.quality_score = score;
 
     if (score < this.config.valueThreshold) return;
+
+    // Clean PII from trace steps before contributing
+    for (const step of trace.steps) {
+      if (step.content) {
+        step.content = cleanPii(step.content, trace.metadata.privacy_level).cleaned;
+      }
+      if (step.output_summary) {
+        step.output_summary = cleanPii(step.output_summary, trace.metadata.privacy_level).cleaned;
+      }
+      if (step.input) {
+        const inputStr = JSON.stringify(step.input);
+        const cleanedInput = cleanPii(inputStr, trace.metadata.privacy_level).cleaned;
+        try { step.input = JSON.parse(cleanedInput); } catch { /* keep original if parse fails */ }
+      }
+    }
 
     const url = this.config.registryUrl ?? "https://registry.openknowledgepulse.org";
     const headers: Record<string, string> = {

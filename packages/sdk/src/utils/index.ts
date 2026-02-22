@@ -2,3 +2,4 @@ export { generateTraceId, generatePatternId, generateSopId, generateSkillId } fr
 export { sha256 } from "./hash.js";
 export { sanitizeSkillMd, type SanitizeResult } from "./sanitizer.js";
 export { classifyInjectionRisk, type InjectionAssessment, type ClassifierOptions } from "./injection-classifier.js";
+export { cleanPii, type PiiCleanResult } from "./pii-cleaner.js";

@@ -3,6 +3,7 @@ import type {
   KnowledgeStore,
   PaginatedResult,
   PaginationOpts,
+  QuarantineStatus,
   StoredKnowledgeUnit,
 } from "../interfaces.js";
 
@@ -41,7 +42,9 @@ export class SqliteKnowledgeStore implements KnowledgeStore {
     pagination?: PaginationOpts;
   }): Promise<PaginatedResult<StoredKnowledgeUnit>> {
     // Load all rows and filter in JS (same logic as memory store)
-    const rows = this.db.query("SELECT * FROM knowledge_units").all() as Record<string, unknown>[];
+    const rows = this.db.query(
+      "SELECT * FROM knowledge_units WHERE quarantine_status IS NULL OR quarantine_status != 'quarantined'",
+    ).all() as Record<string, unknown>[];
     let results = rows.map((row) => this.rowToEntry(row));
 
     if (opts.types?.length) {
@@ -100,6 +103,20 @@ export class SqliteKnowledgeStore implements KnowledgeStore {
     return rows
       .map((row) => this.rowToEntry(row))
       .filter((e) => e.unit.metadata.agent_id === agentId);
+  }
+
+  async setQuarantineStatus(id: string, status: QuarantineStatus): Promise<void> {
+    this.db
+      .query("UPDATE knowledge_units SET quarantine_status = $status WHERE id = $id")
+      .run({ $id: id, $status: status });
+  }
+
+  async getQuarantineStatus(id: string): Promise<QuarantineStatus> {
+    const row = this.db
+      .query("SELECT quarantine_status FROM knowledge_units WHERE id = $id")
+      .get({ $id: id }) as Record<string, unknown> | null;
+    if (!row) return null;
+    return (row.quarantine_status as QuarantineStatus) ?? null;
   }
 
   private rowToEntry(row: Record<string, unknown>): StoredKnowledgeUnit {

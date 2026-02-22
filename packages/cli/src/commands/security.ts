@@ -19,22 +19,29 @@ securityCommand
       process.exit(1);
     }
 
-    console.log(`Reporting unit: ${unitId}`);
-    console.log(`Reason: ${opts.reason ?? "No reason provided"}`);
-
-    // In Phase 1, this logs the report. Full quarantine workflow in Phase 2.
     try {
-      const res = await fetch(`${config.registryUrl}/v1/knowledge/${unitId}`, {
-        headers: { Authorization: `Bearer ${auth.apiKey}` },
+      const res = await fetch(`${config.registryUrl}/v1/knowledge/${unitId}/report`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${auth.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reason: opts.reason ?? "" }),
       });
 
       if (!res.ok) {
-        console.error(`Unit not found: ${unitId}`);
+        const body = await res.json().catch(() => ({}));
+        console.error(`Error: ${(body as { error?: string }).error ?? res.statusText}`);
         process.exit(1);
       }
 
-      console.log("Report submitted. The unit will be reviewed by the community.");
-      console.log("Quarantine workflow will be implemented in Phase 2.");
+      const body = (await res.json()) as {
+        report_count: number;
+        threshold: number;
+        quarantine_status: string;
+      };
+      console.log(`Report submitted for unit: ${unitId}`);
+      console.log(`Reports: ${body.report_count}/${body.threshold} (status: ${body.quarantine_status})`);
     } catch (e) {
       console.error(`Error: ${e instanceof Error ? e.message : String(e)}`);
       process.exit(1);

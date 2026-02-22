@@ -51,6 +51,8 @@ export {
   classifyInjectionRisk,
   type InjectionAssessment,
   type ClassifierOptions,
+  cleanPii,
+  type PiiCleanResult,
 } from "./utils/index.js";
 
 // Errors
@@ -70,6 +72,8 @@ export { migrate } from "./migrations/index.js";
 export {
   parseDocx,
   parsePdf,
+  parseNotion,
+  parseConfluence,
   extractDecisionTree,
   getExtractionPrompt,
 } from "./sop-import/index.js";

@@ -2,11 +2,13 @@ import type {
   KnowledgeStore,
   PaginatedResult,
   PaginationOpts,
+  QuarantineStatus,
   StoredKnowledgeUnit,
 } from "../interfaces.js";
 
 export class MemoryKnowledgeStore implements KnowledgeStore {
   private units = new Map<string, StoredKnowledgeUnit>();
+  private quarantineStatuses = new Map<string, QuarantineStatus>();
 
   async create(entry: StoredKnowledgeUnit): Promise<StoredKnowledgeUnit> {
     this.units.set(entry.id, entry);
@@ -25,6 +27,12 @@ export class MemoryKnowledgeStore implements KnowledgeStore {
     pagination?: PaginationOpts;
   }): Promise<PaginatedResult<StoredKnowledgeUnit>> {
     let results = Array.from(this.units.values());
+
+    // Filter out quarantined units
+    results = results.filter((e) => {
+      const status = this.quarantineStatuses.get(e.id);
+      return !status || status !== "quarantined";
+    });
 
     if (opts.types?.length) {
       const typeSet = new Set(opts.types);
@@ -77,5 +85,17 @@ export class MemoryKnowledgeStore implements KnowledgeStore {
 
   async getByAgentId(agentId: string): Promise<StoredKnowledgeUnit[]> {
     return Array.from(this.units.values()).filter((e) => e.unit.metadata.agent_id === agentId);
+  }
+
+  async setQuarantineStatus(id: string, status: QuarantineStatus): Promise<void> {
+    if (status === null) {
+      this.quarantineStatuses.delete(id);
+    } else {
+      this.quarantineStatuses.set(id, status);
+    }
+  }
+
+  async getQuarantineStatus(id: string): Promise<QuarantineStatus> {
+    return this.quarantineStatuses.get(id) ?? null;
   }
 }

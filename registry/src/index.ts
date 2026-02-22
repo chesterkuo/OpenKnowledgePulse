@@ -11,6 +11,7 @@ import { exportRoutes } from "./routes/export.js";
 import { knowledgeRoutes } from "./routes/knowledge.js";
 import { marketplaceRoutes } from "./routes/marketplace.js";
 import { providerRoutes } from "./routes/providers.js";
+import { quarantineRoutes, adminQuarantineRoutes } from "./routes/quarantine.js";
 import { reputationRoutes } from "./routes/reputation.js";
 import { skillRoutes } from "./routes/skills.js";
 import { sopRoutes } from "./routes/sop.js";
@@ -67,6 +68,8 @@ app.route("/v1/sop", sopRoutes(stores));
 app.route("/v1/sop", wsCollaborateRoutes(collaborationManager));
 app.route("/v1/marketplace", marketplaceRoutes(stores));
 app.route("/v1/providers", providerRoutes(stores));
+app.route("/v1/knowledge", quarantineRoutes(stores));
+app.route("/v1/admin/quarantine", adminQuarantineRoutes(stores));
 
 console.log(`KnowledgePulse Registry running on port ${config.port}`);
 

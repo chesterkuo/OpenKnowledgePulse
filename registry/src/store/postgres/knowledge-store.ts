@@ -2,6 +2,7 @@ import type {
   KnowledgeStore,
   PaginatedResult,
   PaginationOpts,
+  QuarantineStatus,
   StoredKnowledgeUnit,
 } from "../interfaces.js";
 import type { PgPool } from "./db.js";
@@ -44,7 +45,9 @@ export class PgKnowledgeStore implements KnowledgeStore {
     min_quality?: number;
     pagination?: PaginationOpts;
   }): Promise<PaginatedResult<StoredKnowledgeUnit>> {
-    const conditions: string[] = [];
+    const conditions: string[] = [
+      "(quarantine_status IS NULL OR quarantine_status != 'quarantined')",
+    ];
     const params: unknown[] = [];
     let paramIndex = 1;
 
@@ -143,6 +146,22 @@ export class PgKnowledgeStore implements KnowledgeStore {
       [agentId],
     );
     return rows.map((row: Record<string, unknown>) => this.rowToEntry(row));
+  }
+
+  async setQuarantineStatus(id: string, status: QuarantineStatus): Promise<void> {
+    await this.pool.query(
+      "UPDATE knowledge_units SET quarantine_status = $2 WHERE id = $1",
+      [id, status],
+    );
+  }
+
+  async getQuarantineStatus(id: string): Promise<QuarantineStatus> {
+    const { rows } = await this.pool.query(
+      "SELECT quarantine_status FROM knowledge_units WHERE id = $1",
+      [id],
+    );
+    if (rows.length === 0) return null;
+    return (rows[0].quarantine_status as QuarantineStatus) ?? null;
   }
 
   private rowToEntry(row: Record<string, unknown>): StoredKnowledgeUnit {
