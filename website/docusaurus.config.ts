@@ -10,8 +10,8 @@ const config: Config = {
   url: "https://openknowledgepulse.org",
   baseUrl: "/",
 
-  organizationName: "openclaw",
-  projectName: "knowledgepulse",
+  organizationName: "chesterkuo",
+  projectName: "OpenKnowledgePulse",
 
   onBrokenLinks: "throw",
 
@@ -36,7 +36,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          editUrl: "https://github.com/openclaw/knowledgepulse/tree/main/website/",
+          editUrl: "https://github.com/chesterkuo/OpenKnowledgePulse/tree/main/website/",
         },
         blog: false,
         theme: {
@@ -66,7 +66,12 @@ const config: Config = {
           label: "Docs",
         },
         {
-          href: "https://github.com/openclaw/knowledgepulse",
+          href: "https://openknowledgepulse.org/studio/",
+          label: "Studio",
+          position: "left",
+        },
+        {
+          href: "https://github.com/chesterkuo/OpenKnowledgePulse",
           label: "GitHub",
           position: "right",
         },
@@ -92,11 +97,7 @@ const config: Config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/openclaw/knowledgepulse",
-            },
-            {
-              label: "GitHub Discussions",
-              href: "https://github.com/openclaw/knowledgepulse/discussions",
+              href: "https://github.com/chesterkuo/OpenKnowledgePulse",
             },
           ],
         },
@@ -109,7 +110,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} OpenClaw. Apache 2.0 License.`,
+      copyright: `Copyright @ ${new Date().getFullYear()} Summer Lab. Apache 2.0 License.`,
     },
     prism: {
       theme: prismThemes.github,

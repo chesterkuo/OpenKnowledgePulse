@@ -26,7 +26,7 @@ npm install @knowledgepulse/sdk
 克隆仓库并启动本地 Registry 服务器：
 
 ```bash
-git clone https://github.com/openclaw/knowledgepulse.git
+git clone https://github.com/chesterkuo/OpenKnowledgePulse.git
 cd knowledgepulse
 bun install
 bun run registry/src/index.ts

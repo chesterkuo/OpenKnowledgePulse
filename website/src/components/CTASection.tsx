@@ -66,8 +66,11 @@ export default function CTASection(): JSX.Element {
           <Link to="/docs/getting-started/quickstart" style={primaryBtnStyle}>
             Get Started
           </Link>
+          <a href="/studio/" style={outlineBtnStyle}>
+            Open Studio
+          </a>
           <a
-            href="https://github.com/anthropics/knowledgepulse"
+            href="https://github.com/chesterkuo/OpenKnowledgePulse"
             target="_blank"
             rel="noopener noreferrer"
             style={outlineBtnStyle}

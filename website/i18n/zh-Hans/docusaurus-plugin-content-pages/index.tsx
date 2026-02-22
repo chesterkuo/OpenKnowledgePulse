@@ -120,7 +120,24 @@ function HeroSection(): JSX.Element {
             快速入门
           </Link>
           <a
-            href="https://github.com/anthropics/knowledgepulse"
+            href="/studio/"
+            style={{
+              display: "inline-block",
+              background: "transparent",
+              color: "var(--kp-text)",
+              padding: "0.75rem 2rem",
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: "1rem",
+              textDecoration: "none",
+              border: "1px solid var(--kp-border)",
+              transition: "border-color 0.2s",
+            }}
+          >
+            打开 Studio
+          </a>
+          <a
+            href="https://github.com/chesterkuo/OpenKnowledgePulse"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -485,179 +502,6 @@ function CodeExample(): JSX.Element {
             (agentTrace);
           </code>
         </pre>
-      </div>
-    </section>
-  );
-}
-
-/* ========================= 6. COMPARISON TABLE ========================== */
-
-type Mark = "yes" | "no" | "partial";
-
-function Cell({ mark }: { mark: Mark }) {
-  if (mark === "yes") {
-    return <span style={{ color: "var(--kp-teal)", fontWeight: 700 }}>{"\u2713"}</span>;
-  }
-  if (mark === "partial") {
-    return <span style={{ color: "var(--kp-orange)", fontWeight: 700 }}>~</span>;
-  }
-  return <span style={{ color: "var(--kp-muted)" }}>{"\u2717"}</span>;
-}
-
-interface Row {
-  feature: string;
-  kp: Mark;
-  skills: Mark;
-  langchain: Mark;
-  mem0: Mark;
-}
-
-const rows: Row[] = [
-  {
-    feature: "SKILL.md 兼容",
-    kp: "yes",
-    skills: "yes",
-    langchain: "no",
-    mem0: "no",
-  },
-  {
-    feature: "动态知识",
-    kp: "yes",
-    skills: "no",
-    langchain: "no",
-    mem0: "no",
-  },
-  {
-    feature: "MCP 服务器",
-    kp: "yes",
-    skills: "no",
-    langchain: "no",
-    mem0: "no",
-  },
-  {
-    feature: "跨框架",
-    kp: "yes",
-    skills: "partial",
-    langchain: "partial",
-    mem0: "yes",
-  },
-  {
-    feature: "质量评分",
-    kp: "yes",
-    skills: "no",
-    langchain: "no",
-    mem0: "no",
-  },
-  {
-    feature: "声誉系统",
-    kp: "yes",
-    skills: "no",
-    langchain: "no",
-    mem0: "no",
-  },
-  {
-    feature: "专家 SOP",
-    kp: "yes",
-    skills: "no",
-    langchain: "no",
-    mem0: "no",
-  },
-  {
-    feature: "可自托管",
-    kp: "yes",
-    skills: "no",
-    langchain: "no",
-    mem0: "yes",
-  },
-];
-
-const thBase: React.CSSProperties = {
-  fontFamily: mono,
-  fontSize: "0.8rem",
-  color: "var(--kp-muted)",
-  textTransform: "uppercase",
-  letterSpacing: "0.06em",
-  padding: "0.75rem 0.6rem",
-  borderBottom: "1px solid var(--kp-border)",
-  textAlign: "center",
-  fontWeight: 500,
-};
-
-const tdBase: React.CSSProperties = {
-  padding: "0.6rem",
-  borderBottom: "1px solid var(--kp-border)",
-  textAlign: "center",
-  fontSize: "0.95rem",
-};
-
-function ComparisonTable(): JSX.Element {
-  return (
-    <section style={{ background: "var(--kp-navy)", padding: "4rem 1.5rem" }}>
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
-        <h2
-          style={{
-            fontFamily: outfit,
-            fontWeight: 800,
-            fontSize: "1.75rem",
-            color: "var(--kp-heading)",
-            textAlign: "center",
-            marginBottom: "2rem",
-          }}
-        >
-          竞品对比
-        </h2>
-        <div style={{ borderRadius: 8, overflow: "hidden" }}>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              background: "var(--kp-panel)",
-              border: "1px solid var(--kp-border)",
-              borderRadius: 8,
-              overflow: "hidden",
-            }}
-          >
-            <thead>
-              <tr>
-                <th style={{ ...thBase, textAlign: "left", paddingLeft: "1rem" }}>功能</th>
-                <th style={{ ...thBase, color: "var(--kp-teal)" }}>KnowledgePulse</th>
-                <th style={thBase}>SkillsMP</th>
-                <th style={thBase}>LangChain Hub</th>
-                <th style={thBase}>Mem0</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.feature}>
-                  <td
-                    style={{
-                      ...tdBase,
-                      textAlign: "left",
-                      paddingLeft: "1rem",
-                      fontFamily: mono,
-                      fontSize: "0.85rem",
-                      color: "var(--kp-text)",
-                    }}
-                  >
-                    {r.feature}
-                  </td>
-                  <td style={tdBase}>
-                    <Cell mark={r.kp} />
-                  </td>
-                  <td style={tdBase}>
-                    <Cell mark={r.skills} />
-                  </td>
-                  <td style={tdBase}>
-                    <Cell mark={r.langchain} />
-                  </td>
-                  <td style={tdBase}>
-                    <Cell mark={r.mem0} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
     </section>
   );
@@ -1090,7 +934,23 @@ function CTASection(): JSX.Element {
             快速入门
           </Link>
           <a
-            href="https://github.com/anthropics/knowledgepulse"
+            href="/studio/"
+            style={{
+              display: "inline-block",
+              background: "transparent",
+              color: "var(--kp-text)",
+              padding: "0.75rem 2rem",
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: "1rem",
+              textDecoration: "none",
+              border: "1px solid var(--kp-border)",
+            }}
+          >
+            打开 Studio
+          </a>
+          <a
+            href="https://github.com/chesterkuo/OpenKnowledgePulse"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -1123,7 +983,6 @@ export default function Home(): JSX.Element {
       <ProtocolStack />
       <FeatureGrid />
       <CodeExample />
-      <ComparisonTable />
       <UseCaseCards />
       <FrameworkLogos />
       <TestimonialCards />

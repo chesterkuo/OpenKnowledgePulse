@@ -1,7 +1,7 @@
 import Layout from "@theme/Layout";
 import CTASection from "../components/CTASection";
 import CodeExample from "../components/CodeExample";
-import ComparisonTable from "../components/ComparisonTable";
+
 import EcosystemNote from "../components/EcosystemNote";
 import FeatureGrid from "../components/FeatureGrid";
 import FrameworkLogos from "../components/FrameworkLogos";
@@ -19,7 +19,6 @@ export default function Home(): JSX.Element {
       <ProtocolStack />
       <FeatureGrid />
       <CodeExample />
-      <ComparisonTable />
       <UseCaseCards />
       <FrameworkLogos />
       <TestimonialCards />
