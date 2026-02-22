@@ -3,6 +3,7 @@ import { Command } from "commander";
 import { authCommand } from "./commands/auth.js";
 import { contributeCommand } from "./commands/contribute.js";
 import { installCommand } from "./commands/install.js";
+import { listCommand } from "./commands/list.js";
 import { searchCommand } from "./commands/search.js";
 import { securityCommand } from "./commands/security.js";
 import { validateCommand } from "./commands/validate.js";
@@ -16,6 +17,7 @@ program
 
 program.addCommand(searchCommand);
 program.addCommand(installCommand);
+program.addCommand(listCommand);
 program.addCommand(validateCommand);
 program.addCommand(contributeCommand);
 program.addCommand(authCommand);
