@@ -1,5 +1,5 @@
-import type { ValidationVote } from "@knowledgepulse/sdk";
 import type { Database } from "bun:sqlite";
+import type { ValidationVote } from "@knowledgepulse/sdk";
 import type {
   PaginatedResult,
   PaginationOpts,
@@ -115,10 +115,7 @@ export class SqliteReputationStore implements ReputationStore {
   }
 
   async getVotes(): Promise<ValidationVote[]> {
-    const rows = this.db.query("SELECT * FROM validation_votes").all() as Record<
-      string,
-      unknown
-    >[];
+    const rows = this.db.query("SELECT * FROM validation_votes").all() as Record<string, unknown>[];
     return rows.map((row) => ({
       validatorId: row.validator_id as string,
       targetId: row.target_id as string,

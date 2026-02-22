@@ -1,8 +1,8 @@
-import clsx from "clsx";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
+import Layout from "@theme/Layout";
+import clsx from "clsx";
 
 type FeatureItem = {
   title: string;
@@ -69,8 +69,8 @@ export default function Home(): JSX.Element {
         <section className="features">
           <div className="container">
             <div className="row">
-              {features.map((props, idx) => (
-                <Feature key={idx} {...props} />
+              {features.map((props) => (
+                <Feature key={props.title} {...props} />
               ))}
             </div>
           </div>

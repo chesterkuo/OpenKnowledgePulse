@@ -16,7 +16,6 @@ export async function createStore(): Promise<AllStores> {
       const dbPath = process.env.KP_SQLITE_PATH ?? "knowledgepulse.db";
       return createSqliteStore(dbPath);
     }
-    case "memory":
     default: {
       const { createMemoryStore } = await import("./memory/index.js");
       return createMemoryStore();

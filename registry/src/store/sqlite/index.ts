@@ -10,7 +10,7 @@ import { SqliteSkillStore } from "./skill-store.js";
  * Create all stores backed by a single SQLite database.
  * @param dbPath - Path to the SQLite database file, or ":memory:" for in-memory.
  */
-export function createSqliteStore(dbPath: string = ":memory:"): AllStores {
+export function createSqliteStore(dbPath = ":memory:"): AllStores {
   const db = createDatabase(dbPath);
 
   return {

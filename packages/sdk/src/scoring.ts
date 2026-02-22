@@ -16,10 +16,10 @@ const DEFAULT_WEIGHTS: ScoringWeights = {
 };
 
 const DOMAIN_WEIGHTS: Record<string, ScoringWeights> = {
-  finance: { complexity: 0.20, novelty: 0.25, toolDiversity: 0.10, outcomeConfidence: 0.45 },
-  code: { complexity: 0.20, novelty: 0.30, toolDiversity: 0.30, outcomeConfidence: 0.20 },
-  medical: { complexity: 0.15, novelty: 0.20, toolDiversity: 0.10, outcomeConfidence: 0.55 },
-  customer_service: { complexity: 0.20, novelty: 0.30, toolDiversity: 0.20, outcomeConfidence: 0.30 },
+  finance: { complexity: 0.2, novelty: 0.25, toolDiversity: 0.1, outcomeConfidence: 0.45 },
+  code: { complexity: 0.2, novelty: 0.3, toolDiversity: 0.3, outcomeConfidence: 0.2 },
+  medical: { complexity: 0.15, novelty: 0.2, toolDiversity: 0.1, outcomeConfidence: 0.55 },
+  customer_service: { complexity: 0.2, novelty: 0.3, toolDiversity: 0.2, outcomeConfidence: 0.3 },
 };
 
 function getWeights(domain: string): ScoringWeights {

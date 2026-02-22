@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import {
-  generateKeyPair,
   createCredential,
+  generateKeyPair,
   signCredential,
   verifyCredential,
 } from "./verifiable-credential.js";
@@ -32,10 +32,7 @@ describe("verifiable-credential", () => {
         "https://www.w3.org/2018/credentials/v1",
         "https://knowledgepulse.dev/credentials/v1",
       ]);
-      expect(vc.type).toEqual([
-        "VerifiableCredential",
-        "KPReputationCredential",
-      ]);
+      expect(vc.type).toEqual(["VerifiableCredential", "KPReputationCredential"]);
       expect(vc.issuer).toBe("did:kp:registry-001");
       expect(vc.issuanceDate).toBeTruthy();
       expect(vc.credentialSubject.id).toBe("did:kp:agent-abc");
@@ -70,18 +67,12 @@ describe("verifiable-credential", () => {
         validations: 30,
       });
 
-      const signed = await signCredential(
-        vc,
-        kp.privateKey,
-        "did:kp:registry-001#key-1",
-      );
+      const signed = await signCredential(vc, kp.privateKey, "did:kp:registry-001#key-1");
 
       expect(signed.proof).toBeDefined();
       expect(signed.proof!.type).toBe("Ed25519Signature2020");
       expect(signed.proof!.proofPurpose).toBe("assertionMethod");
-      expect(signed.proof!.verificationMethod).toBe(
-        "did:kp:registry-001#key-1",
-      );
+      expect(signed.proof!.verificationMethod).toBe("did:kp:registry-001#key-1");
       expect(signed.proof!.created).toBeTruthy();
       expect(signed.proof!.proofValue).toBeTruthy();
       // proofValue should be a base64-encoded 64-byte Ed25519 signature
@@ -101,11 +92,7 @@ describe("verifiable-credential", () => {
         validations: 10,
       });
 
-      const signed = await signCredential(
-        vc,
-        kp.privateKey,
-        "did:kp:registry-001#key-1",
-      );
+      const signed = await signCredential(vc, kp.privateKey, "did:kp:registry-001#key-1");
 
       const valid = await verifyCredential(signed, kp.publicKey);
       expect(valid).toBe(true);
@@ -121,11 +108,7 @@ describe("verifiable-credential", () => {
         validations: 10,
       });
 
-      const signed = await signCredential(
-        vc,
-        kp.privateKey,
-        "did:kp:registry-001#key-1",
-      );
+      const signed = await signCredential(vc, kp.privateKey, "did:kp:registry-001#key-1");
 
       // Tamper with the score after signing
       const tampered = {
@@ -165,11 +148,7 @@ describe("verifiable-credential", () => {
         validations: 10,
       });
 
-      const signed = await signCredential(
-        vc,
-        kp1.privateKey,
-        "did:kp:registry-001#key-1",
-      );
+      const signed = await signCredential(vc, kp1.privateKey, "did:kp:registry-001#key-1");
 
       // Verify with a different public key
       const valid = await verifyCredential(signed, kp2.publicKey);

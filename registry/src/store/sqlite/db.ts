@@ -4,7 +4,7 @@ import { Database } from "bun:sqlite";
  * Create and initialize a SQLite database with all required tables.
  * Enables WAL mode and foreign keys for performance and integrity.
  */
-export function createDatabase(path: string = ":memory:"): Database {
+export function createDatabase(path = ":memory:"): Database {
   const db = new Database(path);
 
   // Enable WAL mode for better concurrent read performance

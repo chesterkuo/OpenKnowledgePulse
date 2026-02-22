@@ -45,9 +45,7 @@ export function computeEigenTrust(
 
   // Step 2: Build raw trust matrix
   // rawTrust[i][j] = aggregated trust from agent i toward agent j
-  const rawTrust: number[][] = Array.from({ length: n }, () =>
-    new Array<number>(n).fill(0),
-  );
+  const rawTrust: number[][] = Array.from({ length: n }, () => new Array<number>(n).fill(0));
 
   for (const vote of votes) {
     const from = agentIndex.get(vote.validatorId)!;
@@ -61,9 +59,7 @@ export function computeEigenTrust(
   }
 
   // Step 3: Clamp negatives to 0 and row-normalize
-  const C: number[][] = Array.from({ length: n }, () =>
-    new Array<number>(n).fill(0),
-  );
+  const C: number[][] = Array.from({ length: n }, () => new Array<number>(n).fill(0));
 
   for (let i = 0; i < n; i++) {
     const rawRow = rawTrust[i] as number[];
@@ -133,17 +129,13 @@ export function computeEigenTrust(
     // T(i+1) = (1-alpha) * C^T * T(i) + alpha * p
     const tNext = new Array<number>(n);
     for (let j = 0; j < n; j++) {
-      tNext[j] =
-        (1 - alpha) * (ct[j] as number) + alpha * (p[j] as number);
+      tNext[j] = (1 - alpha) * (ct[j] as number) + alpha * (p[j] as number);
     }
 
     // Check convergence: max(|T(i+1) - T(i)|) < epsilon
     let maxDiff = 0;
     for (let j = 0; j < n; j++) {
-      maxDiff = Math.max(
-        maxDiff,
-        Math.abs((tNext[j] as number) - (t[j] as number)),
-      );
+      maxDiff = Math.max(maxDiff, Math.abs((tNext[j] as number) - (t[j] as number)));
     }
 
     t = tNext;

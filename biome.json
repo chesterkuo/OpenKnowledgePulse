@@ -26,6 +26,6 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", "dist", "*.gen.*", "*.json"]
+    "ignore": ["node_modules", "dist", "*.gen.*", "*.json", "website/build", "website/.docusaurus"]
   }
 }

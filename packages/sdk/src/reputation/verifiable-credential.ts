@@ -12,8 +12,7 @@ import { sha512 } from "@noble/hashes/sha2.js";
 import type { ReputationCredential } from "./types.js";
 
 // Configure @noble/ed25519 sync sha512 from @noble/hashes
-ed25519.hashes.sha512 = (msg: Uint8Array): Uint8Array =>
-  sha512(msg);
+ed25519.hashes.sha512 = (msg: Uint8Array): Uint8Array => sha512(msg);
 
 export interface KeyPair {
   publicKey: Uint8Array;

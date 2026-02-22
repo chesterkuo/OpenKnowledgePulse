@@ -1,5 +1,5 @@
-import { sha256 } from "@knowledgepulse/sdk";
 import type { Database } from "bun:sqlite";
+import { sha256 } from "@knowledgepulse/sdk";
 import type { ApiKeyRecord, ApiKeyStore } from "../interfaces.js";
 
 function generateRawKey(): string {

@@ -467,7 +467,9 @@ describe("SQLite Store", () => {
     });
 
     test("verify should return undefined for unknown key", async () => {
-      const result = await stores.apiKeys.verify("kp_nonexistentkey1234567890abcdef1234567890abcdef1234567890abcdef12");
+      const result = await stores.apiKeys.verify(
+        "kp_nonexistentkey1234567890abcdef1234567890abcdef1234567890abcdef12",
+      );
       expect(result).toBeUndefined();
     });
 

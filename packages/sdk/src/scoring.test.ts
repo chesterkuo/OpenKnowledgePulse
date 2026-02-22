@@ -317,7 +317,12 @@ describe("evaluateValue", () => {
       { step_id: 2, type: "observation", content: "Found" },
     ];
 
-    const trace = makeTrace({ steps, confidence: 0.8, success: true, task_domain: "underwater_basket_weaving" });
+    const trace = makeTrace({
+      steps,
+      confidence: 0.8,
+      success: true,
+      task_domain: "underwater_basket_weaving",
+    });
     const score = await evaluateValue(trace);
 
     // Unknown domain should still produce a valid 0-1 score

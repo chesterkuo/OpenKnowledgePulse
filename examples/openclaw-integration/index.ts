@@ -59,8 +59,10 @@ async function codeReviewAgent(codeSnippet: string): Promise<string> {
 
   // In a real integration, you would send `prompt` to an LLM here.
   // For this demo, we return a simulated result.
-  return `Analysis complete for snippet (${codeSnippet.length} chars). ` +
-    `Used ${fewShotContext ? "augmented" : "base"} prompt (${prompt.length} chars).`;
+  return (
+    `Analysis complete for snippet (${codeSnippet.length} chars). ` +
+    `Used ${fewShotContext ? "augmented" : "base"} prompt (${prompt.length} chars).`
+  );
 }
 
 // ── 4. Wrap with auto-capture ───────────────────────────────

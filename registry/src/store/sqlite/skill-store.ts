@@ -48,7 +48,9 @@ export class SqliteSkillStore implements SkillStore {
 
     if (opts.query) {
       const q = `%${opts.query.toLowerCase()}%`;
-      conditions.push("(LOWER(name) LIKE $query OR LOWER(description) LIKE $query OR LOWER(tags) LIKE $query)");
+      conditions.push(
+        "(LOWER(name) LIKE $query OR LOWER(description) LIKE $query OR LOWER(tags) LIKE $query)",
+      );
       params.$query = q;
     }
 

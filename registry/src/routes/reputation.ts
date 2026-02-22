@@ -44,7 +44,11 @@ export function reputationRoutes(stores: AllStores) {
       }
     }
     return c.json({
-      data: { agents_updated: result.scores.size, iterations: result.iterations, converged: result.converged },
+      data: {
+        agents_updated: result.scores.size,
+        iterations: result.iterations,
+        converged: result.converged,
+      },
     });
   });
 
