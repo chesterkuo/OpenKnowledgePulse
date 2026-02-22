@@ -10,6 +10,13 @@ export interface AuthContext {
 
 export function authMiddleware(apiKeyStore: ApiKeyStore) {
   return async (c: Context, next: Next) => {
+    // If already authenticated (e.g. by JWT middleware), skip API key check
+    const existingAuth = c.get("auth") as AuthContext | undefined;
+    if (existingAuth?.authenticated) {
+      await next();
+      return;
+    }
+
     const authHeader = c.req.header("Authorization");
     const authCtx: AuthContext = {
       authenticated: false,

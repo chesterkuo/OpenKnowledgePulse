@@ -27,6 +27,20 @@ const app = new Hono();
 
 // Global middleware
 app.use("*", cors());
+
+// Wire JWT/OIDC auth if configured (runs before API key auth)
+if (config.oidcIssuer && config.oidcAudience && config.oidcJwksUrl) {
+  const { jwtAuthMiddleware } = await import("./middleware/jwt-auth.js");
+  app.use(
+    "*",
+    jwtAuthMiddleware({
+      issuer: config.oidcIssuer,
+      audience: config.oidcAudience,
+      jwksUrl: config.oidcJwksUrl,
+    }),
+  );
+}
+
 app.use("*", authMiddleware(stores.apiKeys));
 app.use("*", rateLimitMiddleware(stores.rateLimit, stores.apiKeys));
 app.use("*", schemaVersionMiddleware());

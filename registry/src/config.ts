@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const ConfigSchema = z.object({
-  port: z.coerce.number().default(8080),
+  port: z.coerce.number().default(3000),
   retentionNetworkDays: z.coerce.number().default(-1), // -1 = permanent
   retentionOrgDays: z.coerce.number().default(730), // 24 months
   retentionPrivateDays: z.coerce.number().default(365), // 12 months
@@ -10,6 +10,9 @@ const ConfigSchema = z.object({
   databaseUrl: z.string().optional(),
   redisUrl: z.string().optional(),
   redisPrefix: z.string().default("kp:"),
+  oidcIssuer: z.string().optional(),
+  oidcAudience: z.string().optional(),
+  oidcJwksUrl: z.string().optional(),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
@@ -25,5 +28,8 @@ export function loadConfig(): Config {
     databaseUrl: process.env.KP_DATABASE_URL,
     redisUrl: process.env.KP_REDIS_URL,
     redisPrefix: process.env.KP_REDIS_PREFIX,
+    oidcIssuer: process.env.KP_OIDC_ISSUER,
+    oidcAudience: process.env.KP_OIDC_AUDIENCE,
+    oidcJwksUrl: process.env.KP_OIDC_JWKS_URL,
   });
 }
