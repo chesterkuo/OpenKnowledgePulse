@@ -11,6 +11,7 @@ import { exportRoutes } from "./routes/export.js";
 import { knowledgeRoutes } from "./routes/knowledge.js";
 import { reputationRoutes } from "./routes/reputation.js";
 import { skillRoutes } from "./routes/skills.js";
+import { marketplaceRoutes } from "./routes/marketplace.js";
 import { sopRoutes } from "./routes/sop.js";
 import { createMemoryStore } from "./store/memory/index.js";
 
@@ -37,6 +38,7 @@ app.route("/v1/reputation", reputationRoutes(stores));
 app.route("/v1/export", exportRoutes(stores));
 app.route("/v1/auth", authRoutes(stores));
 app.route("/v1/sop", sopRoutes(stores));
+app.route("/v1/marketplace", marketplaceRoutes(stores));
 
 console.log(`KnowledgePulse Registry running on port ${config.port}`);
 
