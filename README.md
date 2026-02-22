@@ -78,6 +78,9 @@
 <img src="https://img.shields.io/badge/protocol-MCP%20ready-12B5A8?style=flat" alt="MCP"/>
 <img src="https://img.shields.io/badge/SKILL.md-compatible-1E7EC8?style=flat" alt="SKILL.md"/>
 <img src="https://img.shields.io/badge/tests-639%20passing-18A06A?style=flat" alt="Tests"/>
+<img src="https://img.shields.io/github/stars/openclaw/knowledgepulse?style=flat&color=E07A20" alt="Stars"/>
+
+<a href="https://openknowledgepulse.org"><strong>Website</strong></a> · <a href="https://openknowledgepulse.org/docs/getting-started/introduction"><strong>Docs</strong></a> · <a href="https://github.com/openclaw/knowledgepulse"><strong>GitHub</strong></a>
 
 </div>
 
@@ -301,14 +304,14 @@ cd website && npm run build
 
 Full documentation available in English and Simplified Chinese:
 
-- [Getting Started](https://knowledgepulse.dev/docs/getting-started/installation)
-- [Architecture](https://knowledgepulse.dev/docs/architecture/overview)
-- [SDK Reference](https://knowledgepulse.dev/docs/sdk/types)
-- [Registry API](https://knowledgepulse.dev/docs/registry/rest-api)
-- [MCP Server](https://knowledgepulse.dev/docs/mcp-server/overview)
-- [CLI](https://knowledgepulse.dev/docs/cli/commands)
-- [SOP Studio](https://knowledgepulse.dev/docs/sop-studio/getting-started)
-- [Marketplace](https://knowledgepulse.dev/docs/marketplace/overview)
+- [Getting Started](https://openknowledgepulse.org/docs/getting-started/installation)
+- [Architecture](https://openknowledgepulse.org/docs/architecture/overview)
+- [SDK Reference](https://openknowledgepulse.org/docs/sdk/types)
+- [Registry API](https://openknowledgepulse.org/docs/registry/rest-api)
+- [MCP Server](https://openknowledgepulse.org/docs/mcp-server/overview)
+- [CLI](https://openknowledgepulse.org/docs/cli/commands)
+- [SOP Studio](https://openknowledgepulse.org/docs/sop-studio/getting-started)
+- [Marketplace](https://openknowledgepulse.org/docs/marketplace/overview)
 
 ## Contributing
 
@@ -325,7 +328,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. All contributions require
 | Phase 1 | Done | SKILL.md Registry + SDK + MCP + CLI |
 | Phase 2 | Done | Knowledge Capture + Scoring + Reputation |
 | Phase 3 | Done | Expert SOP Studio + Marketplace |
-| Phase 4 | In Progress | UI Polish + Industry Standardization |
+| Phase 4 | Done | UI Polish + Industry Standardization |
 
 ## License
 

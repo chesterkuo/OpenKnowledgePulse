@@ -7,7 +7,7 @@ const config: Config = {
   tagline: "Open AI Knowledge-Sharing Protocol",
   favicon: "img/octo-favicon.svg",
 
-  url: "https://knowledgepulse.dev",
+  url: "https://openknowledgepulse.org",
   baseUrl: "/",
 
   organizationName: "openclaw",

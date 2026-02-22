@@ -34,4 +34,10 @@ export const api = {
   getBalance: () => request("/v1/marketplace/balance"),
   getListings: (params?: Record<string, string>) =>
     request(`/v1/marketplace/listings?${new URLSearchParams(params || {})}`),
+  getListing: (id: string) => request(`/v1/marketplace/listings/${id}`),
+  createListing: (data: unknown) =>
+    request("/v1/marketplace/listings", { method: "POST", body: JSON.stringify(data) }),
+  purchaseListing: (id: string) =>
+    request(`/v1/marketplace/purchase/${id}`, { method: "POST" }),
+  getEarnings: () => request("/v1/marketplace/earnings"),
 };

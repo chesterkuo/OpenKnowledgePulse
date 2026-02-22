@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import Dashboard from "./pages/Dashboard";
 import Editor from "./pages/Editor";
 import Import from "./pages/Import";
+import Marketplace from "./pages/Marketplace";
 import Settings from "./pages/Settings";
 import TestSandbox from "./pages/TestSandbox";
 
@@ -55,6 +56,9 @@ export default function App() {
                 </NavLink>
                 <NavLink to="/import" className={navLinkClass}>
                   Import
+                </NavLink>
+                <NavLink to="/marketplace" className={navLinkClass}>
+                  Marketplace
                 </NavLink>
                 {/* Test sandbox requires an ID param, e.g. /test/some-id */}
                 <NavLink to="/test/sandbox" className={navLinkClass}>
@@ -113,6 +117,9 @@ export default function App() {
               <NavLink to="/import" className={navLinkClass} onClick={() => setMenuOpen(false)}>
                 Import
               </NavLink>
+              <NavLink to="/marketplace" className={navLinkClass} onClick={() => setMenuOpen(false)}>
+                Marketplace
+              </NavLink>
               <NavLink to="/test/sandbox" className={navLinkClass} onClick={() => setMenuOpen(false)}>
                 Test
               </NavLink>
@@ -130,6 +137,7 @@ export default function App() {
           <Route path="/editor/new" element={<Editor />} />
           <Route path="/editor/:id" element={<Editor />} />
           <Route path="/import" element={<Import />} />
+          <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/test/:id" element={<TestSandbox />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
