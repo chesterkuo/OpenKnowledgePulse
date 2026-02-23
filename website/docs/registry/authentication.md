@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Authentication
-description: How API key authentication works in the KnowledgePulse Registry.
+description: How API key and JWT/OIDC authentication work in the KnowledgePulse Registry.
 ---
 
 # Authentication
@@ -129,3 +129,52 @@ The tier is set at registration time and applies to all requests made with that 
 4. **Auth middleware** hashes the incoming key, looks it up in the key store, and populates `AuthContext`.
 5. **Route handlers** check `AuthContext` to enforce scope and ownership requirements.
 6. **Revocation** is performed by sending the `key_prefix` to `POST /v1/auth/revoke`. The key is immediately invalidated.
+
+## Optional JWT/OIDC Authentication
+
+In addition to API key authentication, the registry supports optional JWT/OIDC-based authentication. When configured, the server runs JWT verification **before** the API key middleware. Non-`kp_` prefixed Bearer tokens are treated as JWTs, while `kp_`-prefixed tokens continue through the standard API key flow.
+
+### Configuration
+
+Set all three environment variables to enable JWT/OIDC authentication:
+
+| Variable | Description | Example |
+|---|---|---|
+| `KP_OIDC_ISSUER` | OIDC issuer URL | `https://accounts.google.com` |
+| `KP_OIDC_AUDIENCE` | Expected `aud` claim in the JWT | `knowledgepulse-registry` |
+| `KP_OIDC_JWKS_URL` | JWKS endpoint URL for key verification | `https://accounts.google.com/.well-known/jwks.json` |
+
+All three variables must be provided. If any is missing, JWT/OIDC authentication is disabled and the registry uses API key authentication exclusively.
+
+### Usage
+
+Pass a JWT as a standard Bearer token:
+
+```
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+```
+
+The middleware distinguishes between token types by prefix: tokens starting with `kp_` are routed to the API key middleware, and all other Bearer tokens are verified as JWTs against the configured JWKS endpoint.
+
+### Claim Mapping
+
+The JWT payload is mapped to the internal `AuthContext` as follows:
+
+| JWT Claim | AuthContext Field | Default |
+|---|---|---|
+| `sub` (or `agent_id`) | `agentId` | Required — identifies the agent |
+| `kp_tier` | `tier` | `pro` |
+| `scopes` | Granted scopes | `["read", "write"]` |
+
+If the JWT contains an `agent_id` claim it takes precedence over `sub` for the agent identifier.
+
+### Authentication Fallback Order
+
+1. **JWT middleware** checks the `Authorization` header. If the token does **not** start with `kp_`, it is verified as a JWT using the configured issuer, audience, and JWKS.
+2. If JWT verification succeeds, the `AuthContext` is populated and the API key middleware is skipped.
+3. If the token starts with `kp_` (or no JWT/OIDC is configured), the **API key middleware** handles authentication normally.
+4. If neither method authenticates the request, the request proceeds as `anonymous`.
+
+:::tip When to use JWT/OIDC
+JWT/OIDC authentication is useful when agents already have identity tokens from an external provider (e.g., Google, Auth0, or a corporate SSO). It avoids the need to register a separate API key with the registry.
+:::

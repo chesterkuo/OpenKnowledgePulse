@@ -10,12 +10,12 @@ The KnowledgePulse CLI (`@knowledgepulse/cli`) provides command-line access to t
 
 ## Configuration
 
-The CLI stores its configuration in two files under `~/.knowledgepulse/`:
+The CLI stores its configuration in two files under `~/.config/knowledgepulse/`:
 
 | File | Contents |
 |---|---|
-| `~/.knowledgepulse/config.json` | `registryUrl` -- the registry endpoint the CLI talks to. |
-| `~/.knowledgepulse/auth.json` | `apiKey`, `agentId`, `keyPrefix` -- authentication credentials. |
+| `~/.config/knowledgepulse/config.json` | `registryUrl` -- the registry endpoint the CLI talks to. |
+| `~/.config/knowledgepulse/auth.json` | `apiKey`, `agentId`, `keyPrefix` -- authentication credentials. |
 
 ---
 
@@ -70,6 +70,7 @@ The CLI infers the contribution type from the file extension:
 
 - `.md` files are treated as **SKILL.md** documents.
 - `.json` files are treated as **KnowledgeUnit** objects.
+- **Directories** are contributed as bundles -- all eligible files within the directory are packaged and contributed together.
 
 **Examples:**
 
@@ -79,6 +80,9 @@ kp contribute my-skill.md
 
 # Contribute a knowledge unit with restricted visibility
 kp contribute trace.json --visibility org
+
+# Contribute an entire directory as a bundle
+kp contribute ./my-knowledge-pack/
 ```
 
 ---
@@ -100,7 +104,7 @@ kp auth register [options]
 | `--agent-id` | Agent identifier. | `agent-{timestamp}` |
 | `--scopes` | Comma-separated list of permission scopes. | `read,write` |
 
-The generated key is stored in `~/.knowledgepulse/auth.json`.
+The generated key is stored in `~/.config/knowledgepulse/auth.json`.
 
 #### kp auth revoke
 
@@ -131,6 +135,7 @@ kp install <skill-id> [options]
 | Option | Alias | Description | Default |
 |---|---|---|---|
 | `--output` | `-o` | Directory to save the skill file. | `~/.claude/skills` |
+| `--for` | -- | Install a skill for a specific agent or tool. | -- |
 
 **Example:**
 
@@ -140,6 +145,9 @@ kp install skill-abc123
 
 # Install to a custom directory
 kp install skill-abc123 --output ./my-skills
+
+# Install a skill for a specific agent
+kp install skill-abc123 --for cursor
 ```
 
 ---
@@ -176,4 +184,64 @@ kp security report <unit-id> [options]
 
 ```bash
 kp security report ku-xyz789 --reason "Contains hallucinated data"
+```
+
+---
+
+### kp list
+
+List published knowledge units. Useful for reviewing what has been contributed from a given directory or across the registry.
+
+```bash
+kp list [options]
+```
+
+| Option | Alias | Description | Default |
+|---|---|---|---|
+| `--json` | -- | Output raw JSON instead of formatted text. | `false` |
+| `--dir` | -- | Directory to list knowledge units from. | `.` |
+
+**Examples:**
+
+```bash
+# List all published units in the current directory
+kp list
+
+# List units from a specific directory in JSON format
+kp list --dir ./my-knowledge --json
+```
+
+---
+
+### kp import
+
+Import knowledge from external sources such as Notion, Confluence, or local files. The imported content is converted into KnowledgeUnit format.
+
+```bash
+kp import [options]
+```
+
+| Option | Alias | Description | Default |
+|---|---|---|---|
+| `--source` | -- | Source type: `notion`, `confluence`. | -- |
+| `--file` | -- | Import from a local file. | -- |
+| `--page-id` | -- | Page ID for API-based import. | -- |
+| `--token` | -- | API token for authenticating with the source. | -- |
+| `--base-url` | -- | Base URL for Confluence instances. | -- |
+| `--llm-provider` | -- | LLM provider for knowledge extraction. | -- |
+| `--llm-key` | -- | LLM API key for knowledge extraction. | -- |
+| `--json` | -- | Output raw JSON instead of formatted text. | `false` |
+
+**Examples:**
+
+```bash
+# Import from a local file
+kp import --file ./notes.md
+
+# Import a Notion page
+kp import --source notion --page-id abc123 --token secret_xxx
+
+# Import from Confluence with LLM-assisted extraction
+kp import --source confluence --page-id 12345 --token xxx \
+  --base-url https://myteam.atlassian.net --llm-provider openai --llm-key sk-xxx
 ```

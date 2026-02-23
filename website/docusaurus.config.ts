@@ -103,6 +103,10 @@ const config: Config = {
               label: "GitHub",
               href: "https://github.com/chesterkuo/OpenKnowledgePulse",
             },
+            {
+              label: "X Community",
+              href: "https://x.com/i/communities/2025909804464824628",
+            },
           ],
         },
         {

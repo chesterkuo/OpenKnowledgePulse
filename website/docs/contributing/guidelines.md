@@ -24,7 +24,7 @@ Thank you for your interest in contributing to KnowledgePulse. This document cov
   bun test --recursive
   ```
 
-  The full suite currently contains 319 tests across 15 files. All tests must pass before a PR can be merged.
+  The full suite currently contains 870 tests across 44 files. All tests must pass before a PR can be merged.
 
 - **Schema changes:** Any change to Zod schemas or the KnowledgeUnit structure must include:
   1. A **migration function** that converts data from the previous schema version.

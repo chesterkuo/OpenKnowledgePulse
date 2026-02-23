@@ -70,10 +70,14 @@ function stripFrontmatter(content: string): string {
   return content.replace(/^---[\s\S]*?---\s*/, "");
 }
 
+const PAGE_SIZE = 30;
+
 function SkillsTab() {
   const { t } = useTranslation();
   const [skills, setSkills] = useState<StoredSkill[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [domain, setDomain] = useState("");
@@ -96,63 +100,66 @@ function SkillsTab() {
     await navigator.clipboard.writeText(selected.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    const fileCount = selected.files ? Object.keys(selected.files).length : 0;
-    if (fileCount > 0) {
-      toast.info(t("marketplace.copyNote", { count: fileCount }));
-    }
+    const slug = selected.name.replace(/\s+/g, "-").toLowerCase();
+    toast.info(t("marketplace.copyGuidance", { path: `~/.claude/skills/${slug}/SKILL.md` }));
   }, [selected, t]);
 
   const handleDownload = useCallback(() => {
     if (!selected) return;
     const slug = selected.name.replace(/\s+/g, "-").toLowerCase();
-    const hasFiles = selected.files && Object.keys(selected.files).length > 0;
 
-    if (hasFiles) {
-      // Generate ZIP with SKILL.md + all bundled files
-      const entries = [
-        { name: "SKILL.md", content: selected.content },
-        ...Object.entries(selected.files!).map(([name, content]) => ({ name, content })),
-      ];
-      const zipData = generateZip(entries);
-      const blob = new Blob([zipData.buffer as ArrayBuffer], { type: "application/zip" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${slug}.zip`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } else {
-      const blob = new Blob([selected.content], { type: "text/markdown" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${slug}.SKILL.md`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+    // Always generate ZIP with correct directory structure: slug/SKILL.md
+    const entries = [
+      { name: `${slug}/SKILL.md`, content: selected.content },
+      ...Object.entries(selected.files ?? {}).map(([name, content]) => ({
+        name: `${slug}/${name}`,
+        content,
+      })),
+    ];
+    const zipData = generateZip(entries);
+    const blob = new Blob([zipData.buffer as ArrayBuffer], { type: "application/zip" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${slug}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
   }, [selected]);
 
-  const fetchSkills = useCallback(async () => {
-    setLoading(true);
+  const fetchSkills = useCallback(async (offset = 0, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
     try {
-      const params: Record<string, string> = { limit: "50" };
+      const params: Record<string, string> = {
+        limit: String(PAGE_SIZE),
+        offset: String(offset),
+      };
       if (query) params.q = query;
       if (domain) params.domain = domain;
       const res = (await api.getSkills(params)) as SkillsResponse;
-      setSkills(res.data);
+      setSkills((prev) => (append ? [...prev, ...res.data] : res.data));
+      setTotal(res.total);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to fetch skills";
       setError(message);
-      setSkills([]);
+      if (!append) setSkills([]);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, [query, domain]);
 
+  const handleLoadMore = useCallback(() => {
+    fetchSkills(skills.length, true);
+  }, [fetchSkills, skills.length]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchSkills();
+      fetchSkills(0, false);
     }, 300);
     return () => clearTimeout(timer);
   }, [fetchSkills]);
@@ -226,11 +233,30 @@ function SkillsTab() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {skills.map((skill) => (
-            <SkillCard key={skill.id} skill={skill} onClick={handleSelect} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {skills.map((skill) => (
+              <SkillCard key={skill.id} skill={skill} onClick={handleSelect} />
+            ))}
+          </div>
+
+          {/* Load more + count */}
+          <div className="flex flex-col items-center gap-3 pt-2">
+            <p className="text-xs text-kp-muted">
+              {t("marketplace.showingCount", { shown: skills.length, total })}
+            </p>
+            {skills.length < total && (
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="px-6 py-2 text-sm font-medium text-kp-teal border border-kp-teal/40 rounded-lg hover:bg-kp-teal/10 disabled:opacity-50 transition-colors"
+              >
+                {loadingMore ? t("common.loading") : t("marketplace.loadMore")}
+              </button>
+            )}
+          </div>
+        </>
       )}
 
       {/* Skill detail dialog */}
@@ -265,12 +291,36 @@ function SkillsTab() {
                   ))}
                 </div>
               )}
-              {/* CLI install hint */}
-              <div className="bg-kp-navy/60 rounded-lg p-3 border border-kp-border">
-                <p className="text-xs text-kp-muted mb-1.5">{t("marketplace.installViaCli")}</p>
-                <code className="text-xs text-kp-teal font-mono select-all">
-                  kp install {selected.id}
-                </code>
+              {/* Install section — primary CTA */}
+              <div className="bg-kp-teal/10 rounded-lg p-4 border border-kp-teal/30 space-y-3">
+                <p className="text-sm font-medium text-kp-teal">{t("marketplace.installTitle")}</p>
+
+                {/* Option 1: kp install (recommended) */}
+                <div>
+                  <p className="text-xs text-kp-muted mb-1">{t("marketplace.installViaCli")}</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-xs text-kp-teal font-mono bg-kp-navy/80 rounded px-2.5 py-1.5 select-all">
+                      kp install {selected.id}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`kp install ${selected.id}`);
+                        toast.success(t("marketplace.copied"));
+                      }}
+                      className="px-2 py-1.5 text-xs text-kp-muted border border-kp-border rounded hover:text-kp-text transition-colors"
+                    >
+                      {t("marketplace.copySkill")}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tool-specific hints */}
+                <div className="text-xs text-kp-muted space-y-0.5 border-t border-kp-border/50 pt-2">
+                  <p>{t("marketplace.hintClaude")}</p>
+                  <p>{t("marketplace.hintCursor")}</p>
+                  <p>{t("marketplace.hintWindsurf")}</p>
+                </div>
               </div>
 
               {/* Bundled files list */}
@@ -316,16 +366,17 @@ function SkillsTab() {
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium border border-kp-border text-kp-text rounded-lg hover:bg-kp-panel transition-colors"
+                className="inline-flex items-center px-3 py-2 text-xs text-kp-muted border border-kp-border rounded-lg hover:text-kp-text transition-colors"
+                title={t("marketplace.copyContentTip")}
               >
-                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {copied ? (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   ) : (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   )}
                 </svg>
-                {copied ? t("marketplace.copied") : t("marketplace.copySkill")}
+                {copied ? t("marketplace.copied") : t("marketplace.copyContent")}
               </button>
               <button
                 type="button"
@@ -335,9 +386,7 @@ function SkillsTab() {
                 <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                {selected?.files && Object.keys(selected.files).length > 0
-                  ? t("marketplace.downloadBundle")
-                  : t("marketplace.downloadSkill")}
+                {t("marketplace.downloadZip")}
               </button>
             </div>
           </DialogFooter>

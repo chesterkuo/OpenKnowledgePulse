@@ -223,7 +223,7 @@ Approve a specific version of an SOP, making it the default version returned by 
 ## Export SOP as Skill-MD
 
 ```
-GET /v1/sop/:id/export-skill
+POST /v1/sop/:id/export-skill
 ```
 
 | Property | Value |
@@ -242,7 +242,7 @@ Export an SOP as a Skill-MD formatted file. Returns the content as `text/markdow
 **Example**
 
 ```bash
-curl http://localhost:3000/v1/sop/kp:sop:abc-123/export-skill \
+curl -X POST http://localhost:3000/v1/sop/kp:sop:abc-123/export-skill \
   -H "Accept: text/markdown" \
   -o bug-triage.skill.md
 ```

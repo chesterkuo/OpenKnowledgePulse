@@ -49,7 +49,7 @@ Four runtime components implement the protocol stack:
 |-----------|---------|------|
 | **SDK** | `@knowledgepulse/sdk` | Core library -- types, capture, retrieve, scoring, SKILL.md parsing, migrations |
 | **Registry** | `registry/` | Hono REST API server -- stores knowledge units, handles auth, rate limiting |
-| **MCP Server** | `@knowledgepulse/mcp` | Model Context Protocol server -- exposes 6 MCP tools, dual-mode registry bridge |
+| **MCP Server** | `@knowledgepulse/mcp` | Model Context Protocol server -- exposes 7 MCP tools, dual-mode registry bridge |
 | **CLI** | `@knowledgepulse/cli` | Command-line interface -- search, install, validate, contribute, auth, security |
 
 ### SDK
@@ -77,10 +77,10 @@ The CLI (`packages/cli`) provides a command-line interface for developers and ag
 knowledgepulse/
 ├── packages/
 │   ├── sdk/            # @knowledgepulse/sdk — types, capture, retrieve, scoring, migrations
-│   ├── mcp-server/     # @knowledgepulse/mcp — 6 MCP tools, dual-mode registry bridge
-│   ├── cli/            # @knowledgepulse/cli — search, install, validate, contribute, auth
-│   └── sop-studio/     # Placeholder (Phase 3)
-├── registry/           # Hono REST API server (in-memory stores, auth, rate limiting)
+│   ├── mcp-server/     # @knowledgepulse/mcp — 7 MCP tools, dual-mode registry bridge
+│   ├── cli/            # @knowledgepulse/cli — search, install, validate, contribute, auth, list, import
+│   └── sop-studio/     # React SPA — visual decision tree editor
+├── registry/           # Hono REST API server (PostgreSQL + Redis + memory stores, auth, rate limiting)
 ├── specs/              # codegen.ts, validate-consistency.ts, skill-md-extension.md
 ├── examples/           # basic-sdk-usage, mcp-client-example, langraph-integration
 └── website/            # Docusaurus documentation site
@@ -88,7 +88,7 @@ knowledgepulse/
 
 ## Storage Model
 
-Phase 1 uses **in-memory `Map<>` stores** behind async `Promise<T>` interfaces. This design is intentional: the async interface boundary means the storage backend can be swapped to a persistent database (PostgreSQL, SQLite, etc.) without changing any consumer code. The vector cache uses a brute-force linear scan rather than HNSW, and is likewise swappable via its interface.
+KnowledgePulse supports three storage backends behind async `Promise<T>` interfaces: **PostgreSQL** (primary, 17 tables with JSONB and tsvector full-text search), **Redis** (rate limiting, caching, idempotency keys, MCP sessions), and **in-memory `Map<>` stores** (development and testing). A factory pattern selects the backend at startup. Because every store method returns a `Promise<T>`, consumers are backend-agnostic -- switching from memory to PostgreSQL requires no code changes. Full-text search uses PostgreSQL's built-in tsvector/tsquery with ts_rank scoring.
 
 ## Tech Stack
 
@@ -100,4 +100,4 @@ Phase 1 uses **in-memory `Map<>` stores** behind async `Promise<T>` interfaces. 
 | **tsup** | Build tool for the SDK (ESM + CJS + TypeScript declarations) |
 | **Biome** | Linter and formatter |
 | **@modelcontextprotocol/sdk** | MCP protocol implementation |
-| **bun test** | Test runner (319 tests across 15 files) |
+| **bun test** | Test runner (870 tests across 44 files) |

@@ -13,7 +13,7 @@
 <img src="https://img.shields.io/badge/runtime-Bun-E07A20?style=flat&logo=bun" alt="Runtime"/>
 <img src="https://img.shields.io/badge/protocol-MCP%20ready-12B5A8?style=flat" alt="MCP"/>
 <img src="https://img.shields.io/badge/SKILL.md-compatible-1E7EC8?style=flat" alt="SKILL.md"/>
-<img src="https://img.shields.io/badge/tests-639%20passing-18A06A?style=flat" alt="Tests"/>
+<img src="https://img.shields.io/badge/tests-870%20passing-18A06A?style=flat" alt="Tests"/>
 <img src="https://img.shields.io/github/stars/chesterkuo/OpenKnowledgePulse?style=flat&color=E07A20" alt="Stars"/>
 
 <a href="https://openknowledgepulse.org"><strong>Website</strong></a> · <a href="https://openknowledgepulse.org/docs/getting-started/introduction"><strong>Docs</strong></a> · <a href="https://github.com/chesterkuo/OpenKnowledgePulse"><strong>GitHub</strong></a>
@@ -142,14 +142,15 @@ bun run registry/src/index.ts
 ```
 knowledgepulse/
   packages/
-    sdk/           @knowledgepulse/sdk    -- types, capture, retrieve, scoring
-    mcp-server/    @knowledgepulse/mcp    -- 6 MCP tools, dual-mode bridge
-    cli/           @knowledgepulse/cli    -- search, install, validate, contribute
+    sdk/           @knowledgepulse/sdk    -- types, capture, retrieve, scoring, skill-md, migrations, sop-import
+    mcp-server/    @knowledgepulse/mcp    -- 7 MCP tools, dual-mode bridge
+    cli/           @knowledgepulse/cli    -- search, install, validate, contribute, auth, security, list, import
     sop-studio/    SOP Studio React SPA   -- visual decision tree editor
-  registry/        Hono REST API server   -- auth, rate limiting, SQLite/memory stores
+    ui/            @knowledgepulse/ui     -- shared Octo CSS design tokens
+  registry/        Hono REST API server   -- auth, rate limiting, PostgreSQL + Redis + memory stores
   specs/           JSON Schema, codegen, SKILL.md extension spec
-  examples/        SDK usage, MCP client, LangGraph integration
-  website/         Docusaurus 3 docs      -- bilingual (en + zh-Hans)
+  examples/        SDK usage, MCP client, LangGraph, CrewAI, AutoGen, Flowise, OpenClaw integrations
+  website/         Docusaurus 3 docs      -- 5 locales (en, zh-Hans, ja, ko, es)
 ```
 
 ## Tech Stack
@@ -162,20 +163,21 @@ knowledgepulse/
 | SDK Build | tsup (ESM + CJS + .d.ts) |
 | SOP Studio | React 19 + Vite + Tailwind CSS v4 + React Flow |
 | Linter | Biome |
-| Tests | bun test (639 tests) |
+| Tests | bun test (870 tests) |
 | Protocol | MCP (Model Context Protocol) |
-| Docs | Docusaurus 3 (en + zh-Hans) |
+| Docs | Docusaurus 3 (5 locales) |
 
 ## MCP Tools
 
 | Tool | Description |
 |------|-------------|
 | `kp_search_skill` | Semantic search across SKILL.md registry |
-| `kp_get_skill` | Retrieve full skill content by ID |
 | `kp_contribute_skill` | Submit new skills with auto-validation |
 | `kp_search_knowledge` | Search KnowledgeUnits (traces, patterns, SOPs) |
 | `kp_contribute_knowledge` | Contribute KnowledgeUnits with quality pre-scoring |
 | `kp_validate_unit` | Validate KnowledgeUnit schema compliance |
+| `kp_reputation_query` | Query contributor reputation scores and history |
+| `kp_provider_discover` | Discover knowledge providers by domain or capability |
 
 ## KnowledgeUnit Types
 
@@ -238,14 +240,14 @@ cd website && npm run build
 
 ## Documentation
 
-Full documentation available in English and Simplified Chinese:
+Full documentation available in 5 languages:
 
-- [Getting Started](https://openknowledgepulse.org/docs/getting-started/installation)
-- [Architecture](https://openknowledgepulse.org/docs/architecture/overview)
+- [Getting Started](https://openknowledgepulse.org/docs/getting-started/introduction)
+- [Architecture](https://openknowledgepulse.org/docs/architecture/setup)
 - [SDK Reference](https://openknowledgepulse.org/docs/sdk/types)
-- [Registry API](https://openknowledgepulse.org/docs/registry/rest-api)
+- [Registry API](https://openknowledgepulse.org/docs/registry/api-reference)
 - [MCP Server](https://openknowledgepulse.org/docs/mcp-server/overview)
-- [CLI](https://openknowledgepulse.org/docs/cli/commands)
+- [CLI](https://openknowledgepulse.org/docs/cli/reference)
 - [SOP Studio](https://openknowledgepulse.org/docs/sop-studio/getting-started)
 - [Marketplace](https://openknowledgepulse.org/docs/marketplace/overview)
 

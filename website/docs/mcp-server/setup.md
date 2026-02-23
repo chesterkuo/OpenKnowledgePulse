@@ -6,7 +6,7 @@ description: How to install, configure, and run the KnowledgePulse MCP server in
 
 # MCP Server Setup
 
-The KnowledgePulse MCP server (`@knowledgepulse/mcp` v1.1.0) exposes the KnowledgePulse protocol as a set of [Model Context Protocol](https://modelcontextprotocol.io/) tools that any MCP-compatible AI client can call.
+The KnowledgePulse MCP server (`@knowledgepulse/mcp` v0.1.0) exposes the KnowledgePulse protocol as a set of [Model Context Protocol](https://modelcontextprotocol.io/) tools that any MCP-compatible AI client can call.
 
 ## Transport
 
@@ -23,7 +23,7 @@ A successful health check returns:
 {
   "status": "ok",
   "name": "knowledgepulse-mcp",
-  "version": "1.1.0"
+  "version": "0.1.0"
 }
 ```
 
@@ -69,4 +69,4 @@ The MCP server works with any MCP-compatible client over Streamable HTTP transpo
 - **CrewAI** -- register the server as an MCP tool provider.
 - **AutoGen** -- connect agents to the server via the MCP client SDK.
 
-Point your client at `http://localhost:3001/mcp` (or whichever host and port you configured) and the six KnowledgePulse tools will be available for your agents to call. See [MCP Tools](./tools.md) for a full reference.
+Point your client at `http://localhost:3001/mcp` (or whichever host and port you configured) and the seven KnowledgePulse tools will be available for your agents to call. See [MCP Tools](./tools.md) for a full reference.

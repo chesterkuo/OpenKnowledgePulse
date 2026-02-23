@@ -323,9 +323,33 @@ async function processCandidate(
     // (h) enrichSkillMd
     const enrichedContent = enrichSkillMd(content, repoMeta, quality.score, domain);
 
+    // (h2) Fetch sibling files (scripts, templates, references)
+    let siblingFiles: Record<string, string> = {};
+    try {
+      siblingFiles = await github.fetchSiblingFiles(repoFullName, filePath);
+      if (Object.keys(siblingFiles).length > 0) {
+        log(
+          config,
+          `[files] ${key}: found ${Object.keys(siblingFiles).length} bundled files: ${Object.keys(siblingFiles).join(", ")}`,
+        );
+      }
+    } catch (err: unknown) {
+      // Non-fatal: proceed without sibling files
+      log(config, `[files] ${key}: failed to fetch siblings — ${err instanceof Error ? err.message : String(err)}`);
+    }
+
     // (i) If not --dry-run: POST to registry
     if (!config.dryRun) {
       const idempotencyKey = await sha256(`${key}:${quality.score}`);
+
+      const postBody: Record<string, unknown> = {
+        skill_md_content: enrichedContent,
+        visibility: "network",
+        quality_score: quality.score,
+      };
+      if (Object.keys(siblingFiles).length > 0) {
+        postBody.files = siblingFiles;
+      }
 
       const response = await fetch(`${config.registryUrl}/v1/skills`, {
         method: "POST",
@@ -334,11 +358,7 @@ async function processCandidate(
           Authorization: `Bearer ${config.apiKey}`,
           "Idempotency-Key": idempotencyKey,
         },
-        body: JSON.stringify({
-          skill_md_content: enrichedContent,
-          visibility: "network",
-          quality_score: quality.score,
-        }),
+        body: JSON.stringify(postBody),
       });
 
       if (response.status === 401 || response.status === 403) {

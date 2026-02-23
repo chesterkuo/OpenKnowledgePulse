@@ -255,6 +255,102 @@ export class GitHubClient {
   }
 
   /**
+   * List files in a directory within a GitHub repository.
+   * Returns an array of { name, path, type, size } for each entry.
+   */
+  async getDirectoryListing(
+    fullName: string,
+    dirPath: string,
+  ): Promise<Array<{ name: string; path: string; type: string; size: number }>> {
+    await this.apiLimiter.acquire();
+
+    const response = await withRetry(() =>
+      fetch(`${GITHUB_API}/repos/${fullName}/contents/${dirPath}`, {
+        headers: {
+          ...this.baseHeaders(),
+          Accept: "application/vnd.github+json",
+        },
+      }),
+    );
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = (await response.json()) as Array<{
+      name: string;
+      path: string;
+      type: string;
+      size: number;
+    }>;
+
+    return Array.isArray(data) ? data : [];
+  }
+
+  /**
+   * Fetch all text sibling files alongside a SKILL.md file.
+   *
+   * Recursively walks subdirectories (max depth 2) and collects text files,
+   * skipping binary files and internal metadata (metadata.json, _meta.json).
+   *
+   * Returns a Record<relativePath, content> suitable for the registry `files` field.
+   */
+  async fetchSiblingFiles(
+    fullName: string,
+    skillMdPath: string,
+    maxTotalBytes = 200_000,
+  ): Promise<Record<string, string>> {
+    const dirPath = skillMdPath.includes("/")
+      ? skillMdPath.substring(0, skillMdPath.lastIndexOf("/"))
+      : ".";
+
+    const SKIP_NAMES = new Set(["SKILL.md", "metadata.json", "_meta.json", "_expected.json"]);
+    const BINARY_EXTS = new Set([
+      ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg", ".woff", ".woff2",
+      ".ttf", ".eot", ".zip", ".tar", ".gz", ".pdf", ".lock", ".bin",
+    ]);
+
+    const files: Record<string, string> = {};
+    let totalBytes = 0;
+
+    const walkDir = async (currentDir: string, relativePrefix: string, depth: number) => {
+      if (depth > 2) return;
+
+      const entries = await this.getDirectoryListing(fullName, currentDir);
+      for (const entry of entries) {
+        if (SKIP_NAMES.has(entry.name)) continue;
+
+        if (entry.type === "dir") {
+          const subRel = relativePrefix ? `${relativePrefix}/${entry.name}` : entry.name;
+          await walkDir(entry.path, subRel, depth + 1);
+        } else if (entry.type === "file") {
+          // Skip binary files
+          const ext = entry.name.includes(".") ? `.${entry.name.split(".").pop()!.toLowerCase()}` : "";
+          if (BINARY_EXTS.has(ext)) continue;
+
+          // Skip files > 50KB individually
+          if (entry.size > 50_000) continue;
+
+          // Skip if total would exceed budget
+          if (totalBytes + entry.size > maxTotalBytes) continue;
+
+          try {
+            const content = await this.getFileContent(fullName, entry.path);
+            const relativePath = relativePrefix ? `${relativePrefix}/${entry.name}` : entry.name;
+            files[relativePath] = content;
+            totalBytes += content.length;
+          } catch {
+            // Skip files that can't be fetched
+          }
+        }
+      }
+    };
+
+    await walkDir(dirPath, "", 0);
+    return files;
+  }
+
+  /**
    * Fetch the raw content of a file from a GitHub repository.
    *
    * Uses the `application/vnd.github.raw+json` accept header so that

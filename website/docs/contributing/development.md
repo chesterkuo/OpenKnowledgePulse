@@ -16,7 +16,7 @@ This guide walks you through setting up a local development environment for the 
 ## Clone and Install
 
 ```bash
-git clone https://github.com/nicobailon/knowledgepulse.git
+git clone https://github.com/chesterkuo/OpenKnowledgePulse.git
 cd knowledgepulse
 bun install
 ```
@@ -29,12 +29,13 @@ bun install
 knowledgepulse/
   packages/
     sdk/           # @knowledgepulse/sdk -- types, capture, retrieve, scoring, skill-md, migrations
-    mcp-server/    # @knowledgepulse/mcp -- 6 MCP tools, dual-mode registry bridge
+    mcp-server/    # @knowledgepulse/mcp -- 7 MCP tools, dual-mode registry bridge
     cli/           # @knowledgepulse/cli -- search, install, validate, contribute, auth, security
-    sop-studio/    # Placeholder (Phase 3)
-  registry/        # Hono REST API server (in-memory stores, auth, rate limiting)
+    sop-studio/    # React 19 + Vite + Tailwind CSS v4 + @xyflow/react + shadcn/ui
+  registry/        # Hono REST API server (PostgreSQL + Redis + memory stores, auth, rate limiting)
   specs/           # codegen.ts, validate-consistency.ts, skill-md-extension.md
   examples/        # basic-sdk-usage, mcp-client-example, langraph-integration
+  website/         # Docusaurus 3 docs site (5 locales: en, zh-Hans, ja, ko, es)
 ```
 
 ## Common Tasks
@@ -65,7 +66,7 @@ bun run lint
 
 ### Run Tests
 
-All tests are written with `bun:test` and co-located with their source files as `*.test.ts`. The full suite comprises 319 tests across 15 files.
+All tests are written with `bun:test` and co-located with their source files as `*.test.ts`. The full suite comprises 870 tests across 44 files.
 
 ```bash
 bun test --recursive
@@ -73,7 +74,7 @@ bun test --recursive
 
 ### Start the Registry
 
-The registry is a Hono HTTP server with in-memory stores. It listens on port 3000 by default.
+The registry is a Hono HTTP server with PostgreSQL + Redis + memory stores. It listens on port 3000 by default.
 
 ```bash
 bun run registry/src/index.ts

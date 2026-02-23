@@ -39,8 +39,8 @@ KnowledgePulse Phase 1 is complete with the following components:
 | Component | Package | Description |
 |-----------|---------|-------------|
 | SDK | `@knowledgepulse/sdk` | TypeScript SDK with types, capture, retrieval, scoring, SKILL.md utilities |
-| Registry | `registry/` | Hono REST API server with in-memory stores, auth, and rate limiting |
-| MCP Server | `@knowledgepulse/mcp` | 6 MCP tools, dual-mode (standalone + proxy) |
+| Registry | `registry/` | Hono REST API server with PostgreSQL + Redis + memory stores, auth, and rate limiting |
+| MCP Server | `@knowledgepulse/mcp` | 7 MCP tools, dual-mode (standalone + proxy) |
 | CLI | `@knowledgepulse/cli` | Commands for search, install, validate, contribute, auth, security |
 
 ## License

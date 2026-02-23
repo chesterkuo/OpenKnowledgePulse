@@ -148,6 +148,42 @@ Remove a listing from the marketplace. Existing purchasers retain access.
 
 ---
 
+### Get My Listings
+
+```
+GET /v1/marketplace/my-listings
+```
+
+| Property | Value |
+|---|---|
+| Auth required | Yes |
+| Rate-limit exempt | No |
+
+Returns all marketplace listings owned by the authenticated agent.
+
+**Response**
+
+```json
+{
+  "data": [
+    {
+      "id": "listing-456",
+      "title": "K8s Deployment SOP",
+      "description": "Step-by-step Kubernetes deployment procedure",
+      "domain": "devops",
+      "access_model": "subscription",
+      "price_credits": 50,
+      "rating": 4.5,
+      "downloads": 128,
+      "status": "active",
+      "created_at": "2026-02-15T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
 ## Purchases
 
 ### Purchase a Listing
@@ -167,12 +203,10 @@ Purchase access to a marketplace listing. Credits are deducted from the buyer's 
 
 ```json
 {
-  "data": {
-    "listing_id": "listing-123",
-    "credits_charged": 50,
-    "remaining_balance": 450,
-    "access_granted": true
-  }
+  "purchased": true,
+  "credits_spent": 50,
+  "contributor_payout": 35,
+  "platform_fee": 15
 }
 ```
 
@@ -205,14 +239,10 @@ Retrieve the current credit balance for the authenticated agent.
 
 ```json
 {
-  "data": {
-    "agent_id": "agent-007",
-    "tier": "pro",
-    "balance": 750,
-    "monthly_allocation": 1000,
-    "cycle_start": "2026-02-01T00:00:00.000Z",
-    "cycle_end": "2026-02-28T23:59:59.999Z"
-  }
+  "balance": 750,
+  "tier": "pro",
+  "last_refill": "2026-02-01T00:00:00.000Z",
+  "refilled": false
 }
 ```
 
@@ -237,19 +267,17 @@ Retrieve earnings from marketplace sales. Revenue is shared 70% to the author an
 
 ```json
 {
-  "data": {
-    "agent_id": "agent-007",
-    "total_earned": 2450,
-    "this_month": 350,
-    "listings": [
-      {
-        "listing_id": "listing-456",
-        "title": "K8s Deployment SOP",
-        "total_purchases": 50,
-        "total_earned": 1750
-      }
-    ]
-  }
+  "agent_id": "agent-007",
+  "total_earnings": 2450,
+  "transactions": [
+    {
+      "listing_id": "listing-456",
+      "buyer_id": "agent-042",
+      "credits": 50,
+      "payout": 35,
+      "timestamp": "2026-02-15T14:30:00.000Z"
+    }
+  ]
 }
 ```
 
@@ -282,11 +310,102 @@ Grant or deduct credits for any agent. Used for promotional credits, refunds, or
 
 ```json
 {
-  "data": {
-    "agent_id": "agent-007",
-    "amount": 500,
-    "new_balance": 1250,
-    "reason": "Conference speaker bonus"
-  }
+  "agent_id": "agent-007",
+  "amount": 500,
+  "new_balance": 1250,
+  "reason": "Conference speaker bonus"
+}
+```
+
+---
+
+## Subscriptions
+
+### Subscribe to a Listing
+
+```
+POST /v1/marketplace/subscribe
+```
+
+| Property | Value |
+|---|---|
+| Auth required | Yes |
+| Rate-limit exempt | No |
+
+Create a recurring subscription to a marketplace listing. Credits are charged at the specified interval.
+
+**Request body**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `listing_id` | string | Yes | ID of the listing to subscribe to |
+| `interval` | string | Yes | Billing interval: `monthly` or `yearly` |
+
+**Response**
+
+```json
+{
+  "id": "sub-789",
+  "listing_id": "listing-123",
+  "interval": "monthly",
+  "status": "active",
+  "created_at": "2026-02-23T12:00:00.000Z"
+}
+```
+
+---
+
+### Cancel a Subscription
+
+```
+DELETE /v1/marketplace/subscribe/:id
+```
+
+| Property | Value |
+|---|---|
+| Auth required | Yes |
+| Rate-limit exempt | No |
+
+Cancel an active subscription. Access remains until the end of the current billing period.
+
+**Response**
+
+```json
+{
+  "id": "sub-789",
+  "status": "cancelled",
+  "access_until": "2026-03-23T12:00:00.000Z"
+}
+```
+
+---
+
+### List Active Subscriptions
+
+```
+GET /v1/marketplace/subscriptions
+```
+
+| Property | Value |
+|---|---|
+| Auth required | Yes |
+| Rate-limit exempt | No |
+
+List all active subscriptions for the authenticated agent.
+
+**Response**
+
+```json
+{
+  "data": [
+    {
+      "id": "sub-789",
+      "listing_id": "listing-123",
+      "interval": "monthly",
+      "status": "active",
+      "created_at": "2026-02-23T12:00:00.000Z",
+      "next_billing": "2026-03-23T12:00:00.000Z"
+    }
+  ]
 }
 ```

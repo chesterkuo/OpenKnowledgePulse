@@ -1,12 +1,12 @@
 ---
 sidebar_position: 2
 title: MCP Tools Reference
-description: Complete reference for all six MCP tools exposed by the KnowledgePulse MCP server.
+description: Complete reference for all seven MCP tools exposed by the KnowledgePulse MCP server.
 ---
 
 # MCP Tools Reference
 
-The KnowledgePulse MCP server exposes six tools. This page documents every parameter, its type and constraints, and the shape of each response.
+The KnowledgePulse MCP server exposes seven tools. This page documents every parameter, its type and constraints, and the shape of each response.
 
 ## kp_search_skill
 
@@ -163,5 +163,35 @@ Returns the agent's reputation score and contribution count.
 {
   "score": 0.91,
   "contributions": 47
+}
+```
+
+---
+
+## kp_provider_discover
+
+Discovers providers that offer specific capabilities or skills.
+
+### Parameters
+
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `capability` | `string` | Yes | -- | The capability to search for. |
+| `limit` | `number` | No | `10` | Maximum number of results to return. |
+
+### Response
+
+Returns a JSON object containing an array of matching providers, each with their capabilities and reputation score.
+
+```json
+{
+  "providers": [
+    {
+      "id": "provider-123",
+      "name": "CodeReview Pro",
+      "capabilities": ["code-review", "security-audit"],
+      "reputation_score": 0.92
+    }
+  ]
 }
 ```
