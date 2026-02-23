@@ -2,8 +2,7 @@
 /**
  * Re-import bundled files for skills that have sibling files on GitHub.
  *
- * - Patches existing skills via psql (execFile, no shell injection risk)
- * - Imports new high-value skills with bundled files via POST API
+ * Updates skills directly via psql (no API rate limiting issues).
  *
  * Usage:
  *   source .env && bun run scripts/reimport-bundled-files.ts
@@ -13,19 +12,14 @@ import { execFileSync } from "node:child_process";
 
 const GITHUB_API = "https://api.github.com";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const KP_API_KEY = process.env.KP_API_KEY;
-const REGISTRY_URL = "http://localhost:3000";
 
 const PG_HOST = "172.31.9.157";
 const PG_DB = "knowledgepulse";
 const PG_USER = "knowledgepulse_user";
+const PG_PASS = "KPulse2026Secure";
 
 if (!GITHUB_TOKEN) {
   console.error("Error: GITHUB_TOKEN environment variable is required");
-  process.exit(1);
-}
-if (!KP_API_KEY) {
-  console.error("Error: KP_API_KEY environment variable is required");
   process.exit(1);
 }
 
@@ -35,18 +29,17 @@ const ghHeaders: Record<string, string> = {
   "X-GitHub-Api-Version": "2022-11-28",
 };
 
-// Skills already in DB that need files added
+// Skills to patch with bundled files: use ID for precision (handles duplicates)
 const SKILLS_TO_PATCH = [
-  { name: "Verify Changes", repo: "google/ground-android", dir: ".agent/skills/verify_changes" },
-];
-
-// New high-value skills to import with bundled files
-const NEW_SKILLS = [
-  { repo: "danielmiessler/Personal_AI_Infrastructure", dir: "Releases/v3.0/.claude/skills/Prompting" },
-  { repo: "datasette/skill", dir: "." },
-  { repo: "blacktop/mcp-tts", dir: "skill" },
-  { repo: "upstash/vector-js", dir: "skills" },
-  { repo: "EnactProtocol/enact", dir: "tools/hello-rust" },
+  { id: "kp:skill:bf470d93-d839-45cf-97ad-119d094f3524", label: "Verify Changes", repo: "google/ground-android", dir: ".agent/skills/verify_changes" },
+  { id: "kp:skill:5d2439ee-1879-4d47-bb31-7df98274f482", label: "Verify Changes (dup)", repo: "google/ground-android", dir: ".agent/skills/verify_changes" },
+  { id: "kp:skill:9f0ea630-931b-4694-9c44-a09c55c6e860", label: "Prompting", repo: "danielmiessler/Personal_AI_Infrastructure", dir: "Releases/v3.0/.claude/skills/Prompting" },
+  { id: "kp:skill:6e408d4c-86b4-4a8f-b4ba-9f13972aeab9", label: "datasette-plugins", repo: "datasette/skill", dir: "." },
+  { id: "kp:skill:71a55d34-a966-4360-a95d-1b898b258a0b", label: "datasette-plugins (dup)", repo: "datasette/skill", dir: "." },
+  { id: "kp:skill:319f0478-05cd-40a7-ad7a-45239b733731", label: "tts (blacktop/mcp-tts)", repo: "blacktop/mcp-tts", dir: "skill" },
+  { id: "kp:skill:166f9d83-0fdd-48e7-a3c7-6a2c53dacc38", label: "tts (dup)", repo: "blacktop/mcp-tts", dir: "skill" },
+  { id: "kp:skill:d52cc2b3-6caf-447a-9927-322cd1278c8d", label: "upstash/vector TypeScript SDK", repo: "upstash/vector-js", dir: "skills" },
+  { id: "kp:skill:8d4bfff4-28e8-4046-aa58-323618ca6170", label: "Hello Rust (EnactProtocol)", repo: "EnactProtocol/enact", dir: "tools/hello-rust" },
 ];
 
 const SKIP_NAMES = new Set(["SKILL.md", "metadata.json", "_meta.json", "_expected.json", ".gitkeep"]);
@@ -103,56 +96,57 @@ async function fetchSiblingFiles(
   return files;
 }
 
-/** Run a parameterized SQL query via psql using execFileSync (no shell injection). */
-function psqlQuery(sql: string): string {
-  return execFileSync("psql", ["-h", PG_HOST, "-U", PG_USER, "-d", PG_DB, "-t", "-A", "-c", sql], {
+/** Run a SQL file via psql using execFileSync (no shell injection). */
+function psqlFile(sqlFile: string): string {
+  return execFileSync("psql", ["-h", PG_HOST, "-U", PG_USER, "-d", PG_DB, "-t", "-A", "-f", sqlFile], {
     encoding: "utf-8",
-    env: { ...process.env, PGPASSWORD: "KPulse2026Secure" },
+    env: { ...process.env, PGPASSWORD: PG_PASS },
   }).trim();
 }
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function psqlQuery(sql: string): string {
+  return execFileSync("psql", ["-h", PG_HOST, "-U", PG_USER, "-d", PG_DB, "-t", "-A", "-c", sql], {
+    encoding: "utf-8",
+    env: { ...process.env, PGPASSWORD: PG_PASS },
+  }).trim();
 }
 
 async function main() {
   console.log("KnowledgePulse Bundled Files Re-importer");
   console.log("=========================================\n");
 
+  console.log("--- Patching skills with bundled files ---\n");
   let patched = 0;
-  let imported = 0;
 
-  // 1. Patch existing skills
-  console.log("--- Patching existing skills with bundled files ---\n");
+  // Cache fetched files by repo+dir to avoid re-fetching for duplicates
+  const fileCache = new Map<string, Record<string, string>>();
+
   for (const skill of SKILLS_TO_PATCH) {
-    console.log(`${skill.name} (${skill.repo}/${skill.dir}/)`);
+    console.log(`${skill.label} [${skill.id}] (${skill.repo}/${skill.dir}/)`);
     try {
-      const files = await fetchSiblingFiles(skill.repo, skill.dir);
+      const cacheKey = `${skill.repo}:${skill.dir}`;
+      let files = fileCache.get(cacheKey);
+      if (!files) {
+        files = await fetchSiblingFiles(skill.repo, skill.dir);
+        fileCache.set(cacheKey, files);
+      } else {
+        console.log("  (using cached files)");
+      }
+
       const count = Object.keys(files).length;
       if (count === 0) { console.log("  No files found.\n"); continue; }
 
       console.log(`  ${count} files: ${Object.keys(files).join(", ")}`);
 
-      // Use a temp file to pass the JSON safely to psql (avoids any quoting issues)
-      const tmpFile = `/tmp/kp-files-${Date.now()}.json`;
-      await Bun.write(tmpFile, JSON.stringify(files));
-
-      const sql = `UPDATE skills SET files = (SELECT pg_read_file('${tmpFile}'))::jsonb, updated_at = NOW() WHERE name = '${skill.name.replace(/'/g, "''")}' RETURNING id`;
-
-      // Alternative: use psql variable binding via echo + pipe
+      // Write SQL to a temp file to avoid quoting issues
       const filesJson = JSON.stringify(files);
-      const updateSql = `UPDATE skills SET files = $1::jsonb, updated_at = NOW() WHERE name = $2 RETURNING id`;
-
-      // Use psql with -v for variable passing is not available, so use a simple approach:
-      // Write a SQL file with the escaped content
-      const safeSql = `UPDATE skills SET files = '${filesJson.replace(/'/g, "''")}'::jsonb, updated_at = NOW() WHERE name = '${skill.name.replace(/'/g, "''")}' RETURNING id`;
+      const escapedJson = filesJson.replace(/'/g, "''");
+      const escapedId = skill.id.replace(/'/g, "''");
+      const safeSql = `UPDATE skills SET files = '${escapedJson}'::jsonb, updated_at = NOW() WHERE id = '${escapedId}' RETURNING id, name;`;
       const sqlFile = `/tmp/kp-update-${Date.now()}.sql`;
       await Bun.write(sqlFile, safeSql);
 
-      const result = execFileSync("psql", ["-h", PG_HOST, "-U", PG_USER, "-d", PG_DB, "-t", "-A", "-f", sqlFile], {
-        encoding: "utf-8",
-        env: { ...process.env, PGPASSWORD: "KPulse2026Secure" },
-      }).trim();
+      const result = psqlFile(sqlFile);
 
       if (result) {
         console.log(`  Patched: ${result}\n`);
@@ -165,56 +159,23 @@ async function main() {
     }
   }
 
-  // 2. Import new skills with bundled files via API
-  console.log("--- Importing new skills with bundled files ---\n");
-  for (const entry of NEW_SKILLS) {
-    console.log(`${entry.repo}/${entry.dir}/`);
-    try {
-      const skillMdPath = entry.dir === "." ? "SKILL.md" : `${entry.dir}/SKILL.md`;
-      const content = await githubRaw(`${GITHUB_API}/repos/${entry.repo}/contents/${skillMdPath}`);
-      const files = await fetchSiblingFiles(entry.repo, entry.dir);
-      const count = Object.keys(files).length;
-
-      console.log(`  SKILL.md: ${content.length} bytes, files: ${count}`);
-      if (count > 0) console.log(`  ${Object.keys(files).join(", ")}`);
-
-      // Wait to avoid rate limiting
-      await sleep(2000);
-
-      const resp = await fetch(`${REGISTRY_URL}/v1/skills`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${KP_API_KEY}` },
-        body: JSON.stringify({
-          skill_md_content: content,
-          visibility: "network",
-          quality_score: 0.7,
-          ...(count > 0 ? { files } : {}),
-        }),
-      });
-
-      if (resp.status === 409) { console.log("  Already exists (409).\n"); continue; }
-      if (!resp.ok) {
-        console.log(`  Failed (HTTP ${resp.status}): ${await resp.text()}\n`);
-        continue;
-      }
-
-      const data = (await resp.json()) as { data: { id: string; name: string } };
-      console.log(`  Imported: ${data.data.id} (${data.data.name})\n`);
-      imported++;
-    } catch (err) {
-      console.error(`  Error: ${err instanceof Error ? err.message : String(err)}\n`);
-    }
-  }
-
   // Summary
   console.log("=== Summary ===");
   console.log(`Patched: ${patched}`);
-  console.log(`Imported: ${imported}`);
 
   const withFiles = psqlQuery(
     "SELECT COUNT(*) FROM skills WHERE files IS NOT NULL AND files::text != 'null' AND files::text != '{}'",
   );
   console.log(`Total skills with bundled files: ${withFiles}`);
+
+  // Show which skills have files
+  const skillsWithFiles = psqlQuery(
+    "SELECT name, jsonb_object_keys(files) FROM skills WHERE files IS NOT NULL AND files::text != 'null' AND files::text != '{}' LIMIT 30",
+  );
+  if (skillsWithFiles) {
+    console.log("\nSkills with bundled files:");
+    console.log(skillsWithFiles);
+  }
 }
 
 main().catch((err) => {
