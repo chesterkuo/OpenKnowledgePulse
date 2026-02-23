@@ -18,22 +18,13 @@ export class PgKnowledgeStore implements KnowledgeStore {
          unit_json = EXCLUDED.unit_json,
          visibility = EXCLUDED.visibility,
          updated_at = EXCLUDED.updated_at`,
-      [
-        entry.id,
-        JSON.stringify(entry.unit),
-        entry.visibility,
-        entry.created_at,
-        entry.updated_at,
-      ],
+      [entry.id, JSON.stringify(entry.unit), entry.visibility, entry.created_at, entry.updated_at],
     );
     return entry;
   }
 
   async getById(id: string): Promise<StoredKnowledgeUnit | undefined> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM knowledge_units WHERE id = $1",
-      [id],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM knowledge_units WHERE id = $1", [id]);
     if (rows.length === 0) return undefined;
     return this.rowToEntry(rows[0]);
   }
@@ -91,15 +82,14 @@ export class PgKnowledgeStore implements KnowledgeStore {
       }
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     // Get total count
     const { rows: countRows } = await this.pool.query(
       `SELECT COUNT(*) AS total FROM knowledge_units ${whereClause}`,
       params,
     );
-    const total = parseInt(countRows[0].total, 10);
+    const total = Number.parseInt(countRows[0].total, 10);
 
     // Get paginated data
     const offset = opts.pagination?.offset ?? 0;
@@ -110,33 +100,24 @@ export class PgKnowledgeStore implements KnowledgeStore {
     let orderClause: string;
     if (useFullText) {
       selectClause = `SELECT *, ts_rank(search_vector, plainto_tsquery('english', $${queryParamIndex})) AS rank`;
-      orderClause = `ORDER BY rank DESC`;
+      orderClause = "ORDER BY rank DESC";
     } else {
-      selectClause = `SELECT *`;
+      selectClause = "SELECT *";
       orderClause = `ORDER BY (unit_json->'metadata'->>'quality_score')::real DESC`;
     }
 
     const dataQuery = `${selectClause} FROM knowledge_units ${whereClause}
       ${orderClause}
       OFFSET $${paramIndex} LIMIT $${paramIndex + 1}`;
-    const { rows } = await this.pool.query(dataQuery, [
-      ...params,
-      offset,
-      limit,
-    ]);
+    const { rows } = await this.pool.query(dataQuery, [...params, offset, limit]);
 
-    const data = rows.map((row: Record<string, unknown>) =>
-      this.rowToEntry(row),
-    );
+    const data = rows.map((row: Record<string, unknown>) => this.rowToEntry(row));
 
     return { data, total, offset, limit };
   }
 
   async delete(id: string): Promise<boolean> {
-    const { rowCount } = await this.pool.query(
-      "DELETE FROM knowledge_units WHERE id = $1",
-      [id],
-    );
+    const { rowCount } = await this.pool.query("DELETE FROM knowledge_units WHERE id = $1", [id]);
     return (rowCount ?? 0) > 0;
   }
 
@@ -149,10 +130,10 @@ export class PgKnowledgeStore implements KnowledgeStore {
   }
 
   async setQuarantineStatus(id: string, status: QuarantineStatus): Promise<void> {
-    await this.pool.query(
-      "UPDATE knowledge_units SET quarantine_status = $2 WHERE id = $1",
-      [id, status],
-    );
+    await this.pool.query("UPDATE knowledge_units SET quarantine_status = $2 WHERE id = $1", [
+      id,
+      status,
+    ]);
   }
 
   async getQuarantineStatus(id: string): Promise<QuarantineStatus> {
@@ -178,13 +159,9 @@ export class PgKnowledgeStore implements KnowledgeStore {
       unit,
       visibility: row.visibility as StoredKnowledgeUnit["visibility"],
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
       updated_at:
-        row.updated_at instanceof Date
-          ? row.updated_at.toISOString()
-          : (row.updated_at as string),
+        row.updated_at instanceof Date ? row.updated_at.toISOString() : (row.updated_at as string),
     };
   }
 }

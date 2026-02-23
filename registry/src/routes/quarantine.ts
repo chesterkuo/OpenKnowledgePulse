@@ -1,15 +1,15 @@
 import { Hono } from "hono";
-import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 const QUARANTINE_THRESHOLD = Number(process.env.KP_QUARANTINE_THRESHOLD ?? 3);
 
 export function quarantineRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // POST /v1/knowledge/:id/report — Submit security report
   app.post("/:id/report", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) return c.json({ error: "Authentication required" }, 401);
 
     const unitId = c.req.param("id");
@@ -41,11 +41,11 @@ export function quarantineRoutes(stores: AllStores) {
 }
 
 export function adminQuarantineRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // GET /v1/admin/quarantine — List flagged/quarantined units
   app.get("/", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated || !auth.apiKey?.scopes.includes("admin")) {
       return c.json({ error: "Admin scope required" }, 403);
     }
@@ -56,7 +56,7 @@ export function adminQuarantineRoutes(stores: AllStores) {
 
   // POST /v1/admin/quarantine/:id/resolve — Admin verdict
   app.post("/:id/resolve", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated || !auth.apiKey?.scopes.includes("admin")) {
       return c.json({ error: "Admin scope required" }, 403);
     }

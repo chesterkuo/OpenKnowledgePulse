@@ -55,10 +55,7 @@ export class PgSubscriptionStore implements SubscriptionStore {
   }
 
   async getById(id: string): Promise<SubscriptionRecord | undefined> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM subscriptions WHERE id = $1",
-      [id],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM subscriptions WHERE id = $1", [id]);
     if (rows.length === 0) return undefined;
     return this.rowToRecord(rows[0]);
   }
@@ -70,13 +67,9 @@ export class PgSubscriptionStore implements SubscriptionStore {
       domain: row.domain as string,
       credits_per_month: row.credits_per_month as number,
       started_at:
-        row.started_at instanceof Date
-          ? row.started_at.toISOString()
-          : (row.started_at as string),
+        row.started_at instanceof Date ? row.started_at.toISOString() : (row.started_at as string),
       expires_at:
-        row.expires_at instanceof Date
-          ? row.expires_at.toISOString()
-          : (row.expires_at as string),
+        row.expires_at instanceof Date ? row.expires_at.toISOString() : (row.expires_at as string),
       status: row.status as SubscriptionRecord["status"],
     };
   }

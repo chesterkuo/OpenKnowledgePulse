@@ -1,18 +1,10 @@
-import type {
-  QuarantineStatus,
-  SecurityReport,
-  SecurityReportStore,
-} from "../interfaces.js";
+import type { QuarantineStatus, SecurityReport, SecurityReportStore } from "../interfaces.js";
 
 export class MemorySecurityReportStore implements SecurityReportStore {
   private reports = new Map<string, SecurityReport>();
   private quarantineStatuses = new Map<string, QuarantineStatus>();
 
-  async report(
-    unitId: string,
-    reporterId: string,
-    reason: string,
-  ): Promise<SecurityReport> {
+  async report(unitId: string, reporterId: string, reason: string): Promise<SecurityReport> {
     const dedupKey = `${unitId}:${reporterId}`;
     const existing = this.reports.get(dedupKey);
 
@@ -34,15 +26,11 @@ export class MemorySecurityReportStore implements SecurityReportStore {
   }
 
   async getReportsForUnit(unitId: string): Promise<SecurityReport[]> {
-    return Array.from(this.reports.values()).filter(
-      (r) => r.unit_id === unitId,
-    );
+    return Array.from(this.reports.values()).filter((r) => r.unit_id === unitId);
   }
 
   async getReportCount(unitId: string): Promise<number> {
-    return Array.from(this.reports.values()).filter(
-      (r) => r.unit_id === unitId,
-    ).length;
+    return Array.from(this.reports.values()).filter((r) => r.unit_id === unitId).length;
   }
 
   async getAllReported(): Promise<

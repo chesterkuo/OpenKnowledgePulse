@@ -1,8 +1,9 @@
 import { sanitizeSkillMd } from "@knowledgepulse/sdk";
 import type { Context, Next } from "hono";
+import type { HonoEnv } from "../types.js";
 
 export function sanitizerMiddleware() {
-  return async (c: Context, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     if (c.req.method === "POST" && c.req.path.includes("/skills")) {
       try {
         const body = await c.req.json();

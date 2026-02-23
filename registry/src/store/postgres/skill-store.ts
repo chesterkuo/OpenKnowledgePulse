@@ -6,8 +6,8 @@ export class PgSkillStore implements SkillStore {
 
   async create(skill: StoredSkill): Promise<StoredSkill> {
     await this.pool.query(
-      `INSERT INTO skills (id, name, description, version, author, tags, content, visibility, quality_score, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      `INSERT INTO skills (id, name, description, version, author, tags, content, files, visibility, quality_score, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        ON CONFLICT (id) DO UPDATE SET
          name = EXCLUDED.name,
          description = EXCLUDED.description,
@@ -15,6 +15,7 @@ export class PgSkillStore implements SkillStore {
          author = EXCLUDED.author,
          tags = EXCLUDED.tags,
          content = EXCLUDED.content,
+         files = EXCLUDED.files,
          visibility = EXCLUDED.visibility,
          quality_score = EXCLUDED.quality_score,
          created_at = EXCLUDED.created_at,
@@ -27,6 +28,7 @@ export class PgSkillStore implements SkillStore {
         skill.author ?? null,
         JSON.stringify(skill.tags),
         skill.content,
+        JSON.stringify(skill.files ?? {}),
         skill.visibility,
         skill.quality_score,
         skill.created_at,
@@ -92,7 +94,7 @@ export class PgSkillStore implements SkillStore {
     // Get total count
     const countQuery = `SELECT COUNT(*) AS total FROM skills ${whereClause}`;
     const { rows: countRows } = await this.pool.query(countQuery, params);
-    const total = parseInt(countRows[0].total, 10);
+    const total = Number.parseInt(countRows[0].total, 10);
 
     // Get paginated data
     const offset = opts.pagination?.offset ?? 0;
@@ -103,10 +105,10 @@ export class PgSkillStore implements SkillStore {
     let orderClause: string;
     if (useFullText) {
       selectClause = `SELECT *, ts_rank(search_vector, plainto_tsquery('english', $${queryParamIndex})) AS rank`;
-      orderClause = `ORDER BY rank DESC`;
+      orderClause = "ORDER BY rank DESC";
     } else {
-      selectClause = `SELECT *`;
-      orderClause = `ORDER BY quality_score DESC`;
+      selectClause = "SELECT *";
+      orderClause = "ORDER BY quality_score DESC";
     }
 
     const dataQuery = `${selectClause} FROM skills ${whereClause} ${orderClause} OFFSET $${paramIndex} LIMIT $${paramIndex + 1}`;
@@ -135,6 +137,20 @@ export class PgSkillStore implements SkillStore {
       tags = [];
     }
 
+    // Parse files JSONB — handle string (JSON.parse) or object (direct), default {}
+    let files: Record<string, string> | undefined;
+    if (typeof row.files === "string") {
+      try {
+        files = JSON.parse(row.files) as Record<string, string>;
+      } catch {
+        files = {};
+      }
+    } else if (row.files && typeof row.files === "object") {
+      files = row.files as Record<string, string>;
+    }
+    // Only include files if non-empty
+    const hasFiles = files && Object.keys(files).length > 0;
+
     return {
       id: row.id as string,
       name: row.name as string,
@@ -143,6 +159,7 @@ export class PgSkillStore implements SkillStore {
       author: (row.author as string) ?? undefined,
       tags,
       content: row.content as string,
+      ...(hasFiles ? { files } : {}),
       visibility: row.visibility as StoredSkill["visibility"],
       quality_score: row.quality_score as number,
       created_at:

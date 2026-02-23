@@ -101,7 +101,7 @@ export class PgRateLimitStore implements RateLimitStore {
       "SELECT COUNT(*) AS cnt FROM rate_limit_violations WHERE identifier = $1 AND timestamp > $2",
       [identifier, cutoff],
     );
-    return parseInt(rows[0].cnt, 10);
+    return Number.parseInt(rows[0].cnt, 10);
   }
 
   async record429(identifier: string): Promise<void> {
@@ -111,11 +111,7 @@ export class PgRateLimitStore implements RateLimitStore {
     );
   }
 
-  private async upsertBucket(
-    bucketKey: string,
-    tokens: number,
-    lastRefill: number,
-  ): Promise<void> {
+  private async upsertBucket(bucketKey: string, tokens: number, lastRefill: number): Promise<void> {
     await this.pool.query(
       `INSERT INTO rate_limit_buckets (bucket_key, tokens, last_refill)
        VALUES ($1, $2, $3)

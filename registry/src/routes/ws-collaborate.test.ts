@@ -11,7 +11,10 @@ import {
 // ── Mock WebSocket helper ────────────────────────────────
 
 /** Create a minimal mock WebSocket for testing broadcast behavior */
-function createMockWebSocket(sopId: string, agentId: string): {
+function createMockWebSocket(
+  sopId: string,
+  agentId: string,
+): {
   ws: WebSocket;
   sent: string[];
 } {

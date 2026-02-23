@@ -4,9 +4,7 @@ import type { ProviderRecord, ProviderStore } from "../interfaces.js";
 export class SqliteProviderStore implements ProviderStore {
   constructor(private db: Database) {}
 
-  async register(
-    provider: Omit<ProviderRecord, "id" | "registered_at">,
-  ): Promise<ProviderRecord> {
+  async register(provider: Omit<ProviderRecord, "id" | "registered_at">): Promise<ProviderRecord> {
     const id = `kp:provider:${crypto.randomUUID()}`;
     const now = new Date().toISOString();
     this.db
@@ -40,9 +38,10 @@ export class SqliteProviderStore implements ProviderStore {
   }
 
   async getById(id: string): Promise<ProviderRecord | undefined> {
-    const row = this.db
-      .query("SELECT * FROM providers WHERE id = $id")
-      .get({ $id: id }) as Record<string, unknown> | null;
+    const row = this.db.query("SELECT * FROM providers WHERE id = $id").get({ $id: id }) as Record<
+      string,
+      unknown
+    > | null;
     if (!row) return undefined;
     return this.rowToProvider(row);
   }
@@ -63,9 +62,7 @@ export class SqliteProviderStore implements ProviderStore {
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = this.db
-      .query("DELETE FROM providers WHERE id = $id")
-      .run({ $id: id });
+    const result = this.db.query("DELETE FROM providers WHERE id = $id").run({ $id: id });
     return result.changes > 0;
   }
 

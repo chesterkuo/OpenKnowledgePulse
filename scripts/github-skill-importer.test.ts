@@ -1,10 +1,10 @@
-import { describe, test, expect } from "bun:test";
-import { computeQualityScore } from "./lib/quality-scorer.js";
+import { describe, expect, test } from "bun:test";
+import { parseSkillMd } from "../packages/sdk/src/skill-md.js";
 import { classifyDomain } from "./lib/domain-classifier.js";
 import { enrichSkillMd } from "./lib/enricher.js";
-import { RateLimiter } from "./lib/rate-limiter.js";
 import { synthesizeFrontmatter } from "./lib/frontmatter-synthesizer.js";
-import { parseSkillMd } from "../packages/sdk/src/skill-md.js";
+import { computeQualityScore } from "./lib/quality-scorer.js";
+import { RateLimiter } from "./lib/rate-limiter.js";
 import type { RepoMetadata } from "./lib/types.js";
 
 // ── Helper ──────────────────────────────────────────────────────────────────
@@ -122,11 +122,7 @@ describe("classifyDomain", () => {
 
   test("mixed signals: tags favor engineering, topics favor data_science — tags win (3x vs 2x weight)", () => {
     // 3 engineering tags (3 * 3 = 9) vs 2 data_science topics (2 * 2 = 4)
-    const result = classifyDomain(
-      ["code", "test", "api"],
-      ["data", "ml"],
-      "",
-    );
+    const result = classifyDomain(["code", "test", "api"], ["data", "ml"], "");
     expect(result).toBe("engineering");
   });
 });
@@ -244,7 +240,7 @@ describe("RateLimiter", () => {
     // but we don't want the test to run for 60 seconds. Instead, we race
     // it against a short timeout to prove it doesn't resolve immediately.
     let resolved = false;
-    const acquirePromise = limiter.acquire().then(() => {
+    const _acquirePromise = limiter.acquire().then(() => {
       resolved = true;
     });
 
@@ -305,7 +301,8 @@ Step one, step two.`;
   });
 
   test("no headings at all — derives name from repo name", () => {
-    const content = `This is a plain document without any headings but has enough content to be synthesized into a skill document.`;
+    const content =
+      "This is a plain document without any headings but has enough content to be synthesized into a skill document.";
     const result = synthesizeFrontmatter(content, "owner/my-cool-tool", []);
     expect(result).not.toBeNull();
     expect(result).toContain('name: "My Cool Tool"');
@@ -341,7 +338,7 @@ Do something.`;
     expect(result).toContain("  - ai");
     expect(result).toContain("  - machine-learning");
     // "ai" should appear only once (deduped after lowercasing)
-    const aiMatches = result!.match(/  - ai$/gm);
+    const aiMatches = result!.match(/ {2}- ai$/gm);
     expect(aiMatches).not.toBeNull();
     expect(aiMatches!.length).toBe(1);
   });

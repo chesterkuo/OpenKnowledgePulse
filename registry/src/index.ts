@@ -11,7 +11,7 @@ import { exportRoutes } from "./routes/export.js";
 import { knowledgeRoutes } from "./routes/knowledge.js";
 import { marketplaceRoutes } from "./routes/marketplace.js";
 import { providerRoutes } from "./routes/providers.js";
-import { quarantineRoutes, adminQuarantineRoutes } from "./routes/quarantine.js";
+import { adminQuarantineRoutes, quarantineRoutes } from "./routes/quarantine.js";
 import { reputationRoutes } from "./routes/reputation.js";
 import { skillRoutes } from "./routes/skills.js";
 import { sopRoutes } from "./routes/sop.js";
@@ -21,11 +21,12 @@ import {
   wsCollaborateRoutes,
 } from "./routes/ws-collaborate.js";
 import { createStore } from "./store/factory.js";
+import type { HonoEnv } from "./types.js";
 
 const config = loadConfig();
 const stores = await createStore();
 
-const app = new Hono();
+const app = new Hono<HonoEnv>();
 
 // Global middleware
 app.use("*", cors());

@@ -28,7 +28,7 @@ function titleCase(str: string): string {
 function extractDescription(content: string): string | null {
   const lines = content.split("\n");
   let foundHeading = false;
-  let paragraphLines: string[] = [];
+  const paragraphLines: string[] = [];
   let inParagraph = false;
 
   for (const line of lines) {
@@ -75,7 +75,7 @@ function extractDescription(content: string): string | null {
   // Truncate to 200 chars at a word boundary
   const truncated = full.slice(0, 200);
   const lastSpace = truncated.lastIndexOf(" ");
-  return lastSpace > 100 ? truncated.slice(0, lastSpace) + "..." : truncated + "...";
+  return lastSpace > 100 ? `${truncated.slice(0, lastSpace)}...` : `${truncated}...`;
 }
 
 /**

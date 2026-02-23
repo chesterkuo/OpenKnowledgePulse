@@ -1,9 +1,9 @@
 import { Hono } from "hono";
-import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 export function authRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // POST /v1/auth/register — Register a new API key
   app.post("/register", async (c) => {
@@ -49,7 +49,7 @@ export function authRoutes(stores: AllStores) {
 
   // POST /v1/auth/revoke — Revoke an API key
   app.post("/revoke", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }

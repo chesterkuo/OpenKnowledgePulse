@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeAll } from "bun:test";
+import { beforeAll, describe, expect, it } from "bun:test";
 import { Hono } from "hono";
-import { SignJWT, generateKeyPair, exportJWK } from "jose";
-import { jwtAuthMiddleware } from "./jwt-auth.js";
+import { SignJWT, exportJWK, generateKeyPair } from "jose";
 import type { AuthContext } from "./auth.js";
+import { jwtAuthMiddleware } from "./jwt-auth.js";
 
 const TEST_ISSUER = "https://test-issuer.example.com";
 const TEST_AUDIENCE = "knowledgepulse-test";
@@ -62,12 +62,15 @@ describe("jwtAuthMiddleware", () => {
   });
 
   // Helper to sign a JWT with test claims
-  async function signJWT(claims: Record<string, unknown> = {}, options: { issuer?: string; audience?: string } = {}) {
+  async function signJWT(
+    claims: Record<string, unknown> = {},
+    options: { issuer?: string; audience?: string } = {},
+  ) {
     const jwt = new SignJWT(claims)
       .setProtectedHeader({ alg: "RS256", kid: "test-key-1" })
       .setIssuedAt()
       .setExpirationTime("1h")
-      .setSubject(claims.sub as string ?? "test-agent");
+      .setSubject((claims.sub as string) ?? "test-agent");
 
     if (options.issuer !== undefined) {
       jwt.setIssuer(options.issuer);
@@ -211,10 +214,7 @@ describe("jwtAuthMiddleware", () => {
   });
 
   it("should return 401 for a JWT with wrong audience", async () => {
-    const token = await signJWT(
-      { sub: "agent-wrong-audience" },
-      { audience: "wrong-audience" },
-    );
+    const token = await signJWT({ sub: "agent-wrong-audience" }, { audience: "wrong-audience" });
 
     const res = await app.request("/test", {
       method: "GET",

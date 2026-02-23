@@ -4,9 +4,7 @@ import type { PgPool } from "./db.js";
 export class PgProviderStore implements ProviderStore {
   constructor(private pool: PgPool) {}
 
-  async register(
-    provider: Omit<ProviderRecord, "id" | "registered_at">,
-  ): Promise<ProviderRecord> {
+  async register(provider: Omit<ProviderRecord, "id" | "registered_at">): Promise<ProviderRecord> {
     const id = `kp:provider:${crypto.randomUUID()}`;
     const { rows } = await this.pool.query(
       `INSERT INTO providers (id, url, name, status, last_heartbeat)
@@ -18,17 +16,12 @@ export class PgProviderStore implements ProviderStore {
   }
 
   async getAll(): Promise<ProviderRecord[]> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM providers ORDER BY registered_at DESC",
-    );
+    const { rows } = await this.pool.query("SELECT * FROM providers ORDER BY registered_at DESC");
     return rows.map((row: Record<string, unknown>) => this.rowToProvider(row));
   }
 
   async getById(id: string): Promise<ProviderRecord | undefined> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM providers WHERE id = $1",
-      [id],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM providers WHERE id = $1", [id]);
     if (rows.length === 0) return undefined;
     return this.rowToProvider(rows[0]);
   }
@@ -42,18 +35,15 @@ export class PgProviderStore implements ProviderStore {
   }
 
   async updateStatus(id: string, status: ProviderRecord["status"]): Promise<boolean> {
-    const { rowCount } = await this.pool.query(
-      "UPDATE providers SET status = $2 WHERE id = $1",
-      [id, status],
-    );
+    const { rowCount } = await this.pool.query("UPDATE providers SET status = $2 WHERE id = $1", [
+      id,
+      status,
+    ]);
     return (rowCount ?? 0) > 0;
   }
 
   async delete(id: string): Promise<boolean> {
-    const { rowCount } = await this.pool.query(
-      "DELETE FROM providers WHERE id = $1",
-      [id],
-    );
+    const { rowCount } = await this.pool.query("DELETE FROM providers WHERE id = $1", [id]);
     return (rowCount ?? 0) > 0;
   }
 

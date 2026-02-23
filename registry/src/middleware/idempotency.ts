@@ -1,8 +1,9 @@
 import type { Context, Next } from "hono";
 import type Redis from "ioredis";
+import type { HonoEnv } from "../types.js";
 
 export function idempotencyMiddleware(redis: Redis) {
-  return async (c: Context, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     // Only apply to write methods
     if (c.req.method !== "POST" && c.req.method !== "PUT") {
       await next();
@@ -30,12 +31,7 @@ export function idempotencyMiddleware(redis: Redis) {
       const cloned = c.res.clone();
       const body = await cloned.json().catch(() => null);
       if (body !== null) {
-        await redis.set(
-          redisKey,
-          JSON.stringify({ status: c.res.status, body }),
-          "EX",
-          86400,
-        );
+        await redis.set(redisKey, JSON.stringify({ status: c.res.status, body }), "EX", 86400);
       }
     }
   };

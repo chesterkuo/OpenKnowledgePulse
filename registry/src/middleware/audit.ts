@@ -1,6 +1,6 @@
 import type { Context, Next } from "hono";
 import type { AuditAction, AuditLogStore } from "../store/interfaces.js";
-import type { AuthContext } from "./auth.js";
+import type { HonoEnv } from "../types.js";
 
 function inferAction(method: string): AuditAction {
   switch (method) {
@@ -25,10 +25,10 @@ function inferResourceType(path: string): string {
 }
 
 export function auditMiddleware(auditLogStore: AuditLogStore) {
-  return async (c: Context, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     await next();
-    const auth: AuthContext = c.get("auth") ?? {
-      authenticated: false,
+    const auth = c.get("auth") ?? {
+      authenticated: false as const,
       tier: "anonymous",
     };
     auditLogStore

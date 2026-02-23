@@ -24,6 +24,7 @@ export interface StoredSkill {
   author?: string;
   tags: string[];
   content: string; // raw SKILL.md
+  files?: Record<string, string>; // bundled files: relative_path → content
   visibility: Visibility;
   quality_score: number;
   created_at: string;

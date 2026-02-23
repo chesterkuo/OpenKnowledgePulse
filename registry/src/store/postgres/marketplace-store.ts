@@ -9,9 +9,7 @@ import type { PgPool } from "./db.js";
 export class PgMarketplaceStore implements MarketplaceStore {
   constructor(private pool: PgPool) {}
 
-  async createListing(
-    listing: MarketplaceListing,
-  ): Promise<MarketplaceListing> {
+  async createListing(listing: MarketplaceListing): Promise<MarketplaceListing> {
     await this.pool.query(
       `INSERT INTO marketplace_listings
          (id, knowledge_unit_id, contributor_id, price_credits, access_model, domain, title, description, purchases, created_at, updated_at)
@@ -44,10 +42,9 @@ export class PgMarketplaceStore implements MarketplaceStore {
   }
 
   async getListing(id: string): Promise<MarketplaceListing | undefined> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM marketplace_listings WHERE id = $1",
-      [id],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM marketplace_listings WHERE id = $1", [
+      id,
+    ]);
     if (rows.length === 0) return undefined;
     return this.rowToListing(rows[0]);
   }
@@ -76,22 +73,19 @@ export class PgMarketplaceStore implements MarketplaceStore {
 
     if (opts.query) {
       const pattern = `%${opts.query}%`;
-      conditions.push(
-        `(title ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`,
-      );
+      conditions.push(`(title ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`);
       params.push(pattern);
       paramIndex++;
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     // Get total count
     const { rows: countRows } = await this.pool.query(
       `SELECT COUNT(*) AS total FROM marketplace_listings ${whereClause}`,
       params,
     );
-    const total = parseInt(countRows[0].total, 10);
+    const total = Number.parseInt(countRows[0].total, 10);
 
     // Get paginated data
     const offset = opts.pagination?.offset ?? 0;
@@ -100,15 +94,9 @@ export class PgMarketplaceStore implements MarketplaceStore {
     const dataQuery = `SELECT * FROM marketplace_listings ${whereClause}
       ORDER BY purchases DESC
       OFFSET $${paramIndex} LIMIT $${paramIndex + 1}`;
-    const { rows } = await this.pool.query(dataQuery, [
-      ...params,
-      offset,
-      limit,
-    ]);
+    const { rows } = await this.pool.query(dataQuery, [...params, offset, limit]);
 
-    const data = rows.map((row: Record<string, unknown>) =>
-      this.rowToListing(row),
-    );
+    const data = rows.map((row: Record<string, unknown>) => this.rowToListing(row));
 
     return { data, total, offset, limit };
   }
@@ -142,13 +130,9 @@ export class PgMarketplaceStore implements MarketplaceStore {
       description: row.description as string,
       purchases: row.purchases as number,
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
       updated_at:
-        row.updated_at instanceof Date
-          ? row.updated_at.toISOString()
-          : (row.updated_at as string),
+        row.updated_at instanceof Date ? row.updated_at.toISOString() : (row.updated_at as string),
     };
   }
 }

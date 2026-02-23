@@ -64,7 +64,7 @@ export class SqliteSkillStore implements SkillStore {
     // Get all matching results (we filter tags in JS for exact matching)
     const rows = this.db
       .query(`SELECT * FROM skills ${whereClause} ORDER BY quality_score DESC`)
-      .all(params) as Record<string, unknown>[];
+      .all(params as Record<string, string | number>) as Record<string, unknown>[];
 
     let results = rows.map((row) => this.rowToSkill(row));
 

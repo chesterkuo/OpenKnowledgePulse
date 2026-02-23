@@ -18,11 +18,7 @@ export class PgCreditStore implements CreditStore {
     return rows[0].balance as number;
   }
 
-  async addCredits(
-    agentId: string,
-    amount: number,
-    reason: string,
-  ): Promise<void> {
+  async addCredits(agentId: string, amount: number, reason: string): Promise<void> {
     // Upsert balance
     await this.pool.query(
       `INSERT INTO credit_balances (agent_id, balance)
@@ -41,20 +37,16 @@ export class PgCreditStore implements CreditStore {
     );
   }
 
-  async deductCredits(
-    agentId: string,
-    amount: number,
-    reason: string,
-  ): Promise<boolean> {
+  async deductCredits(agentId: string, amount: number, reason: string): Promise<boolean> {
     // Check balance first
     const balance = await this.getBalance(agentId);
     if (balance < amount) return false;
 
     // Deduct balance
-    await this.pool.query(
-      "UPDATE credit_balances SET balance = balance - $1 WHERE agent_id = $2",
-      [amount, agentId],
-    );
+    await this.pool.query("UPDATE credit_balances SET balance = balance - $1 WHERE agent_id = $2", [
+      amount,
+      agentId,
+    ]);
 
     // Record transaction (negative amount for deductions)
     const txId = crypto.randomUUID();
@@ -78,7 +70,7 @@ export class PgCreditStore implements CreditStore {
       "SELECT COUNT(*) AS total FROM credit_transactions WHERE agent_id = $1",
       [agentId],
     );
-    const total = parseInt(countRows[0].total, 10);
+    const total = Number.parseInt(countRows[0].total, 10);
 
     const { rows } = await this.pool.query(
       `SELECT * FROM credit_transactions WHERE agent_id = $1
@@ -87,9 +79,7 @@ export class PgCreditStore implements CreditStore {
       [agentId, offset, limit],
     );
 
-    const data = rows.map((row: Record<string, unknown>) =>
-      this.rowToTransaction(row),
-    );
+    const data = rows.map((row: Record<string, unknown>) => this.rowToTransaction(row));
 
     return { data, total, offset, limit };
   }
@@ -121,9 +111,7 @@ export class PgCreditStore implements CreditStore {
       type: row.type as CreditTransaction["type"],
       description: row.description as string,
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
     };
 
     if (row.related_listing_id != null) {

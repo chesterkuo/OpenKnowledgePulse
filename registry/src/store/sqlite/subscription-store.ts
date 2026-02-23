@@ -34,9 +34,7 @@ export class SqliteSubscriptionStore implements SubscriptionStore {
 
     // Retrieve the record (could be the inserted or updated one)
     const row = this.db
-      .query(
-        "SELECT * FROM subscriptions WHERE agent_id = $agent_id AND domain = $domain",
-      )
+      .query("SELECT * FROM subscriptions WHERE agent_id = $agent_id AND domain = $domain")
       .get({ $agent_id: agentId, $domain: domain }) as Record<string, unknown>;
 
     return this.rowToRecord(row);

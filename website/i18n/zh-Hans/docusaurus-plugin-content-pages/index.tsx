@@ -1,8 +1,8 @@
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Layout from "@theme/Layout";
-import FeaturedSkills from "../../../src/components/FeaturedSkills";
 import { useEffect, useState } from "react";
+import FeaturedSkills from "../../../src/components/FeaturedSkills";
 
 /* ==========================================================================
    Chinese Landing Page — mirrors all 12 sections of the English version
@@ -175,7 +175,7 @@ function useSkillCount(): string {
   const [count, setCount] = useState("--");
   useEffect(() => {
     fetch("/v1/skills?limit=1")
-      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((j) => setCount((j as { total: number }).total.toLocaleString()))
       .catch(() => setCount("30+"));
   }, []);

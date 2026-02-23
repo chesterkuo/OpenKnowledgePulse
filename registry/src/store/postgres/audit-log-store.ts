@@ -1,8 +1,4 @@
-import type {
-  AuditAction,
-  AuditLogEntry,
-  AuditLogStore,
-} from "../interfaces.js";
+import type { AuditAction, AuditLogEntry, AuditLogStore } from "../interfaces.js";
 import type { PgPool } from "./db.js";
 
 export class PgAuditLogStore implements AuditLogStore {
@@ -59,8 +55,7 @@ export class PgAuditLogStore implements AuditLogStore {
       paramIndex++;
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     const { rows } = await this.pool.query(
       `SELECT * FROM audit_log ${whereClause} ORDER BY timestamp`,
@@ -87,9 +82,7 @@ export class PgAuditLogStore implements AuditLogStore {
       resourceType: row.resource_type as string,
       resourceId: row.resource_id as string,
       timestamp:
-        row.timestamp instanceof Date
-          ? row.timestamp.toISOString()
-          : (row.timestamp as string),
+        row.timestamp instanceof Date ? row.timestamp.toISOString() : (row.timestamp as string),
       ip: row.ip as string,
       details,
     };

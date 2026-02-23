@@ -14,19 +14,14 @@ export class PgReputationStore implements ReputationStore {
   constructor(private pool: PgPool) {}
 
   async get(agentId: string): Promise<ReputationRecord | undefined> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM reputation WHERE agent_id = $1",
-      [agentId],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM reputation WHERE agent_id = $1", [
+      agentId,
+    ]);
     if (rows.length === 0) return undefined;
     return this.rowToRecord(rows[0]);
   }
 
-  async upsert(
-    agentId: string,
-    delta: number,
-    reason: string,
-  ): Promise<ReputationRecord> {
+  async upsert(agentId: string, delta: number, reason: string): Promise<ReputationRecord> {
     const now = new Date().toISOString();
     const historyEntry = JSON.stringify({ timestamp: now, delta, reason });
     const isValidation = reason.includes("Validated");
@@ -43,14 +38,7 @@ export class PgReputationStore implements ReputationStore {
          validations = reputation.validations + $4,
          history = reputation.history || $5::jsonb,
          updated_at = $6`,
-      [
-        agentId,
-        delta,
-        contributionInc,
-        validationInc,
-        `[${historyEntry}]`,
-        now,
-      ],
+      [agentId, delta, contributionInc, validationInc, `[${historyEntry}]`, now],
     );
 
     // Fetch and return the updated record
@@ -63,25 +51,19 @@ export class PgReputationStore implements ReputationStore {
     return rows.map((row: Record<string, unknown>) => this.rowToRecord(row));
   }
 
-  async getLeaderboard(
-    opts: PaginationOpts,
-  ): Promise<PaginatedResult<ReputationRecord>> {
+  async getLeaderboard(opts: PaginationOpts): Promise<PaginatedResult<ReputationRecord>> {
     const offset = opts.offset ?? 0;
     const limit = opts.limit ?? 20;
 
-    const { rows: countRows } = await this.pool.query(
-      "SELECT COUNT(*) AS total FROM reputation",
-    );
-    const total = parseInt(countRows[0].total, 10);
+    const { rows: countRows } = await this.pool.query("SELECT COUNT(*) AS total FROM reputation");
+    const total = Number.parseInt(countRows[0].total, 10);
 
     const { rows } = await this.pool.query(
       "SELECT * FROM reputation ORDER BY score DESC OFFSET $1 LIMIT $2",
       [offset, limit],
     );
 
-    const data = rows.map((row: Record<string, unknown>) =>
-      this.rowToRecord(row),
-    );
+    const data = rows.map((row: Record<string, unknown>) => this.rowToRecord(row));
 
     return { data, total, offset, limit };
   }
@@ -90,29 +72,19 @@ export class PgReputationStore implements ReputationStore {
     await this.pool.query(
       `INSERT INTO validation_votes (validator_id, target_id, unit_id, valid, timestamp)
        VALUES ($1, $2, $3, $4, $5)`,
-      [
-        vote.validatorId,
-        vote.targetId,
-        vote.unitId,
-        vote.valid,
-        vote.timestamp,
-      ],
+      [vote.validatorId, vote.targetId, vote.unitId, vote.valid, vote.timestamp],
     );
   }
 
   async getVotes(): Promise<ValidationVote[]> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM validation_votes ORDER BY id",
-    );
+    const { rows } = await this.pool.query("SELECT * FROM validation_votes ORDER BY id");
     return rows.map((row: Record<string, unknown>) => ({
       validatorId: row.validator_id as string,
       targetId: row.target_id as string,
       unitId: row.unit_id as string,
       valid: row.valid as boolean,
       timestamp:
-        row.timestamp instanceof Date
-          ? row.timestamp.toISOString()
-          : (row.timestamp as string),
+        row.timestamp instanceof Date ? row.timestamp.toISOString() : (row.timestamp as string),
     }));
   }
 
@@ -133,10 +105,7 @@ export class PgReputationStore implements ReputationStore {
   // ── Badge methods ───────────────────────────────────────
 
   async getBadges(agentId: string): Promise<DomainBadge[]> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM badges WHERE agent_id = $1",
-      [agentId],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM badges WHERE agent_id = $1", [agentId]);
     return rows.map((row: Record<string, unknown>) => this.rowToBadge(row));
   }
 
@@ -156,11 +125,7 @@ export class PgReputationStore implements ReputationStore {
     );
   }
 
-  async hasBadge(
-    agentId: string,
-    domain: string,
-    level: BadgeLevel,
-  ): Promise<boolean> {
+  async hasBadge(agentId: string, domain: string, level: BadgeLevel): Promise<boolean> {
     const { rows } = await this.pool.query(
       "SELECT 1 FROM badges WHERE agent_id = $1 AND domain = $2 AND level = $3",
       [agentId, domain, level],
@@ -170,9 +135,7 @@ export class PgReputationStore implements ReputationStore {
 
   // ── Certification proposal methods ──────────────────────
 
-  async createProposal(
-    proposal: CertificationProposal,
-  ): Promise<CertificationProposal> {
+  async createProposal(proposal: CertificationProposal): Promise<CertificationProposal> {
     await this.pool.query(
       `INSERT INTO certification_proposals (proposal_id, agent_id, domain, target_level, proposed_by, status, created_at, closes_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
@@ -201,9 +164,7 @@ export class PgReputationStore implements ReputationStore {
     return proposal;
   }
 
-  async getProposal(
-    proposalId: string,
-  ): Promise<CertificationProposal | undefined> {
+  async getProposal(proposalId: string): Promise<CertificationProposal | undefined> {
     const { rows } = await this.pool.query(
       "SELECT * FROM certification_proposals WHERE proposal_id = $1",
       [proposalId],
@@ -254,10 +215,10 @@ export class PgReputationStore implements ReputationStore {
     proposalId: string,
     status: CertificationProposal["status"],
   ): Promise<void> {
-    await this.pool.query(
-      "UPDATE certification_proposals SET status = $1 WHERE proposal_id = $2",
-      [status, proposalId],
-    );
+    await this.pool.query("UPDATE certification_proposals SET status = $1 WHERE proposal_id = $2", [
+      status,
+      proposalId,
+    ]);
   }
 
   // ── Row mappers ─────────────────────────────────────────
@@ -279,9 +240,7 @@ export class PgReputationStore implements ReputationStore {
       validations: row.validations as number,
       history,
       updated_at:
-        row.updated_at instanceof Date
-          ? row.updated_at.toISOString()
-          : (row.updated_at as string),
+        row.updated_at instanceof Date ? row.updated_at.toISOString() : (row.updated_at as string),
     };
   }
 
@@ -292,9 +251,7 @@ export class PgReputationStore implements ReputationStore {
       domain: row.domain as string,
       level: row.level as BadgeLevel,
       granted_at:
-        row.granted_at instanceof Date
-          ? row.granted_at.toISOString()
-          : (row.granted_at as string),
+        row.granted_at instanceof Date ? row.granted_at.toISOString() : (row.granted_at as string),
       granted_by: row.granted_by as string,
     };
   }
@@ -316,13 +273,9 @@ export class PgReputationStore implements ReputationStore {
       })),
       status: row.status as CertificationProposal["status"],
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
       closes_at:
-        row.closes_at instanceof Date
-          ? row.closes_at.toISOString()
-          : (row.closes_at as string),
+        row.closes_at instanceof Date ? row.closes_at.toISOString() : (row.closes_at as string),
     };
   }
 }

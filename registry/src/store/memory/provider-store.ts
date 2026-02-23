@@ -3,9 +3,7 @@ import type { ProviderRecord, ProviderStore } from "../interfaces.js";
 export class MemoryProviderStore implements ProviderStore {
   private providers = new Map<string, ProviderRecord>();
 
-  async register(
-    provider: Omit<ProviderRecord, "id" | "registered_at">,
-  ): Promise<ProviderRecord> {
+  async register(provider: Omit<ProviderRecord, "id" | "registered_at">): Promise<ProviderRecord> {
     const id = `kp:provider:${crypto.randomUUID()}`;
     const record: ProviderRecord = {
       id,

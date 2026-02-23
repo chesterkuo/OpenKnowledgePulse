@@ -113,19 +113,51 @@ function SkillCard({ skill }: { skill: Skill }) {
 
   return (
     <div style={cardStyle}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-        <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", fontWeight: 700, fontSize: "1rem", color: "var(--kp-heading)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: "0.75rem", flex: 1 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: "0.75rem",
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "'Outfit', system-ui, sans-serif",
+            fontWeight: 700,
+            fontSize: "1rem",
+            color: "var(--kp-heading)",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            paddingRight: "0.75rem",
+            flex: 1,
+          }}
+        >
           {skill.name}
         </div>
         <span style={badgeStyle}>{qualityPct}%</span>
       </div>
-      <div style={{ fontSize: "0.9rem", color: "var(--kp-text)", lineHeight: 1.5, marginBottom: "0.75rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+      <div
+        style={{
+          fontSize: "0.9rem",
+          color: "var(--kp-text)",
+          lineHeight: 1.5,
+          marginBottom: "0.75rem",
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
         {skill.description}
       </div>
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
         <span style={domainStyle}>{domain}</span>
         {visibleTags.map((tag) => (
-          <span key={tag} style={tagStyle}>{tag}</span>
+          <span key={tag} style={tagStyle}>
+            {tag}
+          </span>
         ))}
       </div>
       {skill.author && (
@@ -174,9 +206,5 @@ function FeaturedSkillsInner(): JSX.Element | null {
 }
 
 export default function FeaturedSkills(): JSX.Element {
-  return (
-    <BrowserOnly fallback={<div />}>
-      {() => <FeaturedSkillsInner />}
-    </BrowserOnly>
-  );
+  return <BrowserOnly fallback={<div />}>{() => <FeaturedSkillsInner />}</BrowserOnly>;
 }

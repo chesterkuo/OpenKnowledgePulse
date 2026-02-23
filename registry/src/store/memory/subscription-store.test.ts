@@ -1,9 +1,11 @@
-import { describe, expect, test, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, test } from "bun:test";
 import { MemorySubscriptionStore } from "./subscription-store.js";
 
 describe("MemorySubscriptionStore", () => {
   let store: MemorySubscriptionStore;
-  beforeEach(() => { store = new MemorySubscriptionStore(); });
+  beforeEach(() => {
+    store = new MemorySubscriptionStore();
+  });
 
   test("subscribe creates a subscription record", async () => {
     const sub = await store.subscribe("agent-1", "devops", 50);
@@ -15,8 +17,8 @@ describe("MemorySubscriptionStore", () => {
   });
 
   test("subscribe deduplicates by agent+domain", async () => {
-    const sub1 = await store.subscribe("agent-1", "devops", 50);
-    const sub2 = await store.subscribe("agent-1", "devops", 75);
+    const _sub1 = await store.subscribe("agent-1", "devops", 50);
+    const _sub2 = await store.subscribe("agent-1", "devops", 75);
     // Should update existing, not create new
     const active = await store.getActive("agent-1");
     expect(active).toHaveLength(1);

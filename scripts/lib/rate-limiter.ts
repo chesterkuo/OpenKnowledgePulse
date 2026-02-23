@@ -59,10 +59,7 @@ export class RateLimiter {
  * @returns The successful Response
  * @throws The last error if all attempts fail
  */
-export async function withRetry(
-  fn: () => Promise<Response>,
-  maxAttempts: number = 3,
-): Promise<Response> {
+export async function withRetry(fn: () => Promise<Response>, maxAttempts = 3): Promise<Response> {
   const retryableStatuses = new Set([403, 429, 503]);
 
   let lastError: Error | undefined;
@@ -79,9 +76,9 @@ export async function withRetry(
         const retryAfter = response.headers.get("Retry-After");
         let delayMs: number;
         if (retryAfter) {
-          delayMs = (parseInt(retryAfter, 10) || 1) * 1000;
+          delayMs = (Number.parseInt(retryAfter, 10) || 1) * 1000;
         } else {
-          const baseDelayMs = 1000 * Math.pow(2, attempt);
+          const baseDelayMs = 1000 * 2 ** attempt;
           delayMs = baseDelayMs + Math.random() * baseDelayMs * 0.5;
         }
 
@@ -96,7 +93,7 @@ export async function withRetry(
       lastError = error instanceof Error ? error : new Error(String(error));
 
       if (attempt < maxAttempts - 1) {
-        const baseDelayMs = 1000 * Math.pow(2, attempt);
+        const baseDelayMs = 1000 * 2 ** attempt;
         const jitter = Math.random() * baseDelayMs * 0.5;
         await sleep(baseDelayMs + jitter);
       }

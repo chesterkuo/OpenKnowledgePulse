@@ -1,9 +1,9 @@
 import { Hono } from "hono";
-import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 export function reputationRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // ── Static routes MUST come before parameterized routes ──
 
@@ -23,7 +23,7 @@ export function reputationRoutes(stores: AllStores) {
 
   // POST /v1/reputation/proposals/:proposal_id/vote — Cast vote on certification
   app.post("/proposals/:proposal_id/vote", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated || !auth.agentId) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -114,7 +114,7 @@ export function reputationRoutes(stores: AllStores) {
 
   // POST /v1/reputation/recompute — Admin trigger for EigenTrust
   app.post("/recompute", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated || !auth.apiKey?.scopes.includes("admin")) {
       return c.json({ error: "Admin access required" }, 403);
     }
@@ -161,7 +161,7 @@ export function reputationRoutes(stores: AllStores) {
 
   // POST /v1/reputation/:agent_id/certify — Create certification proposal
   app.post("/:agent_id/certify", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated || !auth.apiKey?.scopes.includes("admin")) {
       return c.json({ error: "Admin access required" }, 403);
     }

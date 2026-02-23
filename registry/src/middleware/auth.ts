@@ -1,5 +1,6 @@
 import type { Context, Next } from "hono";
 import type { ApiKeyRecord, ApiKeyStore } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 export interface AuthContext {
   authenticated: boolean;
@@ -9,9 +10,9 @@ export interface AuthContext {
 }
 
 export function authMiddleware(apiKeyStore: ApiKeyStore) {
-  return async (c: Context, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     // If already authenticated (e.g. by JWT middleware), skip API key check
-    const existingAuth = c.get("auth") as AuthContext | undefined;
+    const existingAuth = c.get("auth");
     if (existingAuth?.authenticated) {
       await next();
       return;

@@ -759,13 +759,18 @@ describe("Marketplace Routes", () => {
         body: JSON.stringify({ domain: "devops", credits_per_month: 50 }),
       });
       // Create subscription-tier listing
-      const { body: created } = await postListing(app, makeListing({
-        access_model: "subscription",
-        domain: "devops",
-        price_credits: 100,
-      }));
+      const { body: created } = await postListing(
+        app,
+        makeListing({
+          access_model: "subscription",
+          domain: "devops",
+          price_credits: 100,
+        }),
+      );
       // Purchase — should succeed via subscription
-      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, { method: "POST" });
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(body.purchased).toBe(true);
@@ -774,12 +779,17 @@ describe("Marketplace Routes", () => {
     });
 
     test("purchase with subscription access_model returns 402 without subscription", async () => {
-      const { body: created } = await postListing(app, makeListing({
-        access_model: "subscription",
-        domain: "devops",
-        price_credits: 100,
-      }));
-      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, { method: "POST" });
+      const { body: created } = await postListing(
+        app,
+        makeListing({
+          access_model: "subscription",
+          domain: "devops",
+          price_credits: 100,
+        }),
+      );
+      const res = await app.request(`/v1/marketplace/purchase/${created.data.id}`, {
+        method: "POST",
+      });
       expect(res.status).toBe(402);
       const body = await res.json();
       expect(body.error).toBe("Subscription required");

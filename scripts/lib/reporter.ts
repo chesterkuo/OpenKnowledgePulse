@@ -1,4 +1,4 @@
-import { join, dirname } from "node:path";
+import { dirname, join } from "node:path";
 import type { ImportStats, SkillCandidate } from "./types.js";
 
 /**
@@ -18,9 +18,7 @@ export class Reporter {
     const duration = this.formatDuration();
     const hardFiltered = stats.discovered - stats.fetched;
     const topDomains = this.computeTopDomains(candidates, 3);
-    const topDomainsStr = topDomains
-      .map(([domain, pct]) => `${domain} ${pct}%`)
-      .join(", ");
+    const topDomainsStr = topDomains.map(([domain, pct]) => `${domain} ${pct}%`).join(", ");
 
     const W = 50; // box width (inner)
     const line = "\u2550".repeat(W);
@@ -31,13 +29,25 @@ export class Reporter {
       center("KnowledgePulse GitHub Skill Import Report", W + 2),
       `\u2550${line}\u2550`,
       pad("Duration:", duration, W + 2),
-      pad("Discovered:", String(stats.discovered) + " repos", W + 2),
+      pad("Discovered:", `${String(stats.discovered)} repos`, W + 2),
       pad("Hard-filtered:", `${hardFiltered}`, W + 2),
       pad("Fetched SKILL.md:", String(stats.fetched), W + 2),
       `  ${thin}`,
-      pad("Passed validation:", `${stats.passed_validation}  (failed: ${stats.skipped_validation})`, W + 2),
-      pad("Passed injection:", `${stats.passed_validation - stats.skipped_injection}  (flagged: ${stats.skipped_injection})`, W + 2),
-      pad("Passed quality:", `${stats.passed_quality}  (below 0.6: ${stats.skipped_low_quality})`, W + 2),
+      pad(
+        "Passed validation:",
+        `${stats.passed_validation}  (failed: ${stats.skipped_validation})`,
+        W + 2,
+      ),
+      pad(
+        "Passed injection:",
+        `${stats.passed_validation - stats.skipped_injection}  (flagged: ${stats.skipped_injection})`,
+        W + 2,
+      ),
+      pad(
+        "Passed quality:",
+        `${stats.passed_quality}  (below 0.6: ${stats.skipped_low_quality})`,
+        W + 2,
+      ),
       `  ${thin}`,
       pad("Imported:", String(stats.imported), W + 2),
       pad("Duplicates:", String(stats.skipped_duplicate), W + 2),

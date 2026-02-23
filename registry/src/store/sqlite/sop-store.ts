@@ -71,7 +71,7 @@ export class SqliteSopStore implements SopStore {
 
     const rows = this.db
       .query(`SELECT * FROM sops ${whereClause} ORDER BY updated_at DESC`)
-      .all(params) as Record<string, unknown>[];
+      .all(params as Record<string, string | number>) as Record<string, unknown>[];
 
     let results = rows.map((row) => this.rowToSOP(row));
 

@@ -1,5 +1,5 @@
 import Redis from "ioredis";
 
-export function createRedisClient(url: string, prefix: string = "kp:"): Redis {
+export function createRedisClient(url: string, prefix = "kp:"): Redis {
   return new Redis(url, { keyPrefix: prefix });
 }

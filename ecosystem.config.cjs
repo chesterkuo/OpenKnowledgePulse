@@ -9,7 +9,8 @@ module.exports = {
       env: {
         KP_PORT: 3000,
         KP_STORE_BACKEND: "postgres",
-        KP_DATABASE_URL: "postgresql://knowledgepulse_user:KPulse2026Secure@172.31.9.157:5432/knowledgepulse",
+        KP_DATABASE_URL:
+          "postgresql://knowledgepulse_user:KPulse2026Secure@172.31.9.157:5432/knowledgepulse",
         KP_REDIS_URL: "redis://:bibi5566778800@127.0.0.1:6379",
       },
       exec_mode: "fork",

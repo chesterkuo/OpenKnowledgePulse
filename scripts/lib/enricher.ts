@@ -1,4 +1,4 @@
-import { parseSkillMd, generateSkillMd } from "../../packages/sdk/src/skill-md.js";
+import { generateSkillMd, parseSkillMd } from "../../packages/sdk/src/skill-md.js";
 import type { SkillMdKpExtension } from "../../packages/sdk/src/types/knowledge-unit.js";
 import type { RepoMetadata } from "./types.js";
 
@@ -14,7 +14,7 @@ import type { RepoMetadata } from "./types.js";
 export function enrichSkillMd(
   rawContent: string,
   repo: RepoMetadata,
-  qualityScore: number,
+  _qualityScore: number,
   domain: string,
 ): string {
   const parsed = parseSkillMd(rawContent);

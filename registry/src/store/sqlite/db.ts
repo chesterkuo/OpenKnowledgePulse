@@ -279,7 +279,7 @@ export function createDatabase(path = ":memory:"): Database {
   // ── Quarantine status on knowledge_units ────────────────
   // SQLite doesn't have ADD COLUMN IF NOT EXISTS, so we use a try/catch approach
   try {
-    db.run(`ALTER TABLE knowledge_units ADD COLUMN quarantine_status TEXT`);
+    db.run("ALTER TABLE knowledge_units ADD COLUMN quarantine_status TEXT");
   } catch {
     // Column already exists — ignore
   }

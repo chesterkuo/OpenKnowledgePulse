@@ -42,9 +42,11 @@ export class SqliteKnowledgeStore implements KnowledgeStore {
     pagination?: PaginationOpts;
   }): Promise<PaginatedResult<StoredKnowledgeUnit>> {
     // Load all rows and filter in JS (same logic as memory store)
-    const rows = this.db.query(
-      "SELECT * FROM knowledge_units WHERE quarantine_status IS NULL OR quarantine_status != 'quarantined'",
-    ).all() as Record<string, unknown>[];
+    const rows = this.db
+      .query(
+        "SELECT * FROM knowledge_units WHERE quarantine_status IS NULL OR quarantine_status != 'quarantined'",
+      )
+      .all() as Record<string, unknown>[];
     let results = rows.map((row) => this.rowToEntry(row));
 
     if (opts.types?.length) {

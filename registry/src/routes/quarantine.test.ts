@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { Hono } from "hono";
 import type { AllStores, QuarantineStatus, StoredKnowledgeUnit } from "../store/interfaces.js";
 import { createMemoryStore } from "../store/memory/index.js";
-import { quarantineRoutes, adminQuarantineRoutes } from "./quarantine.js";
+import { adminQuarantineRoutes, quarantineRoutes } from "./quarantine.js";
 
 // ── Test helpers ─────────────────────────────────────────
 
@@ -48,7 +48,10 @@ function createAgentApp(stores: AllStores, agentId: string) {
   });
 }
 
-async function createKnowledgeUnit(stores: AllStores, id = "kp:trace:test-unit-1"): Promise<StoredKnowledgeUnit> {
+async function createKnowledgeUnit(
+  stores: AllStores,
+  id = "kp:trace:test-unit-1",
+): Promise<StoredKnowledgeUnit> {
   const now = new Date().toISOString();
   const entry: StoredKnowledgeUnit = {
     id,

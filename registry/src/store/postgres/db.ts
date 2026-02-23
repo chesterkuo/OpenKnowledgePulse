@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS skills (
   author        TEXT,
   tags          JSONB NOT NULL DEFAULT '[]',
   content       TEXT NOT NULL,
+  files         JSONB NOT NULL DEFAULT '{}',
   visibility    TEXT NOT NULL DEFAULT 'private',
   quality_score REAL NOT NULL DEFAULT 0,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -258,6 +259,9 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   UNIQUE(agent_id, domain)
 );
 CREATE INDEX IF NOT EXISTS idx_sub_agent ON subscriptions (agent_id);
+
+-- skill files bundle (migration for existing tables)
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS files JSONB NOT NULL DEFAULT '{}';
 
 -- ── Full-Text Search ──────────────────────────────────
 

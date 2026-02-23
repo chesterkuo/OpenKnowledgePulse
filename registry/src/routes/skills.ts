@@ -1,10 +1,10 @@
 import { generateSkillId, parseSkillMd } from "@knowledgepulse/sdk";
 import { Hono } from "hono";
-import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores, StoredSkill } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 export function skillRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // GET /v1/skills — Search/list skills
   app.get("/", async (c) => {
@@ -23,7 +23,9 @@ export function skillRoutes(stores: AllStores) {
       pagination: { offset, limit },
     });
 
-    return c.json(result);
+    // Strip files from list results to keep payloads small
+    const data = result.data.map(({ files, ...rest }) => rest);
+    return c.json({ ...result, data });
   });
 
   // GET /v1/skills/:id — Get skill by ID
@@ -37,7 +39,7 @@ export function skillRoutes(stores: AllStores) {
 
   // POST /v1/skills — Contribute a new skill
   app.post("/", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required for write operations" }, 401);
     }
@@ -47,7 +49,7 @@ export function skillRoutes(stores: AllStores) {
 
     // Use sanitized body if available
     const body = c.get("sanitizedBody") ?? (await c.req.json());
-    const { skill_md_content, visibility = "network" } = body;
+    const { skill_md_content, visibility = "network", files } = body;
 
     if (!skill_md_content || typeof skill_md_content !== "string") {
       return c.json({ error: "skill_md_content is required" }, 400);
@@ -72,10 +74,12 @@ export function skillRoutes(stores: AllStores) {
       author: parsed.frontmatter.author,
       tags: parsed.frontmatter.tags ?? [],
       content: skill_md_content,
+      ...(files && typeof files === "object" && Object.keys(files).length > 0 ? { files } : {}),
       visibility,
-      quality_score: (auth.apiKey?.scopes.includes("admin") && typeof body.quality_score === "number")
-        ? Math.min(1, Math.max(0, body.quality_score))
-        : 0.5,
+      quality_score:
+        auth.apiKey?.scopes.includes("admin") && typeof body.quality_score === "number"
+          ? Math.min(1, Math.max(0, body.quality_score))
+          : 0.5,
       created_at: now,
       updated_at: now,
     };

@@ -69,7 +69,7 @@ export class SqliteMarketplaceStore implements MarketplaceStore {
     // Get total count
     const countRow = this.db
       .query(`SELECT COUNT(*) as count FROM marketplace_listings ${whereClause}`)
-      .get(params) as { count: number };
+      .get(params as Record<string, string | number>) as { count: number };
     const total = countRow.count;
 
     // Get paginated results
@@ -80,7 +80,11 @@ export class SqliteMarketplaceStore implements MarketplaceStore {
       .query(
         `SELECT * FROM marketplace_listings ${whereClause} ORDER BY updated_at DESC LIMIT $limit OFFSET $offset`,
       )
-      .all({ ...params, $limit: limit, $offset: offset }) as Record<string, unknown>[];
+      .all({
+        ...(params as Record<string, string | number>),
+        $limit: limit,
+        $offset: offset,
+      }) as Record<string, unknown>[];
 
     const data = rows.map((row) => this.rowToListing(row));
 

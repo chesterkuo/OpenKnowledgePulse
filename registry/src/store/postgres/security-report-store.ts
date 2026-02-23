@@ -1,18 +1,10 @@
-import type {
-  QuarantineStatus,
-  SecurityReport,
-  SecurityReportStore,
-} from "../interfaces.js";
+import type { QuarantineStatus, SecurityReport, SecurityReportStore } from "../interfaces.js";
 import type { PgPool } from "./db.js";
 
 export class PgSecurityReportStore implements SecurityReportStore {
   constructor(private pool: PgPool) {}
 
-  async report(
-    unitId: string,
-    reporterId: string,
-    reason: string,
-  ): Promise<SecurityReport> {
+  async report(unitId: string, reporterId: string, reason: string): Promise<SecurityReport> {
     const id = `kp:sr:${crypto.randomUUID()}`;
     const { rows } = await this.pool.query(
       `INSERT INTO security_reports (id, unit_id, reporter_id, reason)
@@ -38,7 +30,7 @@ export class PgSecurityReportStore implements SecurityReportStore {
       "SELECT COUNT(*) AS count FROM security_reports WHERE unit_id = $1",
       [unitId],
     );
-    return parseInt(rows[0].count, 10);
+    return Number.parseInt(rows[0].count, 10);
   }
 
   async getAllReported(): Promise<
@@ -53,16 +45,13 @@ export class PgSecurityReportStore implements SecurityReportStore {
     );
     return rows.map((row: Record<string, unknown>) => ({
       unit_id: row.unit_id as string,
-      count: typeof row.count === "string" ? parseInt(row.count, 10) : (row.count as number),
+      count: typeof row.count === "string" ? Number.parseInt(row.count, 10) : (row.count as number),
       status: (row.status as QuarantineStatus) ?? null,
     }));
   }
 
   async resolve(unitId: string, _verdict: "cleared" | "removed"): Promise<void> {
-    await this.pool.query(
-      "DELETE FROM security_reports WHERE unit_id = $1",
-      [unitId],
-    );
+    await this.pool.query("DELETE FROM security_reports WHERE unit_id = $1", [unitId]);
   }
 
   private rowToReport(row: Record<string, unknown>): SecurityReport {
@@ -72,9 +61,7 @@ export class PgSecurityReportStore implements SecurityReportStore {
       reporter_id: row.reporter_id as string,
       reason: row.reason as string,
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
     };
   }
 }

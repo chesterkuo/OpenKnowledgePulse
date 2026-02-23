@@ -1,9 +1,10 @@
 import type { Context, Next } from "hono";
+import type { HonoEnv } from "../types.js";
 
 const CURRENT_VERSION = "v1";
 
 export function schemaVersionMiddleware() {
-  return async (c: Context, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const requestedVersion = c.req.header("KP-Schema-Version");
 
     // Store requested version for route handlers

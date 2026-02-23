@@ -3,7 +3,7 @@ import type Redis from "ioredis";
 export class RedisCache {
   constructor(
     private redis: Redis,
-    private defaultTtl: number = 300,
+    private defaultTtl = 300,
   ) {}
 
   async get<T>(key: string): Promise<T | undefined> {
@@ -12,12 +12,7 @@ export class RedisCache {
   }
 
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
-    await this.redis.set(
-      `cache:${key}`,
-      JSON.stringify(value),
-      "EX",
-      ttl ?? this.defaultTtl,
-    );
+    await this.redis.set(`cache:${key}`, JSON.stringify(value), "EX", ttl ?? this.defaultTtl);
   }
 
   async del(key: string): Promise<void> {

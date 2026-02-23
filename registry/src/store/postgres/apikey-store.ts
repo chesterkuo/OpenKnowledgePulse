@@ -60,10 +60,7 @@ export class PgApiKeyStore implements ApiKeyStore {
 
   async verify(rawKey: string): Promise<ApiKeyRecord | undefined> {
     const keyHash = await sha256(rawKey);
-    const { rows } = await this.pool.query(
-      "SELECT * FROM api_keys WHERE key_hash = $1",
-      [keyHash],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM api_keys WHERE key_hash = $1", [keyHash]);
     if (rows.length === 0) return undefined;
 
     const record = this.rowToRecord(rows[0]);
@@ -81,10 +78,7 @@ export class PgApiKeyStore implements ApiKeyStore {
   }
 
   async getByAgentId(agentId: string): Promise<ApiKeyRecord[]> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM api_keys WHERE agent_id = $1",
-      [agentId],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM api_keys WHERE agent_id = $1", [agentId]);
     return rows.map((row: Record<string, unknown>) => this.rowToRecord(row));
   }
 
@@ -105,17 +99,13 @@ export class PgApiKeyStore implements ApiKeyStore {
       scopes,
       tier: row.tier as ApiKeyRecord["tier"],
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
       revoked: row.revoked as boolean,
     };
 
     if (row.revoked_at != null) {
       record.revoked_at =
-        row.revoked_at instanceof Date
-          ? row.revoked_at.toISOString()
-          : (row.revoked_at as string);
+        row.revoked_at instanceof Date ? row.revoked_at.toISOString() : (row.revoked_at as string);
     }
 
     return record;

@@ -1,4 +1,4 @@
-import { RateLimiter, withRetry } from "./rate-limiter.js";
+import { type RateLimiter, withRetry } from "./rate-limiter.js";
 import type { RepoMetadata } from "./types.js";
 
 /**
@@ -16,12 +16,7 @@ export interface GitHubSearchResult {
  * by file size lets us get up to 1000 results per range, effectively
  * raising the ceiling to ~4000 discoverable files.
  */
-const SIZE_RANGES = [
-  "size:100..500",
-  "size:501..2000",
-  "size:2001..10000",
-  "size:>10000",
-] as const;
+const SIZE_RANGES = ["size:100..500", "size:501..2000", "size:2001..10000", "size:>10000"] as const;
 
 const GITHUB_API = "https://api.github.com";
 const MAX_PAGES = 10;
@@ -42,11 +37,7 @@ export class GitHubClient {
   private readonly apiLimiter: RateLimiter;
   private readonly repoCache: Map<string, RepoMetadata> = new Map();
 
-  constructor(
-    token: string,
-    searchLimiter: RateLimiter,
-    apiLimiter: RateLimiter,
-  ) {
+  constructor(token: string, searchLimiter: RateLimiter, apiLimiter: RateLimiter) {
     this.token = token;
     this.searchLimiter = searchLimiter;
     this.apiLimiter = apiLimiter;
@@ -82,9 +73,7 @@ export class GitHubClient {
     );
 
     if (!response.ok) {
-      console.error(
-        `[tree] HTTP ${response.status} for ${fullName}, skipping repo`,
-      );
+      console.error(`[tree] HTTP ${response.status} for ${fullName}, skipping repo`);
       return;
     }
 
@@ -234,9 +223,7 @@ export class GitHubClient {
     );
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch repo metadata for ${fullName}: HTTP ${response.status}`,
-      );
+      throw new Error(`Failed to fetch repo metadata for ${fullName}: HTTP ${response.status}`);
     }
 
     const data = (await response.json()) as {

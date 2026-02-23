@@ -31,30 +31,9 @@ const DOMAIN_MAP: Record<string, string[]> = {
     "statistics",
     "visualization",
   ],
-  security: [
-    "security",
-    "vulnerability",
-    "pentest",
-    "owasp",
-    "encryption",
-    "compliance",
-  ],
-  content_creation: [
-    "writing",
-    "blog",
-    "seo",
-    "marketing",
-    "content",
-    "copywriting",
-  ],
-  design: [
-    "design",
-    "ui",
-    "ux",
-    "figma",
-    "wireframe",
-    "accessibility",
-  ],
+  security: ["security", "vulnerability", "pentest", "owasp", "encryption", "compliance"],
+  content_creation: ["writing", "blog", "seo", "marketing", "content", "copywriting"],
+  design: ["design", "ui", "ux", "figma", "wireframe", "accessibility"],
   general: [], // fallback — never wins via keyword matching
 };
 

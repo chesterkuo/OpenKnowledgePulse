@@ -14,9 +14,7 @@ const API_KEY = process.argv.includes("--api-key")
   ? process.argv[process.argv.indexOf("--api-key") + 1]
   : "";
 
-const authHeaders: Record<string, string> = API_KEY
-  ? { Authorization: `Bearer ${API_KEY}` }
-  : {};
+const authHeaders: Record<string, string> = API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {};
 
 interface StoredSkill {
   id: string;
@@ -39,7 +37,9 @@ async function fetchAllPages<T>(path: string): Promise<T[]> {
   let offset = 0;
   const limit = 100;
   while (true) {
-    const res = await fetch(`${REGISTRY_URL}${path}?limit=${limit}&offset=${offset}`, { headers: authHeaders });
+    const res = await fetch(`${REGISTRY_URL}${path}?limit=${limit}&offset=${offset}`, {
+      headers: authHeaders,
+    });
     if (!res.ok) {
       throw new Error(`Failed to fetch ${path}: ${res.status} ${res.statusText}`);
     }

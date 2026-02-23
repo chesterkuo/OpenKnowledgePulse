@@ -93,15 +93,17 @@ function StatsCounterInner(): JSX.Element {
 
 export default function StatsCounter(): JSX.Element {
   return (
-    <BrowserOnly fallback={
-      <section style={sectionStyle}>
-        <div style={gridStyle}>
-          <StatBox value="--" label="Skills" color="var(--kp-orange)" />
-          <StatBox value="6" label="MCP Tools" color="var(--kp-blue)" />
-          <StatBox value="5" label="Protocol Layers" color="var(--kp-green)" />
-        </div>
-      </section>
-    }>
+    <BrowserOnly
+      fallback={
+        <section style={sectionStyle}>
+          <div style={gridStyle}>
+            <StatBox value="--" label="Skills" color="var(--kp-orange)" />
+            <StatBox value="6" label="MCP Tools" color="var(--kp-blue)" />
+            <StatBox value="5" label="Protocol Layers" color="var(--kp-green)" />
+          </div>
+        </section>
+      }
+    >
       {() => <StatsCounterInner />}
     </BrowserOnly>
   );

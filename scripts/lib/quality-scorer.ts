@@ -25,7 +25,14 @@ const AI_KEYWORDS = new Set([
 const PERMISSIVE_LICENSES = new Set(["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause"]);
 
 /** Copyleft licenses (score 0.7) */
-const COPYLEFT_LICENSES = new Set(["GPL-2.0", "GPL-3.0", "LGPL-2.1", "LGPL-3.0", "MPL-2.0", "AGPL-3.0"]);
+const COPYLEFT_LICENSES = new Set([
+  "GPL-2.0",
+  "GPL-3.0",
+  "LGPL-2.1",
+  "LGPL-3.0",
+  "MPL-2.0",
+  "AGPL-3.0",
+]);
 
 /** Days since a date string */
 function daysSince(dateStr: string): number {
@@ -99,13 +106,17 @@ export function computeQualityScore(
   bodyLength: number,
   sectionCount: number,
   hasInstructions: boolean,
-  minStars: number = 5,
-  trustedRepo: boolean = false,
+  minStars = 5,
+  trustedRepo = false,
 ): QualityResult {
   // --- Hard filters ---
   if (!trustedRepo) {
     if (repo.stargazers_count < minStars) {
-      return { score: 0, rejected: true, reason: `stars ${repo.stargazers_count} < minStars ${minStars}` };
+      return {
+        score: 0,
+        rejected: true,
+        reason: `stars ${repo.stargazers_count} < minStars ${minStars}`,
+      };
     }
     if (repo.archived) {
       return { score: 0, rejected: true, reason: "repository is archived" };
@@ -124,11 +135,11 @@ export function computeQualityScore(
 
   // --- Weighted scoring ---
   const stars = scoreStars(repo.stargazers_count) * 0.25;
-  const recency = scoreRecency(repo.pushed_at) * 0.20;
+  const recency = scoreRecency(repo.pushed_at) * 0.2;
   const depth = scoreContentDepth(bodyLength, sectionCount, hasInstructions) * 0.25;
-  const license = scoreLicense(repo.license) * 0.10;
-  const forks = scoreForks(repo.forks_count) * 0.10;
-  const topics = scoreTopics(repo.topics) * 0.10;
+  const license = scoreLicense(repo.license) * 0.1;
+  const forks = scoreForks(repo.forks_count) * 0.1;
+  const topics = scoreTopics(repo.topics) * 0.1;
 
   const score = Math.round((stars + recency + depth + license + forks + topics) * 1000) / 1000;
 

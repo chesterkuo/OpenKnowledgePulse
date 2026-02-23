@@ -1,8 +1,8 @@
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Layout from "@theme/Layout";
-import FeaturedSkills from "../../../src/components/FeaturedSkills";
 import { useEffect, useState } from "react";
+import FeaturedSkills from "../../../src/components/FeaturedSkills";
 
 /* ==========================================================================
    Korean Landing Page — mirrors all 12 sections of the English version
@@ -175,7 +175,7 @@ function useSkillCount(): string {
   const [count, setCount] = useState("--");
   useEffect(() => {
     fetch("/v1/skills?limit=1")
-      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((j) => setCount((j as { total: number }).total.toLocaleString()))
       .catch(() => setCount("30+"));
   }, []);
@@ -738,8 +738,8 @@ function EcosystemNote(): JSX.Element {
         }}
       >
         <p style={lineStyle}>
-          <span style={accent}>OpenClaw</span> <span style={muted}>&mdash;</span>{" "}
-          랍스터. 강한 집게, 작업을 실행합니다.
+          <span style={accent}>OpenClaw</span> <span style={muted}>&mdash;</span> 랍스터. 강한 집게,
+          작업을 실행합니다.
         </p>
         <p style={lineStyle}>
           <span style={accent}>KnowledgePulse</span> <span style={muted}>&mdash;</span> 문어. 8개의

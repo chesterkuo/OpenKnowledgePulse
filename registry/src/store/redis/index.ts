@@ -1,7 +1,7 @@
+import type Redis from "ioredis";
+import { RedisCache } from "./cache.js";
 import { createRedisClient } from "./client.js";
 import { RedisRateLimitStore } from "./rate-limit-store.js";
-import { RedisCache } from "./cache.js";
-import type Redis from "ioredis";
 
 export interface RedisStores {
   redis: Redis;
@@ -9,10 +9,7 @@ export interface RedisStores {
   cache: RedisCache;
 }
 
-export async function createRedisStores(
-  url: string,
-  prefix: string = "kp:",
-): Promise<RedisStores> {
+export async function createRedisStores(url: string, prefix = "kp:"): Promise<RedisStores> {
   const redis = createRedisClient(url, prefix);
   // Verify connection
   await redis.ping();

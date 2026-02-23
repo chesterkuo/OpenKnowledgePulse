@@ -21,24 +21,25 @@
  *     --verbose
  */
 
-import { parseArgs } from "node:util";
 import { join } from "node:path";
-import { RateLimiter } from "./lib/rate-limiter.js";
-import { GitHubClient } from "./lib/github-client.js";
-import { computeQualityScore } from "./lib/quality-scorer.js";
-import { classifyDomain } from "./lib/domain-classifier.js";
-import { enrichSkillMd } from "./lib/enricher.js";
-import { CheckpointManager } from "./lib/checkpoint.js";
-import { Reporter } from "./lib/reporter.js";
-import { synthesizeFrontmatter } from "./lib/frontmatter-synthesizer.js";
-import type { ImportConfig, Checkpoint, ImportStats, SkillCandidate } from "./lib/types.js";
+import { parseArgs } from "node:util";
 // SDK imports (relative paths since scripts/ is not a workspace member):
 import {
-  validateSkillMd,
-  parseSkillMd,
+  type ParsedSkillMd,
   classifyInjectionRisk,
+  parseSkillMd,
   sha256,
+  validateSkillMd,
 } from "../packages/sdk/src/index.js";
+import { CheckpointManager } from "./lib/checkpoint.js";
+import { classifyDomain } from "./lib/domain-classifier.js";
+import { enrichSkillMd } from "./lib/enricher.js";
+import { synthesizeFrontmatter } from "./lib/frontmatter-synthesizer.js";
+import { GitHubClient } from "./lib/github-client.js";
+import { computeQualityScore } from "./lib/quality-scorer.js";
+import { RateLimiter } from "./lib/rate-limiter.js";
+import { Reporter } from "./lib/reporter.js";
+import type { Checkpoint, ImportConfig, ImportStats, SkillCandidate } from "./lib/types.js";
 
 // ─── CLI Argument Parsing ────────────────────────────────────────
 
@@ -69,7 +70,9 @@ function parseCliArgs(): ImportConfig {
 
   const apiKey = values["api-key"] ?? process.env.KP_API_KEY;
   if (!apiKey && !values["dry-run"]) {
-    console.error("Error: --api-key or KP_API_KEY environment variable is required (unless --dry-run)");
+    console.error(
+      "Error: --api-key or KP_API_KEY environment variable is required (unless --dry-run)",
+    );
     process.exit(1);
   }
 
@@ -85,14 +88,16 @@ function parseCliArgs(): ImportConfig {
     resume: values.resume!,
     verbose: values.verbose!,
     repos: values.repos ? values.repos.split(",").map((r) => r.trim()) : undefined,
-    skipPaths: values["skip-paths"] ? values["skip-paths"].split(",").map((p) => p.trim()) : undefined,
+    skipPaths: values["skip-paths"]
+      ? values["skip-paths"].split(",").map((p) => p.trim())
+      : undefined,
   };
 }
 
 // ─── Validation helpers ──────────────────────────────────────────
 
 function validateInt(value: string, name: string): number {
-  const n = parseInt(value, 10);
+  const n = Number.parseInt(value, 10);
   if (Number.isNaN(n)) {
     console.error(`Error: --${name} must be an integer, got "${value}"`);
     process.exit(1);
@@ -101,7 +106,7 @@ function validateInt(value: string, name: string): number {
 }
 
 function validateFloat(value: string, name: string): number {
-  const n = parseFloat(value);
+  const n = Number.parseFloat(value);
   if (Number.isNaN(n)) {
     console.error(`Error: --${name} must be a number, got "${value}"`);
     process.exit(1);
@@ -173,7 +178,7 @@ async function processCandidate(
   github: GitHubClient,
   checkpointMgr: CheckpointManager,
   stats: ImportStats,
-  trustedRepo: boolean = false,
+  trustedRepo = false,
 ): Promise<void> {
   const { key, repoFullName, filePath } = candidate;
 
@@ -189,7 +194,7 @@ async function processCandidate(
     }
 
     // (a) Fetch repo metadata (cached per-repo)
-    let repoMeta;
+    let repoMeta: Awaited<ReturnType<typeof github.getRepoMetadata>> | undefined;
     try {
       repoMeta = await github.getRepoMetadata(repoFullName);
     } catch (err: unknown) {
@@ -269,7 +274,7 @@ async function processCandidate(
     }
 
     // (f) computeQualityScore with real content data
-    let parsed;
+    let parsed: ParsedSkillMd | undefined;
     try {
       parsed = parseSkillMd(content);
     } catch {
@@ -284,7 +289,14 @@ async function processCandidate(
     const sectionCount = countSections(parsed.body);
     const hasInstr = hasInstructions(parsed.body);
 
-    const quality = computeQualityScore(repoMeta, bodyLength, sectionCount, hasInstr, config.minStars, trustedRepo);
+    const quality = computeQualityScore(
+      repoMeta,
+      bodyLength,
+      sectionCount,
+      hasInstr,
+      config.minStars,
+      trustedRepo,
+    );
     if (quality.rejected) {
       log(config, `[skip] ${key}: quality rejected — ${quality.reason}`);
       checkpointMgr.updateCandidate(key, { status: "skipped", reason: quality.reason });
@@ -393,9 +405,7 @@ async function processCandidate(
         domain,
       });
       stats.imported++;
-      console.log(
-        `[dry-run] ${key} — quality=${quality.score}, domain=${domain}`,
-      );
+      console.log(`[dry-run] ${key} — quality=${quality.score}, domain=${domain}`);
     }
 
     // (j) Checkpoint is updated by calls above
@@ -436,7 +446,9 @@ async function main(): Promise<void> {
   console.log("KnowledgePulse GitHub SKILL.md Importer");
   console.log("========================================");
   console.log(`  Registry:    ${config.registryUrl}`);
-  console.log(`  Mode:        ${repoMode ? `repo-list (${config.repos!.join(", ")})` : "code search"}`);
+  console.log(
+    `  Mode:        ${repoMode ? `repo-list (${config.repos!.join(", ")})` : "code search"}`,
+  );
   console.log(`  Min stars:   ${config.minStars}`);
   console.log(`  Min quality: ${config.minQuality}`);
   console.log(`  Max results: ${config.maxResults}`);
@@ -491,7 +503,9 @@ async function main(): Promise<void> {
   // ── DISCOVER PHASE ──
 
   if (checkpoint.phase === "discover") {
-    console.log(`Phase 1: Discovering SKILL.md files${repoMode ? " (repo-list mode)" : " (code search)"}...`);
+    console.log(
+      `Phase 1: Discovering SKILL.md files${repoMode ? " (repo-list mode)" : " (code search)"}...`,
+    );
 
     let discoveredCount = Object.keys(checkpoint.candidates).length;
 
@@ -560,7 +574,9 @@ async function main(): Promise<void> {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`Discovery error: ${msg}`);
-      console.log("Saving checkpoint and continuing to process phase with discovered candidates...");
+      console.log(
+        "Saving checkpoint and continuing to process phase with discovered candidates...",
+      );
     }
 
     // Transition to process phase
@@ -577,9 +593,7 @@ async function main(): Promise<void> {
   if (checkpoint.phase === "process") {
     console.log("Phase 2: Processing candidates...");
 
-    const pending = Object.values(checkpoint.candidates).filter(
-      (c) => c.status === "pending",
-    );
+    const pending = Object.values(checkpoint.candidates).filter((c) => c.status === "pending");
     console.log(`  ${pending.length} pending candidates to process.`);
     console.log();
 
@@ -608,7 +622,9 @@ async function main(): Promise<void> {
           }
           // Non-fatal errors are handled inside processCandidate,
           // but just in case something slips through:
-          console.error(`[unexpected] ${candidate.key}: ${err instanceof Error ? err.message : String(err)}`);
+          console.error(
+            `[unexpected] ${candidate.key}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
     }

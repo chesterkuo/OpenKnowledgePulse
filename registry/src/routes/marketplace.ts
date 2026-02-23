@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores, MarketplaceListing } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 /** Default revenue share for contributors (70%) */
 const DEFAULT_REVENUE_SHARE = 0.7;
@@ -27,7 +27,7 @@ function getRevenueShare(): number {
 }
 
 export function marketplaceRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // GET /v1/marketplace/listings — Browse listings
   app.get("/listings", async (c) => {
@@ -47,6 +47,17 @@ export function marketplaceRoutes(stores: AllStores) {
     return c.json(result);
   });
 
+  // GET /v1/marketplace/my-listings — Current user's listings
+  app.get("/my-listings", async (c) => {
+    const auth = c.get("auth");
+    if (!auth.authenticated) {
+      return c.json({ error: "Authentication required" }, 401);
+    }
+
+    const listings = await stores.marketplace.getByContributor(auth.agentId!);
+    return c.json({ data: listings, total: listings.length, offset: 0, limit: listings.length });
+  });
+
   // GET /v1/marketplace/listings/:id — Listing detail
   app.get("/listings/:id", async (c) => {
     const id = c.req.param("id");
@@ -59,7 +70,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // POST /v1/marketplace/listings — Create listing
   app.post("/listings", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -90,7 +101,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // POST /v1/marketplace/purchase/:id — Buy with credits
   app.post("/purchase/:id", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -119,11 +130,14 @@ export function marketplaceRoutes(stores: AllStores) {
         await stores.marketplace.recordPurchase(id, auth.agentId!);
         return c.json({ purchased: true, credits_spent: 0, via_subscription: true });
       }
-      return c.json({
-        error: "Subscription required",
-        domain: listing.domain,
-        message: "Subscribe to this domain via POST /v1/marketplace/subscribe",
-      }, 402);
+      return c.json(
+        {
+          error: "Subscription required",
+          domain: listing.domain,
+          message: "Subscribe to this domain via POST /v1/marketplace/subscribe",
+        },
+        402,
+      );
     }
 
     // Deduct credits from buyer
@@ -170,7 +184,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // GET /v1/marketplace/balance — Credit balance with auto-refill
   app.get("/balance", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -185,7 +199,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
     if (!lastRefill) {
       // Never refilled — do initial refill
-      const amount = REFILL_AMOUNTS[tier] ?? REFILL_AMOUNTS.free;
+      const amount = REFILL_AMOUNTS[tier] ?? REFILL_AMOUNTS.free ?? 100;
       await stores.credits.addCredits(agentId, amount, `Initial credit refill (${tier} tier)`);
       await stores.credits.setLastRefill(agentId, now.toISOString());
       refilled = true;
@@ -193,7 +207,7 @@ export function marketplaceRoutes(stores: AllStores) {
       const lastRefillDate = new Date(lastRefill);
       const elapsed = now.getTime() - lastRefillDate.getTime();
       if (elapsed > REFILL_INTERVAL_MS) {
-        const amount = REFILL_AMOUNTS[tier] ?? REFILL_AMOUNTS.free;
+        const amount = REFILL_AMOUNTS[tier] ?? REFILL_AMOUNTS.free ?? 100;
         await stores.credits.addCredits(agentId, amount, `Monthly credit refill (${tier} tier)`);
         await stores.credits.setLastRefill(agentId, now.toISOString());
         refilled = true;
@@ -213,7 +227,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // GET /v1/marketplace/earnings — Contributor earnings
   app.get("/earnings", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -238,7 +252,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // POST /v1/marketplace/credits — Admin add credits
   app.post("/credits", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -266,7 +280,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // POST /v1/marketplace/subscribe — Create domain subscription
   app.post("/subscribe", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) return c.json({ error: "Authentication required" }, 401);
 
     const { domain, credits_per_month } = await c.req.json();
@@ -276,7 +290,9 @@ export function marketplaceRoutes(stores: AllStores) {
 
     // Deduct first month
     const deducted = await stores.credits.deductCredits(
-      auth.agentId!, price, `Subscription: ${domain} (first month)`
+      auth.agentId!,
+      price,
+      `Subscription: ${domain} (first month)`,
     );
     if (!deducted) {
       const balance = await stores.credits.getBalance(auth.agentId!);
@@ -289,7 +305,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // DELETE /v1/marketplace/subscribe/:id — Cancel subscription
   app.delete("/subscribe/:id", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) return c.json({ error: "Authentication required" }, 401);
 
     const cancelled = await stores.subscriptions.unsubscribe(c.req.param("id"));
@@ -299,7 +315,7 @@ export function marketplaceRoutes(stores: AllStores) {
 
   // GET /v1/marketplace/subscriptions — List active subscriptions
   app.get("/subscriptions", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) return c.json({ error: "Authentication required" }, 401);
 
     const subs = await stores.subscriptions.getActive(auth.agentId!);

@@ -1,14 +1,14 @@
 import { ExpertSOPSchema, generateSkillId, generateSkillMd } from "@knowledgepulse/sdk";
 import { Hono } from "hono";
-import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores, StoredSOP, StoredSkill } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 export function sopRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // POST /v1/sop — Create ExpertSOP
   app.post("/", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -77,6 +77,7 @@ export function sopRoutes(stores: AllStores) {
     const query = c.req.query("q");
     const domain = c.req.query("domain");
     const status = c.req.query("status") as StoredSOP["status"] | undefined;
+    const mine = c.req.query("mine");
     const limit = c.req.query("limit") ? Number(c.req.query("limit")) : 20;
     const offset = c.req.query("offset") ? Number(c.req.query("offset")) : 0;
 
@@ -86,6 +87,15 @@ export function sopRoutes(stores: AllStores) {
       status,
       pagination: { offset, limit },
     });
+
+    // Filter to current user's SOPs when mine=true
+    if (mine === "true") {
+      const auth = c.get("auth");
+      if (auth.authenticated && auth.agentId) {
+        const filtered = result.data.filter((s) => s.sop.metadata.agent_id === auth.agentId);
+        return c.json({ data: filtered, total: filtered.length, offset, limit });
+      }
+    }
 
     return c.json(result);
   });
@@ -102,7 +112,7 @@ export function sopRoutes(stores: AllStores) {
 
   // PUT /v1/sop/:id — Update (creates new version)
   app.put("/:id", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -173,7 +183,7 @@ export function sopRoutes(stores: AllStores) {
 
   // POST /v1/sop/:id/approve — Approve SOP
   app.post("/:id/approve", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -199,7 +209,7 @@ export function sopRoutes(stores: AllStores) {
 
   // POST /v1/sop/:id/export-skill — Generate SKILL.md
   app.post("/:id/export-skill", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -293,7 +303,7 @@ export function sopRoutes(stores: AllStores) {
 
   // DELETE /v1/sop/:id — Delete SOP
   app.delete("/:id", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }

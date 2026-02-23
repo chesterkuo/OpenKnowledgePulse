@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import type { HonoEnv } from "../types.js";
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -290,7 +291,7 @@ export function createWebSocketHandler(manager: CollaborationManager = collabora
 // ── HTTP routes (presence + upgrade info) ────────────────
 
 export function wsCollaborateRoutes(manager: CollaborationManager = collaborationManager) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   /**
    * GET /v1/sop/:id/collaborate/presence

@@ -38,10 +38,7 @@ export class PgSopStore implements SopStore {
   }
 
   async getById(id: string): Promise<StoredSOP | undefined> {
-    const { rows } = await this.pool.query(
-      "SELECT * FROM sops WHERE id = $1",
-      [id],
-    );
+    const { rows } = await this.pool.query("SELECT * FROM sops WHERE id = $1", [id]);
     if (rows.length === 0) return undefined;
     return this.rowToSOP(rows[0]);
   }
@@ -77,15 +74,14 @@ export class PgSopStore implements SopStore {
       paramIndex++;
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     // Get total count
     const { rows: countRows } = await this.pool.query(
       `SELECT COUNT(*) AS total FROM sops ${whereClause}`,
       params,
     );
-    const total = parseInt(countRows[0].total, 10);
+    const total = Number.parseInt(countRows[0].total, 10);
 
     // Get paginated data
     const offset = opts.pagination?.offset ?? 0;
@@ -94,23 +90,14 @@ export class PgSopStore implements SopStore {
     const dataQuery = `SELECT * FROM sops ${whereClause}
       ORDER BY (sop_json->'metadata'->>'quality_score')::real DESC
       OFFSET $${paramIndex} LIMIT $${paramIndex + 1}`;
-    const { rows } = await this.pool.query(dataQuery, [
-      ...params,
-      offset,
-      limit,
-    ]);
+    const { rows } = await this.pool.query(dataQuery, [...params, offset, limit]);
 
-    const data = rows.map((row: Record<string, unknown>) =>
-      this.rowToSOP(row),
-    );
+    const data = rows.map((row: Record<string, unknown>) => this.rowToSOP(row));
 
     return { data, total, offset, limit };
   }
 
-  async update(
-    id: string,
-    updates: Partial<StoredSOP>,
-  ): Promise<StoredSOP | undefined> {
+  async update(id: string, updates: Partial<StoredSOP>): Promise<StoredSOP | undefined> {
     const existing = await this.getById(id);
     if (!existing) return undefined;
 
@@ -144,10 +131,7 @@ export class PgSopStore implements SopStore {
   }
 
   async delete(id: string): Promise<boolean> {
-    const { rowCount } = await this.pool.query(
-      "DELETE FROM sops WHERE id = $1",
-      [id],
-    );
+    const { rowCount } = await this.pool.query("DELETE FROM sops WHERE id = $1", [id]);
     return (rowCount ?? 0) > 0;
   }
 
@@ -191,13 +175,9 @@ export class PgSopStore implements SopStore {
       status: row.status as StoredSOP["status"],
       visibility: row.visibility as StoredSOP["visibility"],
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
       updated_at:
-        row.updated_at instanceof Date
-          ? row.updated_at.toISOString()
-          : (row.updated_at as string),
+        row.updated_at instanceof Date ? row.updated_at.toISOString() : (row.updated_at as string),
     };
 
     if (row.previous_version_id != null) {
@@ -216,9 +196,7 @@ export class PgSopStore implements SopStore {
       version: row.version as number,
       diff_summary: row.diff_summary as string,
       created_at:
-        row.created_at instanceof Date
-          ? row.created_at.toISOString()
-          : (row.created_at as string),
+        row.created_at instanceof Date ? row.created_at.toISOString() : (row.created_at as string),
     };
   }
 }

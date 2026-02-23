@@ -1,10 +1,10 @@
 import { KnowledgeUnitSchema } from "@knowledgepulse/sdk";
 import { Hono } from "hono";
-import type { AuthContext } from "../middleware/auth.js";
 import type { AllStores, StoredKnowledgeUnit } from "../store/interfaces.js";
+import type { HonoEnv } from "../types.js";
 
 export function knowledgeRoutes(stores: AllStores) {
-  const app = new Hono();
+  const app = new Hono<HonoEnv>();
 
   // GET /v1/knowledge — Search knowledge units
   app.get("/", async (c) => {
@@ -37,7 +37,7 @@ export function knowledgeRoutes(stores: AllStores) {
 
   // POST /v1/knowledge — Contribute a knowledge unit
   app.post("/", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required for write operations" }, 401);
     }
@@ -96,7 +96,7 @@ export function knowledgeRoutes(stores: AllStores) {
 
   // POST /v1/knowledge/:id/validate — Submit validation result
   app.post("/:id/validate", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }
@@ -126,7 +126,7 @@ export function knowledgeRoutes(stores: AllStores) {
 
   // DELETE /v1/knowledge/:id — Delete a knowledge unit (GDPR Art. 17)
   app.delete("/:id", async (c) => {
-    const auth: AuthContext = c.get("auth");
+    const auth = c.get("auth");
     if (!auth.authenticated) {
       return c.json({ error: "Authentication required" }, 401);
     }

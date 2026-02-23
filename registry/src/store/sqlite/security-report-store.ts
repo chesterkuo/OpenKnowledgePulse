@@ -1,18 +1,10 @@
 import type { Database } from "bun:sqlite";
-import type {
-  QuarantineStatus,
-  SecurityReport,
-  SecurityReportStore,
-} from "../interfaces.js";
+import type { QuarantineStatus, SecurityReport, SecurityReportStore } from "../interfaces.js";
 
 export class SqliteSecurityReportStore implements SecurityReportStore {
   constructor(private db: Database) {}
 
-  async report(
-    unitId: string,
-    reporterId: string,
-    reason: string,
-  ): Promise<SecurityReport> {
+  async report(unitId: string, reporterId: string, reason: string): Promise<SecurityReport> {
     const id = `kp:sr:${crypto.randomUUID()}`;
     const now = new Date().toISOString();
 
@@ -51,18 +43,14 @@ export class SqliteSecurityReportStore implements SecurityReportStore {
 
   async getReportsForUnit(unitId: string): Promise<SecurityReport[]> {
     const rows = this.db
-      .query(
-        "SELECT * FROM security_reports WHERE unit_id = $unit_id ORDER BY created_at DESC",
-      )
+      .query("SELECT * FROM security_reports WHERE unit_id = $unit_id ORDER BY created_at DESC")
       .all({ $unit_id: unitId }) as Record<string, unknown>[];
     return rows.map((row) => this.rowToReport(row));
   }
 
   async getReportCount(unitId: string): Promise<number> {
     const row = this.db
-      .query(
-        "SELECT COUNT(*) AS count FROM security_reports WHERE unit_id = $unit_id",
-      )
+      .query("SELECT COUNT(*) AS count FROM security_reports WHERE unit_id = $unit_id")
       .get({ $unit_id: unitId }) as Record<string, unknown>;
     return row.count as number;
   }

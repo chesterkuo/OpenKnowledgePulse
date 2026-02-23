@@ -1,5 +1,6 @@
-import { createRemoteJWKSet, jwtVerify } from "jose";
 import type { Context, Next } from "hono";
+import { createRemoteJWKSet, jwtVerify } from "jose";
+import type { HonoEnv } from "../types.js";
 import type { AuthContext } from "./auth.js";
 
 export interface JwtAuthConfig {
@@ -11,7 +12,7 @@ export interface JwtAuthConfig {
 export function jwtAuthMiddleware(config: JwtAuthConfig) {
   const JWKS = createRemoteJWKSet(new URL(config.jwksUrl));
 
-  return async (c: Context, next: Next) => {
+  return async (c: Context<HonoEnv>, next: Next) => {
     const authHeader = c.req.header("Authorization");
 
     // Only intercept Bearer tokens that are NOT API keys (kp_ prefix)
@@ -50,7 +51,10 @@ export function jwtAuthMiddleware(config: JwtAuthConfig) {
       await next();
     } catch (error) {
       return c.json(
-        { error: "Invalid JWT token", details: error instanceof Error ? error.message : "Unknown error" },
+        {
+          error: "Invalid JWT token",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
         401,
       );
     }
