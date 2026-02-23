@@ -4,11 +4,12 @@ import CodeExample from "../components/CodeExample";
 
 import EcosystemNote from "../components/EcosystemNote";
 import FeatureGrid from "../components/FeatureGrid";
+import FeaturedSkills from "../components/FeaturedSkills";
 import FrameworkLogos from "../components/FrameworkLogos";
 import HeroSection from "../components/HeroSection";
 import ProtocolStack from "../components/ProtocolStack";
 import StatsCounter from "../components/StatsCounter";
-import TestimonialCards from "../components/TestimonialCards";
+
 import UseCaseCards from "../components/UseCaseCards";
 
 export default function Home(): JSX.Element {
@@ -20,8 +21,9 @@ export default function Home(): JSX.Element {
       <FeatureGrid />
       <CodeExample />
       <UseCaseCards />
+      <FeaturedSkills />
       <FrameworkLogos />
-      <TestimonialCards />
+
       <EcosystemNote />
       <CTASection />
     </Layout>

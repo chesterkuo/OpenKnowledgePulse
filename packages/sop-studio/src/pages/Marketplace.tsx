@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuth } from "../hooks/useAuth";
 import MarketplaceCard from "../components/MarketplaceCard";
 import type { MarketplaceListing } from "../components/MarketplaceCard";
 import MarketplaceFilters from "../components/MarketplaceFilters";
+import SkillCard, { extractDomain } from "../components/SkillCard";
+import type { StoredSkill } from "../components/SkillCard";
 import {
   Dialog,
   DialogContent,
@@ -41,10 +45,199 @@ interface EarningsResponse {
   }>;
 }
 
+// -- Skills Tab --
+
+interface SkillsResponse {
+  data: StoredSkill[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+const SKILL_DOMAINS = [
+  { value: "", key: "domains.all" },
+  { value: "engineering", key: "domains.engineering" },
+  { value: "general", key: "domains.general" },
+  { value: "security", key: "domains.security" },
+  { value: "design", key: "domains.design" },
+  { value: "data_science", key: "domains.data_science" },
+  { value: "content_creation", key: "domains.content_creation" },
+];
+
+function stripFrontmatter(content: string): string {
+  return content.replace(/^---[\s\S]*?---\s*/, "");
+}
+
+function SkillsTab() {
+  const { t } = useTranslation();
+  const [skills, setSkills] = useState<StoredSkill[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [domain, setDomain] = useState("");
+  const [selected, setSelected] = useState<StoredSkill | null>(null);
+
+  const fetchSkills = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params: Record<string, string> = { limit: "50" };
+      if (query) params.q = query;
+      if (domain) params.domain = domain;
+      const res = (await api.getSkills(params)) as SkillsResponse;
+      setSkills(res.data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to fetch skills";
+      setError(message);
+      setSkills([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [query, domain]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchSkills();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [fetchSkills]);
+
+  return (
+    <div className="space-y-6">
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("marketplace.searchSkills")}
+            className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text placeholder:text-kp-muted rounded-lg focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none transition-colors"
+          />
+        </div>
+        <select
+          value={domain}
+          onChange={(e) => setDomain(e.target.value)}
+          className="px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-lg focus:ring-2 focus:ring-kp-teal focus:border-kp-teal outline-none transition-colors"
+        >
+          {SKILL_DOMAINS.map((d) => (
+            <option key={d.value} value={d.value}>
+              {t(d.key)}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {error && (
+        <div className="bg-kp-error/10 border border-kp-error/30 rounded-lg p-4">
+          <div className="flex">
+            <svg className="w-5 h-5 text-kp-error mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-sm text-kp-error">{error}</p>
+              <button type="button" onClick={fetchSkills} className="mt-1 text-sm text-kp-error/80 underline hover:text-kp-error">
+                {t("common.tryAgain")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-kp-panel rounded-lg border border-kp-border p-5 animate-pulse">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-5 bg-kp-navy rounded w-3/4" />
+                <div className="h-5 bg-kp-navy rounded-full w-12" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-4 bg-kp-navy rounded w-full" />
+                <div className="h-4 bg-kp-navy rounded w-2/3" />
+                <div className="h-4 bg-kp-navy rounded w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : skills.length === 0 ? (
+        <div className="text-center py-16">
+          <svg className="mx-auto h-12 w-12 text-kp-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <h3 className="mt-4 text-lg font-medium text-kp-heading">{t("marketplace.noSkills")}</h3>
+          <p className="mt-1 text-sm text-kp-muted">
+            {query || domain ? t("marketplace.adjustFilters") : t("marketplace.noSkillsYet")}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {skills.map((skill) => (
+            <SkillCard key={skill.id} skill={skill} onClick={setSelected} />
+          ))}
+        </div>
+      )}
+
+      {/* Skill detail dialog */}
+      <Dialog open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{selected?.name}</DialogTitle>
+            <DialogDescription>{selected?.description}</DialogDescription>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="bg-kp-navy text-kp-teal text-xs font-mono px-2 py-0.5 rounded">
+                  {extractDomain(selected.content)}
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-kp-teal/15 text-kp-teal">
+                  {t("marketplace.qualityScore")}: {Math.round(selected.quality_score * 100)}%
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-kp-green/15 text-kp-green">
+                  {t("marketplace.freeToUse")}
+                </span>
+              </div>
+              {selected.author && (
+                <p className="text-sm text-kp-muted">{selected.author}</p>
+              )}
+              {selected.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {selected.tags.map((tag) => (
+                    <span key={tag} className="bg-kp-navy/60 text-kp-muted text-xs px-2 py-0.5 rounded">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="bg-kp-navy rounded-lg p-4 border border-kp-border">
+                <pre className="text-sm text-kp-text whitespace-pre-wrap font-mono leading-relaxed">
+                  {stripFrontmatter(selected.content)}
+                </pre>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setSelected(null)}
+              className="px-4 py-2 text-sm text-kp-muted border border-kp-border rounded-lg hover:text-kp-text transition-colors"
+            >
+              {t("common.cancel")}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 // -- Browse Tab --
 
 function BrowseTab() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -98,6 +291,11 @@ function BrowseTab() {
 
   const handlePurchase = async () => {
     if (!selected) return;
+    if (!isAuthenticated) {
+      toast.error(t("marketplace.authRequired"));
+      navigate("/settings", { state: { from: "/marketplace", authRequired: true } });
+      return;
+    }
     setPurchasing(true);
     try {
       await api.purchaseListing(selected.id);
@@ -238,6 +436,8 @@ function BrowseTab() {
 
 function MyListingsTab() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
@@ -284,6 +484,11 @@ function MyListingsTab() {
   };
 
   const handleCreate = async () => {
+    if (!isAuthenticated) {
+      toast.error(t("marketplace.authRequired"));
+      navigate("/settings", { state: { from: "/marketplace", authRequired: true } });
+      return;
+    }
     if (!title.trim() || !knowledgeUnitId.trim()) {
       toast.error(t("marketplace.titleRequired"));
       return;
@@ -559,12 +764,16 @@ export default function Marketplace() {
         <p className="mt-1 text-sm text-kp-muted">{t("marketplace.subtitle")}</p>
       </div>
 
-      <Tabs defaultValue="browse">
+      <Tabs defaultValue="skills">
         <TabsList>
+          <TabsTrigger value="skills">{t("marketplace.skillsTab")}</TabsTrigger>
           <TabsTrigger value="browse">{t("marketplace.browseTab")}</TabsTrigger>
           <TabsTrigger value="my-listings">{t("marketplace.myListingsTab")}</TabsTrigger>
           <TabsTrigger value="earnings">{t("marketplace.earningsTab")}</TabsTrigger>
         </TabsList>
+        <TabsContent value="skills">
+          <SkillsTab />
+        </TabsContent>
         <TabsContent value="browse">
           <BrowseTab />
         </TabsContent>

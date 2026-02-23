@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
+import AuthBanner from "../components/AuthBanner";
 import { api } from "../lib/api";
 
 interface DecisionTreeStep {
@@ -145,6 +146,7 @@ export default function TestSandbox() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <AuthBanner />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

@@ -1,6 +1,8 @@
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Layout from "@theme/Layout";
+import FeaturedSkills from "../../../src/components/FeaturedSkills";
+import { useEffect, useState } from "react";
 
 /* ==========================================================================
    Chinese Landing Page — mirrors all 12 sections of the English version
@@ -169,12 +171,16 @@ interface Stat {
   color: string;
 }
 
-const stats: Stat[] = [
-  { value: "639", label: "测试", color: "var(--kp-teal)" },
-  { value: "6", label: "MCP 工具", color: "var(--kp-blue)" },
-  { value: "200K+", label: "技能", color: "var(--kp-orange)" },
-  { value: "5", label: "协议层", color: "var(--kp-green)" },
-];
+function useSkillCount(): string {
+  const [count, setCount] = useState("--");
+  useEffect(() => {
+    fetch("/v1/skills?limit=1")
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((j) => setCount((j as { total: number }).total.toLocaleString()))
+      .catch(() => setCount("30+"));
+  }, []);
+  return count;
+}
 
 function StatBox({ value, label, color }: Stat) {
   return (
@@ -215,6 +221,12 @@ function StatBox({ value, label, color }: Stat) {
 }
 
 function StatsCounter(): JSX.Element {
+  const skillCount = useSkillCount();
+  const dynamicStats: Stat[] = [
+    { value: skillCount, label: "技能", color: "var(--kp-orange)" },
+    { value: "6", label: "MCP 工具", color: "var(--kp-blue)" },
+    { value: "5", label: "协议层", color: "var(--kp-green)" },
+  ];
   return (
     <section style={{ background: "var(--kp-dark)", padding: "3rem 1.5rem" }}>
       <div
@@ -222,11 +234,11 @@ function StatsCounter(): JSX.Element {
           maxWidth: 900,
           margin: "0 auto",
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(3, 1fr)",
           gap: "1.25rem",
         }}
       >
-        {stats.map((s) => (
+        {dynamicStats.map((s) => (
           <StatBox key={s.label} {...s} />
         ))}
       </div>
@@ -693,135 +705,6 @@ function FrameworkLogos(): JSX.Element {
   );
 }
 
-/* ============================ 9. TESTIMONIALS =========================== */
-
-interface Testimonial {
-  initials: string;
-  color: string;
-  quote: string;
-  name: string;
-  role: string;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    initials: "AK",
-    color: "var(--kp-teal)",
-    quote: "KnowledgePulse 彻底改变了我们 AI 智能体在团队间共享知识的方式。",
-    name: "Alex Kim",
-    role: "ML 工程师",
-  },
-  {
-    initials: "SR",
-    color: "var(--kp-blue)",
-    quote: "SOP 工作室让我们能够捕获以前未记录的专家流程。",
-    name: "Sarah Rodriguez",
-    role: "运营主管",
-  },
-  {
-    initials: "JC",
-    color: "var(--kp-orange)",
-    quote: "终于有一个跨不同 AI 框架工作的知识协议了。",
-    name: "James Chen",
-    role: "AI 架构师",
-  },
-];
-
-function TestimonialCard({ initials, color, quote, name, role }: Testimonial) {
-  return (
-    <div
-      style={{
-        background: "var(--kp-panel)",
-        border: "1px solid var(--kp-border)",
-        borderRadius: 8,
-        padding: "1.5rem",
-      }}
-    >
-      <div
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: "50%",
-          background: color,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: outfit,
-          fontWeight: 700,
-          fontSize: "0.9rem",
-          color: "#fff",
-          marginBottom: "1rem",
-        }}
-      >
-        {initials}
-      </div>
-      <p
-        style={{
-          fontStyle: "italic",
-          color: "var(--kp-text)",
-          fontSize: "0.95rem",
-          lineHeight: 1.6,
-          margin: "0 0 1rem",
-        }}
-      >
-        &ldquo;{quote}&rdquo;
-      </p>
-      <div>
-        <div
-          style={{
-            fontWeight: 600,
-            color: "var(--kp-heading)",
-            fontSize: "0.9rem",
-          }}
-        >
-          {name}
-        </div>
-        <div
-          style={{
-            fontFamily: mono,
-            fontSize: "0.75rem",
-            color: "var(--kp-muted)",
-          }}
-        >
-          {role}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TestimonialCards(): JSX.Element {
-  return (
-    <section style={{ background: "var(--kp-dark)", padding: "4rem 1.5rem" }}>
-      <div style={{ maxWidth: 960, margin: "0 auto" }}>
-        <h2
-          style={{
-            fontFamily: outfit,
-            fontWeight: 800,
-            fontSize: "1.75rem",
-            color: "var(--kp-heading)",
-            textAlign: "center",
-            marginBottom: "2.5rem",
-          }}
-        >
-          用户评价
-        </h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "1.25rem",
-          }}
-        >
-          {testimonials.map((t) => (
-            <TestimonialCard key={t.initials} {...t} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ============================ 10. ECOSYSTEM ============================= */
 
 function EcosystemNote(): JSX.Element {
@@ -984,8 +867,9 @@ export default function Home(): JSX.Element {
       <FeatureGrid />
       <CodeExample />
       <UseCaseCards />
+      <FeaturedSkills />
       <FrameworkLogos />
-      <TestimonialCards />
+
       <EcosystemNote />
       <CTASection />
     </Layout>

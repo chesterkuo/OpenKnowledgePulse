@@ -34,7 +34,11 @@
     "finance": "金融",
     "medical": "医疗",
     "engineering": "工程",
-    "legal": "法律"
+    "legal": "法律",
+    "security": "安全",
+    "design": "设计",
+    "data_science": "数据科学",
+    "content_creation": "内容创作"
   },
   "status": {
     "draft": "草稿",
@@ -186,7 +190,15 @@
     "totalEarnings": "总收益",
     "noEarnings": "暂无收益",
     "earningsDescription": "市场销售收益将显示在这里。",
-    "transactions": "交易记录"
+    "transactions": "交易记录",
+    "skillsTab": "技能",
+    "searchSkills": "搜索技能...",
+    "noSkills": "未找到技能",
+    "noSkillsYet": "暂无可用技能",
+    "qualityScore": "质量",
+    "freeToUse": "免费",
+    "skillDetail": "技能详情",
+    "authRequired": "请在设置中配置 API 密钥以执行此操作。"
   },
   "test": {
     "title": "测试沙箱",
@@ -234,7 +246,14 @@
     "connectedSuccess": "连接成功。",
     "connectedStatus": "连接成功。状态：{{status}}",
     "connectionFailed": "连接失败：HTTP {{status}} {{statusText}}",
-    "connectionError": "连接失败：{{error}}"
+    "connectionError": "连接失败：{{error}}",
+    "authRequired": "需要身份验证",
+    "authRedirectFrom": "请配置注册中心 URL 和 API 密钥以访问 {{page}}。"
+  },
+  "auth": {
+    "bannerTitle": "需要身份验证",
+    "bannerDescription": "请配置注册中心 URL 和 API 密钥以使用此功能。",
+    "goToSettings": "前往设置"
   },
   "sopCard": {
     "quality": "质量："

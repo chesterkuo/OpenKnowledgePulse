@@ -9,6 +9,8 @@ export interface ImportConfig {
   dryRun: boolean;
   resume: boolean;
   verbose: boolean;
+  repos?: string[]; // e.g. ["sickn33/antigravity-awesome-skills"]
+  skipPaths?: string[]; // e.g. ["docx", "pdf", "pptx", "xlsx"]
 }
 
 export interface RepoMetadata {

@@ -3,9 +3,13 @@ import type { StoredSkill } from "../interfaces.js";
 import { createPool, runMigrations, type PgPool } from "./db.js";
 import { PgSkillStore } from "./skill-store.js";
 
-const DATABASE_URL =
-  process.env.KP_TEST_DATABASE_URL ??
-  "postgresql://knowledgepulse_user:KPulse2026Secure@172.31.9.157:5432/knowledgepulse";
+const DATABASE_URL = process.env.KP_TEST_DATABASE_URL;
+
+if (!DATABASE_URL) {
+  describe.skip("PgSkillStore (KP_TEST_DATABASE_URL not set)", () => {
+    test("skipped", () => {});
+  });
+} else {
 
 // ── Helpers ───────────────────────────────────────────
 
@@ -198,3 +202,5 @@ describe("PgSkillStore", () => {
     expect(result.data[2]!.quality_score).toBe(0.5);
   });
 });
+
+} // end if (DATABASE_URL)

@@ -34,7 +34,11 @@
     "finance": "금융",
     "medical": "의료",
     "engineering": "엔지니어링",
-    "legal": "법률"
+    "legal": "법률",
+    "security": "보안",
+    "design": "디자인",
+    "data_science": "데이터 과학",
+    "content_creation": "콘텐츠 제작"
   },
   "status": {
     "draft": "초안",
@@ -186,7 +190,15 @@
     "totalEarnings": "총 수익",
     "noEarnings": "아직 수익이 없습니다",
     "earningsDescription": "마켓플레이스 판매 수익이 여기에 표시됩니다.",
-    "transactions": "거래"
+    "transactions": "거래",
+    "skillsTab": "스킬",
+    "searchSkills": "스킬 검색...",
+    "noSkills": "스킬을 찾을 수 없습니다",
+    "noSkillsYet": "아직 사용 가능한 스킬이 없습니다",
+    "qualityScore": "품질",
+    "freeToUse": "무료",
+    "skillDetail": "스킬 상세",
+    "authRequired": "이 작업을 수행하려면 설정에서 API 키를 구성하세요."
   },
   "test": {
     "title": "테스트 샌드박스",
@@ -234,7 +246,14 @@
     "connectedSuccess": "연결에 성공했습니다.",
     "connectedStatus": "연결에 성공했습니다. 상태: {{status}}",
     "connectionFailed": "연결 실패: HTTP {{status}} {{statusText}}",
-    "connectionError": "연결 실패: {{error}}"
+    "connectionError": "연결 실패: {{error}}",
+    "authRequired": "인증이 필요합니다",
+    "authRedirectFrom": "{{page}}에 접근하려면 레지스트리 URL과 API 키를 설정하세요."
+  },
+  "auth": {
+    "bannerTitle": "인증이 필요합니다",
+    "bannerDescription": "이 기능을 사용하려면 레지스트리 URL과 API 키를 설정하세요.",
+    "goToSettings": "설정으로 이동"
   },
   "sopCard": {
     "quality": "품질:"

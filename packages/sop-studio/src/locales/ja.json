@@ -34,7 +34,11 @@
     "finance": "金融",
     "medical": "医療",
     "engineering": "エンジニアリング",
-    "legal": "法務"
+    "legal": "法務",
+    "security": "セキュリティ",
+    "design": "デザイン",
+    "data_science": "データサイエンス",
+    "content_creation": "コンテンツ制作"
   },
   "status": {
     "draft": "下書き",
@@ -186,7 +190,15 @@
     "totalEarnings": "総収益",
     "noEarnings": "収益はまだありません",
     "earningsDescription": "マーケットプレイスの売上による収益がここに表示されます。",
-    "transactions": "取引"
+    "transactions": "取引",
+    "skillsTab": "スキル",
+    "searchSkills": "スキルを検索...",
+    "noSkills": "スキルが見つかりません",
+    "noSkillsYet": "スキルはまだありません",
+    "qualityScore": "品質",
+    "freeToUse": "無料",
+    "skillDetail": "スキル詳細",
+    "authRequired": "この操作を行うには、設定で API キーを設定してください。"
   },
   "test": {
     "title": "テストサンドボックス",
@@ -234,7 +246,14 @@
     "connectedSuccess": "接続に成功しました。",
     "connectedStatus": "接続に成功しました。ステータス: {{status}}",
     "connectionFailed": "接続に失敗しました: HTTP {{status}} {{statusText}}",
-    "connectionError": "接続に失敗しました: {{error}}"
+    "connectionError": "接続に失敗しました: {{error}}",
+    "authRequired": "認証が必要です",
+    "authRedirectFrom": "{{page}} にアクセスするには、レジストリ URL と API キーを設定してください。"
+  },
+  "auth": {
+    "bannerTitle": "認証が必要です",
+    "bannerDescription": "この機能を使用するには、レジストリ URL と API キーを設定してください。",
+    "goToSettings": "設定へ移動"
   },
   "sopCard": {
     "quality": "品質:"

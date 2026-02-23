@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import AuthBanner from "../components/AuthBanner";
 import { api } from "../lib/api";
 
 interface LLMConfig {
@@ -284,6 +285,7 @@ export default function Import() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
+      <AuthBanner />
       <div>
         <h1 className="text-2xl font-bold text-kp-heading">{t("import.title")}</h1>
         <p className="mt-1 text-sm text-kp-muted">

@@ -17,6 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import "@xyflow/react/dist/style.css";
 
+import AuthBanner from "../components/AuthBanner";
 import PropertyPanel from "../components/PropertyPanel";
 import ConditionNode from "../components/nodes/ConditionNode";
 import StepNode from "../components/nodes/StepNode";
@@ -435,6 +436,7 @@ function EditorInner() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
+      <AuthBanner />
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-kp-navy border-b border-kp-border">
         <div className="flex items-center gap-3">

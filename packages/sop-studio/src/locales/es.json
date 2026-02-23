@@ -34,7 +34,11 @@
     "finance": "Finanzas",
     "medical": "Medicina",
     "engineering": "Ingeniería",
-    "legal": "Legal"
+    "legal": "Legal",
+    "security": "Seguridad",
+    "design": "Diseño",
+    "data_science": "Ciencia de datos",
+    "content_creation": "Creación de contenido"
   },
   "status": {
     "draft": "Borrador",
@@ -186,7 +190,15 @@
     "totalEarnings": "Ganancias totales",
     "noEarnings": "Aún no hay ganancias",
     "earningsDescription": "Las ganancias por ventas en el marketplace aparecerán aquí.",
-    "transactions": "Transacciones"
+    "transactions": "Transacciones",
+    "skillsTab": "Habilidades",
+    "searchSkills": "Buscar habilidades...",
+    "noSkills": "No se encontraron habilidades",
+    "noSkillsYet": "Aún no hay habilidades disponibles",
+    "qualityScore": "Calidad",
+    "freeToUse": "Gratis",
+    "skillDetail": "Detalle de habilidad",
+    "authRequired": "Configura tu clave API en Configuración para realizar esta acción."
   },
   "test": {
     "title": "Entorno de pruebas",
@@ -234,7 +246,14 @@
     "connectedSuccess": "Conectado correctamente.",
     "connectedStatus": "Conectado correctamente. Estado: {{status}}",
     "connectionFailed": "Error de conexión: HTTP {{status}} {{statusText}}",
-    "connectionError": "Error de conexión: {{error}}"
+    "connectionError": "Error de conexión: {{error}}",
+    "authRequired": "Autenticación requerida",
+    "authRedirectFrom": "Configura tu URL del registro y clave API para acceder a {{page}}."
+  },
+  "auth": {
+    "bannerTitle": "Autenticación requerida",
+    "bannerDescription": "Configura tu URL del registro y clave API para usar esta función.",
+    "goToSettings": "Ir a Configuración"
   },
   "sopCard": {
     "quality": "Calidad:"

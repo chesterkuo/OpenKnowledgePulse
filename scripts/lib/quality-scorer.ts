@@ -89,6 +89,10 @@ const THREE_YEARS_DAYS = 365 * 3;
  *
  * Hard filters reject immediately (return rejected=true with reason).
  * Otherwise a weighted score is computed from 6 signals.
+ *
+ * When `trustedRepo` is true, repo-level hard filters (stars, archived, pushed_at)
+ * are skipped — only content quality checks (body length, section count) apply.
+ * This is used for curated repos that are pre-vetted.
  */
 export function computeQualityScore(
   repo: RepoMetadata,
@@ -96,22 +100,26 @@ export function computeQualityScore(
   sectionCount: number,
   hasInstructions: boolean,
   minStars: number = 5,
+  trustedRepo: boolean = false,
 ): QualityResult {
   // --- Hard filters ---
-  if (repo.stargazers_count < minStars) {
-    return { score: 0, rejected: true, reason: `stars ${repo.stargazers_count} < minStars ${minStars}` };
+  if (!trustedRepo) {
+    if (repo.stargazers_count < minStars) {
+      return { score: 0, rejected: true, reason: `stars ${repo.stargazers_count} < minStars ${minStars}` };
+    }
+    if (repo.archived) {
+      return { score: 0, rejected: true, reason: "repository is archived" };
+    }
+    if (daysSince(repo.pushed_at) > THREE_YEARS_DAYS) {
+      return { score: 0, rejected: true, reason: "last push older than 3 years" };
+    }
   }
-  if (repo.archived) {
-    return { score: 0, rejected: true, reason: "repository is archived" };
-  }
+  // Content checks always apply
   if (bodyLength < 100) {
     return { score: 0, rejected: true, reason: `body too short (${bodyLength} < 100 chars)` };
   }
   if (sectionCount < 1) {
     return { score: 0, rejected: true, reason: "no ## headings found (sectionCount < 1)" };
-  }
-  if (daysSince(repo.pushed_at) > THREE_YEARS_DAYS) {
-    return { score: 0, rejected: true, reason: "last push older than 3 years" };
   }
 
   // --- Weighted scoring ---

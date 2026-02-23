@@ -34,7 +34,11 @@
     "finance": "Finance",
     "medical": "Medical",
     "engineering": "Engineering",
-    "legal": "Legal"
+    "legal": "Legal",
+    "security": "Security",
+    "design": "Design",
+    "data_science": "Data Science",
+    "content_creation": "Content Creation"
   },
   "status": {
     "draft": "Draft",
@@ -186,7 +190,15 @@
     "totalEarnings": "Total Earnings",
     "noEarnings": "No earnings yet",
     "earningsDescription": "Earnings from marketplace sales will appear here.",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "skillsTab": "Skills",
+    "searchSkills": "Search skills...",
+    "noSkills": "No skills found",
+    "noSkillsYet": "No skills available yet",
+    "qualityScore": "Quality",
+    "freeToUse": "Free",
+    "skillDetail": "Skill Detail",
+    "authRequired": "Please configure your API key in Settings to perform this action."
   },
   "test": {
     "title": "Test Sandbox",
@@ -234,7 +246,14 @@
     "connectedSuccess": "Connected successfully.",
     "connectedStatus": "Connected successfully. Status: {{status}}",
     "connectionFailed": "Connection failed: HTTP {{status}} {{statusText}}",
-    "connectionError": "Connection failed: {{error}}"
+    "connectionError": "Connection failed: {{error}}",
+    "authRequired": "Authentication required",
+    "authRedirectFrom": "Please configure your Registry URL and API Key to access {{page}}."
+  },
+  "auth": {
+    "bannerTitle": "Authentication required",
+    "bannerDescription": "Configure your Registry URL and API Key to use this feature.",
+    "goToSettings": "Go to Settings"
   },
   "sopCard": {
     "quality": "Quality:"

@@ -4,9 +4,13 @@ import { createPool, runMigrations, type PgPool } from "./db.js";
 import { PgKnowledgeStore } from "./knowledge-store.js";
 import { PgSkillStore } from "./skill-store.js";
 
-const DATABASE_URL =
-  process.env.KP_TEST_DATABASE_URL ??
-  "postgresql://knowledgepulse_user:KPulse2026Secure@172.31.9.157:5432/knowledgepulse";
+const DATABASE_URL = process.env.KP_TEST_DATABASE_URL;
+
+if (!DATABASE_URL) {
+  describe.skip("PostgreSQL Full-Text Search (KP_TEST_DATABASE_URL not set)", () => {
+    test("skipped", () => {});
+  });
+} else {
 
 // ── Helpers ───────────────────────────────────────────
 
@@ -539,3 +543,5 @@ describe("PostgreSQL Full-Text Search", () => {
     });
   });
 });
+
+} // end if (DATABASE_URL)

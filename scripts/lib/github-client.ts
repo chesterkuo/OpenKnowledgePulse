@@ -64,10 +64,61 @@ export class GitHubClient {
   }
 
   /**
+   * Discover all SKILL.md files within a specific repo using the Git Trees API.
+   *
+   * Uses a single recursive tree fetch (one API call) to enumerate every file
+   * in the repository, then filters for paths ending with SKILL.md.
+   */
+  async *discoverSkillFilesInRepo(fullName: string): AsyncGenerator<GitHubSearchResult> {
+    await this.apiLimiter.acquire();
+
+    const response = await withRetry(() =>
+      fetch(`${GITHUB_API}/repos/${fullName}/git/trees/HEAD?recursive=1`, {
+        headers: {
+          ...this.baseHeaders(),
+          Accept: "application/vnd.github+json",
+        },
+      }),
+    );
+
+    if (!response.ok) {
+      console.error(
+        `[tree] HTTP ${response.status} for ${fullName}, skipping repo`,
+      );
+      return;
+    }
+
+    const data = (await response.json()) as {
+      sha: string;
+      tree: Array<{
+        path: string;
+        type: string;
+        size?: number;
+      }>;
+      truncated: boolean;
+    };
+
+    if (data.truncated) {
+      console.warn(`[tree] Tree for ${fullName} was truncated by GitHub (very large repo)`);
+    }
+
+    for (const entry of data.tree) {
+      if (entry.type !== "blob") continue;
+      const basename = entry.path.split("/").pop() ?? "";
+      if (basename.toLowerCase() === "skill.md") {
+        yield { fullName, filePath: entry.path };
+      }
+    }
+  }
+
+  /**
    * Discover SKILL.md files across GitHub using code search.
    *
    * Iterates through size-range partitions to overcome the 1000-result-per-query
    * limit. Each partition is paginated up to 10 pages (100 results each).
+   *
+   * Also searches for `.claude/skills/` and `skills/` path patterns to catch
+   * files that filename-only search may miss in different repos.
    *
    * Yields results one at a time so the caller can begin processing immediately
    * without waiting for all search queries to complete.
@@ -75,74 +126,83 @@ export class GitHubClient {
   async *discoverSkillFiles(): AsyncGenerator<GitHubSearchResult> {
     const seen = new Set<string>();
 
-    for (const sizeRange of SIZE_RANGES) {
-      const query = `filename:SKILL.md ${sizeRange}`;
+    // Query templates: base filename search + path-scoped variants
+    const queryTemplates = [
+      (sizeRange: string) => `filename:SKILL.md ${sizeRange}`,
+      (sizeRange: string) => `filename:SKILL.md path:.claude/skills ${sizeRange}`,
+      (sizeRange: string) => `filename:SKILL.md path:skills/ ${sizeRange}`,
+    ];
 
-      for (let page = 1; page <= MAX_PAGES; page++) {
-        await this.searchLimiter.acquire();
+    for (const makeQuery of queryTemplates) {
+      for (const sizeRange of SIZE_RANGES) {
+        const query = makeQuery(sizeRange);
 
-        const url = new URL(`${GITHUB_API}/search/code`);
-        url.searchParams.set("q", query);
-        url.searchParams.set("per_page", String(PER_PAGE));
-        url.searchParams.set("page", String(page));
+        for (let page = 1; page <= MAX_PAGES; page++) {
+          await this.searchLimiter.acquire();
 
-        const response = await withRetry(() =>
-          fetch(url.toString(), {
-            headers: {
-              ...this.baseHeaders(),
-              Accept: "application/vnd.github+json",
-            },
-          }),
-        );
+          const url = new URL(`${GITHUB_API}/search/code`);
+          url.searchParams.set("q", query);
+          url.searchParams.set("per_page", String(PER_PAGE));
+          url.searchParams.set("page", String(page));
 
-        if (!response.ok) {
-          // 422 can occur for malformed queries or if GitHub is having issues;
-          // skip this page/range rather than crashing the entire discovery.
-          console.error(
-            `[search] HTTP ${response.status} for query="${query}" page=${page}, skipping`,
+          const response = await withRetry(() =>
+            fetch(url.toString(), {
+              headers: {
+                ...this.baseHeaders(),
+                Accept: "application/vnd.github+json",
+              },
+            }),
           );
-          break;
-        }
 
-        const data = (await response.json()) as {
-          total_count: number;
-          incomplete_results: boolean;
-          items: Array<{
-            name: string;
-            path: string;
-            repository: {
-              full_name: string;
-            };
-          }>;
-        };
-
-        if (data.incomplete_results) {
-          console.warn(
-            `[search] Incomplete results for query="${query}" page=${page} (${data.total_count} total)`,
-          );
-        }
-
-        if (data.items.length === 0) {
-          // No more results for this size range
-          break;
-        }
-
-        for (const item of data.items) {
-          const key = `${item.repository.full_name}:${item.path}`;
-          if (seen.has(key)) {
-            continue;
+          if (!response.ok) {
+            // 422 can occur for malformed queries or if GitHub is having issues;
+            // skip this page/range rather than crashing the entire discovery.
+            console.error(
+              `[search] HTTP ${response.status} for query="${query}" page=${page}, skipping`,
+            );
+            break;
           }
-          seen.add(key);
 
-          yield {
-            fullName: item.repository.full_name,
-            filePath: item.path,
+          const data = (await response.json()) as {
+            total_count: number;
+            incomplete_results: boolean;
+            items: Array<{
+              name: string;
+              path: string;
+              repository: {
+                full_name: string;
+              };
+            }>;
           };
-        }
 
-        // If we received fewer items than per_page, there are no more pages.
-        if (data.items.length < PER_PAGE) {
-          break;
+          if (data.incomplete_results) {
+            console.warn(
+              `[search] Incomplete results for query="${query}" page=${page} (${data.total_count} total)`,
+            );
+          }
+
+          if (data.items.length === 0) {
+            // No more results for this size range
+            break;
+          }
+
+          for (const item of data.items) {
+            const key = `${item.repository.full_name}:${item.path}`;
+            if (seen.has(key)) {
+              continue;
+            }
+            seen.add(key);
+
+            yield {
+              fullName: item.repository.full_name,
+              filePath: item.path,
+            };
+          }
+
+          // If we received fewer items than per_page, there are no more pages.
+          if (data.items.length < PER_PAGE) {
+            break;
+          }
         }
       }
     }

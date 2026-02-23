@@ -40,4 +40,9 @@ export const api = {
   purchaseListing: (id: string) =>
     request(`/v1/marketplace/purchase/${id}`, { method: "POST" }),
   getEarnings: () => request("/v1/marketplace/earnings"),
+
+  // Skills
+  getSkills: (params?: Record<string, string>) =>
+    request(`/v1/skills?${new URLSearchParams(params || {})}`),
+  getSkill: (id: string) => request(`/v1/skills/${id}`),
 };

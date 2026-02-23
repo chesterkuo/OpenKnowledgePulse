@@ -55,6 +55,8 @@ function parseCliArgs(): ImportConfig {
       "dry-run": { type: "boolean", default: false },
       resume: { type: "boolean", default: false },
       verbose: { type: "boolean", default: false },
+      repos: { type: "string" },
+      "skip-paths": { type: "string" },
     },
     strict: true,
   });
@@ -82,6 +84,8 @@ function parseCliArgs(): ImportConfig {
     dryRun: values["dry-run"]!,
     resume: values.resume!,
     verbose: values.verbose!,
+    repos: values.repos ? values.repos.split(",").map((r) => r.trim()) : undefined,
+    skipPaths: values["skip-paths"] ? values["skip-paths"].split(",").map((p) => p.trim()) : undefined,
   };
 }
 
@@ -169,10 +173,21 @@ async function processCandidate(
   github: GitHubClient,
   checkpointMgr: CheckpointManager,
   stats: ImportStats,
+  trustedRepo: boolean = false,
 ): Promise<void> {
   const { key, repoFullName, filePath } = candidate;
 
   try {
+    // (0) Check skip-paths filter
+    if (config.skipPaths?.length) {
+      const pathLower = filePath.toLowerCase();
+      if (config.skipPaths.some((p) => pathLower.includes(p.toLowerCase()))) {
+        log(config, `[skip] ${key}: matches skip-path filter`);
+        checkpointMgr.updateCandidate(key, { status: "skipped", reason: "skip-path filter" });
+        return;
+      }
+    }
+
     // (a) Fetch repo metadata (cached per-repo)
     let repoMeta;
     try {
@@ -192,7 +207,7 @@ async function processCandidate(
     //     We need the SKILL.md body for full scoring, but hard filters on repo
     //     metadata (stars, archived, last push) can reject early without fetching content.
     //     Use placeholder content values for the early hard-filter check.
-    const earlyCheck = computeQualityScore(repoMeta, 1000, 3, true, config.minStars);
+    const earlyCheck = computeQualityScore(repoMeta, 1000, 3, true, config.minStars, trustedRepo);
     if (earlyCheck.rejected) {
       log(config, `[skip] ${key}: hard filter — ${earlyCheck.reason}`);
       checkpointMgr.updateCandidate(key, { status: "skipped", reason: earlyCheck.reason });
@@ -269,7 +284,7 @@ async function processCandidate(
     const sectionCount = countSections(parsed.body);
     const hasInstr = hasInstructions(parsed.body);
 
-    const quality = computeQualityScore(repoMeta, bodyLength, sectionCount, hasInstr, config.minStars);
+    const quality = computeQualityScore(repoMeta, bodyLength, sectionCount, hasInstr, config.minStars, trustedRepo);
     if (quality.rejected) {
       log(config, `[skip] ${key}: quality rejected — ${quality.reason}`);
       checkpointMgr.updateCandidate(key, { status: "skipped", reason: quality.reason });
@@ -416,9 +431,12 @@ async function main(): Promise<void> {
   const config = parseCliArgs();
   const startTime = new Date();
 
+  const repoMode = !!config.repos?.length;
+
   console.log("KnowledgePulse GitHub SKILL.md Importer");
   console.log("========================================");
   console.log(`  Registry:    ${config.registryUrl}`);
+  console.log(`  Mode:        ${repoMode ? `repo-list (${config.repos!.join(", ")})` : "code search"}`);
   console.log(`  Min stars:   ${config.minStars}`);
   console.log(`  Min quality: ${config.minQuality}`);
   console.log(`  Max results: ${config.maxResults}`);
@@ -426,6 +444,9 @@ async function main(): Promise<void> {
   console.log(`  Dry run:     ${config.dryRun}`);
   console.log(`  Resume:      ${config.resume}`);
   console.log(`  Verbose:     ${config.verbose}`);
+  if (config.skipPaths?.length) {
+    console.log(`  Skip paths:  ${config.skipPaths.join(", ")}`);
+  }
   console.log();
 
   // ── Initialize components ──
@@ -470,49 +491,70 @@ async function main(): Promise<void> {
   // ── DISCOVER PHASE ──
 
   if (checkpoint.phase === "discover") {
-    console.log("Phase 1: Discovering SKILL.md files...");
+    console.log(`Phase 1: Discovering SKILL.md files${repoMode ? " (repo-list mode)" : " (code search)"}...`);
 
     let discoveredCount = Object.keys(checkpoint.candidates).length;
 
+    /** Helper to add a discovered result to the checkpoint */
+    function addCandidate(result: { fullName: string; filePath: string }): boolean {
+      // Filter: only accept files named exactly SKILL.md (case-insensitive)
+      const basename = result.filePath.split("/").pop() ?? "";
+      if (basename.toLowerCase() !== "skill.md") {
+        return false;
+      }
+
+      const key = `${result.fullName}:${result.filePath}`;
+
+      // Skip if already in checkpoint (from a previous partial run)
+      if (checkpoint.candidates[key]) {
+        return false;
+      }
+
+      const candidate: SkillCandidate = {
+        repoFullName: result.fullName,
+        filePath: result.filePath,
+        key,
+        status: "pending",
+      };
+      checkpoint.candidates[key] = candidate;
+      discoveredCount++;
+      stats.discovered++;
+
+      log(config, `[discover] ${key}`);
+
+      // Save checkpoint periodically (every 50 discoveries)
+      if (discoveredCount % 50 === 0) {
+        checkpointMgr.save(checkpoint);
+        console.log(`  ...discovered ${discoveredCount} candidates so far`);
+      }
+
+      return discoveredCount >= config.maxResults;
+    }
+
     try {
-      for await (const result of github.discoverSkillFiles()) {
-        // Filter: only accept files named exactly SKILL.md (case-insensitive)
-        // GitHub's filename: search does partial matching, so "natural-skill.md" etc. slip through
-        const basename = result.filePath.split("/").pop() ?? "";
-        if (basename.toLowerCase() !== "skill.md") {
-          continue;
+      if (repoMode) {
+        // Repo-list mode: iterate specific repos using Git Trees API
+        for (const repoFullName of config.repos!) {
+          console.log(`  Scanning repo: ${repoFullName}`);
+          let hitLimit = false;
+          for await (const result of github.discoverSkillFilesInRepo(repoFullName)) {
+            if (addCandidate(result)) {
+              hitLimit = true;
+              break;
+            }
+          }
+          if (hitLimit) {
+            console.log(`  Reached maxResults limit (${config.maxResults}), stopping discovery.`);
+            break;
+          }
         }
-
-        const key = `${result.fullName}:${result.filePath}`;
-
-        // Skip if already in checkpoint (from a previous partial run)
-        if (checkpoint.candidates[key]) {
-          continue;
-        }
-
-        // Add as a new pending candidate
-        const candidate: SkillCandidate = {
-          repoFullName: result.fullName,
-          filePath: result.filePath,
-          key,
-          status: "pending",
-        };
-        checkpoint.candidates[key] = candidate;
-        discoveredCount++;
-        stats.discovered++;
-
-        log(config, `[discover] ${key}`);
-
-        // Save checkpoint periodically (every 50 discoveries)
-        if (discoveredCount % 50 === 0) {
-          checkpointMgr.save(checkpoint);
-          console.log(`  ...discovered ${discoveredCount} candidates so far`);
-        }
-
-        // Stop if maxResults reached
-        if (discoveredCount >= config.maxResults) {
-          console.log(`  Reached maxResults limit (${config.maxResults}), stopping discovery.`);
-          break;
+      } else {
+        // Code search mode: discover across GitHub
+        for await (const result of github.discoverSkillFiles()) {
+          if (addCandidate(result)) {
+            console.log(`  Reached maxResults limit (${config.maxResults}), stopping discovery.`);
+            break;
+          }
         }
       }
     } catch (err: unknown) {
@@ -541,6 +583,9 @@ async function main(): Promise<void> {
     console.log(`  ${pending.length} pending candidates to process.`);
     console.log();
 
+    // Build set of trusted repos for quality scoring
+    const trustedRepos = new Set(config.repos?.map((r) => r.toLowerCase()) ?? []);
+
     // Concurrency-limited worker pool
     const queue = [...pending];
     let fatalError: FatalError | null = null;
@@ -553,8 +598,9 @@ async function main(): Promise<void> {
         }
 
         const candidate = queue.shift()!;
+        const isTrusted = trustedRepos.has(candidate.repoFullName.toLowerCase());
         try {
-          await processCandidate(candidate, config, github, checkpointMgr, stats);
+          await processCandidate(candidate, config, github, checkpointMgr, stats, isTrusted);
         } catch (err: unknown) {
           if (err instanceof FatalError) {
             fatalError = err;
