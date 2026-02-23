@@ -41,7 +41,9 @@ securityCommand
         quarantine_status: string;
       };
       console.log(`Report submitted for unit: ${unitId}`);
-      console.log(`Reports: ${body.report_count}/${body.threshold} (status: ${body.quarantine_status})`);
+      console.log(
+        `Reports: ${body.report_count}/${body.threshold} (status: ${body.quarantine_status})`,
+      );
     } catch (e) {
       console.error(`Error: ${e instanceof Error ? e.message : String(e)}`);
       process.exit(1);

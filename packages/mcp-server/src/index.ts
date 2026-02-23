@@ -1,12 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { Hono } from "hono";
 import { mcpAuthMiddleware } from "./middleware/auth.js";
 import { createRegistryBridge } from "./registry.js";
 import {
+  type McpSessionManager,
   MemorySessionManager,
   RedisSessionManager,
-  type McpSessionManager,
 } from "./session-manager.js";
 import { registerAllTools } from "./tools/index.js";
 
@@ -44,9 +44,7 @@ const app = new Hono();
 app.use("*", mcpAuthMiddleware(sessionManager));
 
 // Health check
-app.get("/health", (c) =>
-  c.json({ status: "ok", name: "knowledgepulse-mcp", version: "1.1.0" }),
-);
+app.get("/health", (c) => c.json({ status: "ok", name: "knowledgepulse-mcp", version: "1.1.0" }));
 
 // POST /mcp/session - Initialize session with API key
 app.post("/mcp/session", async (c) => {
@@ -75,13 +73,13 @@ app.delete("/mcp/session", async (c) => {
 
 // MCP endpoint via Streamable HTTP
 app.post("/mcp", async (c) => {
-  const transport = new StreamableHTTPServerTransport({
+  const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: () => crypto.randomUUID(),
   });
   await mcpServer.connect(transport);
 
   const body = await c.req.json();
-  const response = await transport.handleRequest(c.req.raw, body);
+  const response = await transport.handleRequest(c.req.raw, { parsedBody: body });
 
   return response;
 });

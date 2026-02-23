@@ -8,14 +8,14 @@ describe("mcpAuthMiddleware", () => {
 
   beforeEach(() => {
     savedApiKey = process.env.KP_API_KEY;
-    delete process.env.KP_API_KEY;
+    process.env.KP_API_KEY = undefined;
   });
 
   afterEach(() => {
     if (savedApiKey !== undefined) {
       process.env.KP_API_KEY = savedApiKey;
     } else {
-      delete process.env.KP_API_KEY;
+      process.env.KP_API_KEY = undefined;
     }
   });
 

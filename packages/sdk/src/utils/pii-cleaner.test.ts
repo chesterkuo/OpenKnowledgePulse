@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cleanPii, type PiiCleanResult } from "./pii-cleaner.js";
+import { cleanPii } from "./pii-cleaner.js";
 
 describe("cleanPii", () => {
   // ── OpenAI API keys ────────────────────────────────────────
@@ -14,7 +14,7 @@ describe("cleanPii", () => {
   // ── GitHub tokens ──────────────────────────────────────────
 
   test("redacts GitHub personal access tokens (ghp_)", () => {
-    const token = "ghp_" + "A".repeat(36);
+    const token = `ghp_${"A".repeat(36)}`;
     const input = `Token: ${token}`;
     const result = cleanPii(input);
     expect(result.cleaned).toBe("Token: [REDACTED:api_key]");
@@ -22,14 +22,14 @@ describe("cleanPii", () => {
   });
 
   test("redacts GitHub OAuth tokens (gho_)", () => {
-    const token = "gho_" + "B".repeat(36);
+    const token = `gho_${"B".repeat(36)}`;
     const input = `OAuth: ${token}`;
     const result = cleanPii(input);
     expect(result.cleaned).toBe("OAuth: [REDACTED:api_key]");
   });
 
   test("redacts GitHub app tokens (ghs_)", () => {
-    const token = "ghs_" + "C".repeat(36);
+    const token = `ghs_${"C".repeat(36)}`;
     const input = `App: ${token}`;
     const result = cleanPii(input);
     expect(result.cleaned).toBe("App: [REDACTED:api_key]");
@@ -134,7 +134,8 @@ describe("cleanPii", () => {
   // ── Bearer tokens ─────────────────────────────────────────
 
   test("redacts Bearer tokens", () => {
-    const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";
+    const jwt =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";
     const input = `Authorization: Bearer ${jwt}`;
     const result = cleanPii(input);
     expect(result.cleaned).toBe("Authorization: Bearer [REDACTED:bearer_token]");
@@ -302,8 +303,8 @@ describe("cleanPii", () => {
   // ── Multiple redactions accumulate counts ─────────────────
 
   test("multiple redactions accumulate counts", () => {
-    const token1 = "ghp_" + "A".repeat(36);
-    const token2 = "ghp_" + "B".repeat(36);
+    const token1 = `ghp_${"A".repeat(36)}`;
+    const token2 = `ghp_${"B".repeat(36)}`;
     const input = `Keys: ${token1} and ${token2} plus sk-abc123def456ghi789jkl012mno345`;
     const result = cleanPii(input);
     const apiKeyRedaction = result.redactions.find((r) => r.type === "api_key");

@@ -1,5 +1,5 @@
 import { SanitizationError } from "../errors.js";
-import { classifyInjectionRisk, type InjectionAssessment } from "./injection-classifier.js";
+import { type InjectionAssessment, classifyInjectionRisk } from "./injection-classifier.js";
 
 // Invisible Unicode characters to reject (PRD Section 3.5.1 T-2)
 const INVISIBLE_CHARS =

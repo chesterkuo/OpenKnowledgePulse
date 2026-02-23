@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LLM_PROVIDERS, getProvider } from "../lib/llm-providers";
 
 interface RegistryConfig {
   url: string;
@@ -133,6 +134,9 @@ export default function Settings() {
               placeholder={t("settings.apiKeyPlaceholder")}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
+            <p className="mt-1 text-xs text-kp-muted/60">
+              {t("settings.apiKeyHelp")}
+            </p>
           </div>
 
           <div className="flex items-center gap-3 pt-2">
@@ -249,8 +253,9 @@ export default function Settings() {
               onChange={(e) => setLlm((prev) => ({ ...prev, provider: e.target.value }))}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal"
             >
-              <option value="anthropic">Anthropic</option>
-              <option value="openai">OpenAI</option>
+              {LLM_PROVIDERS.map((p) => (
+                <option key={p.id} value={p.id}>{p.label}</option>
+              ))}
             </select>
           </div>
 
@@ -263,7 +268,7 @@ export default function Settings() {
               type="password"
               value={llm.apiKey}
               onChange={(e) => setLlm((prev) => ({ ...prev, apiKey: e.target.value }))}
-              placeholder={llm.provider === "openai" ? "sk-..." : "sk-ant-..."}
+              placeholder={getProvider(llm.provider).keyPlaceholder || "..."}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
@@ -277,11 +282,7 @@ export default function Settings() {
               type="text"
               value={llm.model}
               onChange={(e) => setLlm((prev) => ({ ...prev, model: e.target.value }))}
-              placeholder={
-                llm.provider === "openai"
-                  ? "gpt-4o (default)"
-                  : "claude-sonnet-4-20250514 (default)"
-              }
+              placeholder={`${getProvider(llm.provider).defaultModel} (default)`}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
             <p className="mt-1 text-xs text-kp-muted/60">

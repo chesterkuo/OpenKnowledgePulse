@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import AuthBanner from "../components/AuthBanner";
 import SOPCard from "../components/SOPCard";
 import type { StoredSOP } from "../components/SOPCard";
 import SearchBar from "../components/SearchBar";
+import { useAuth } from "../hooks/useAuth";
 import { api } from "../lib/api";
 
 interface SOPListResponse {
@@ -16,6 +18,7 @@ interface SOPListResponse {
 export default function Dashboard() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const [sops, setSOPs] = useState<StoredSOP[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -26,10 +29,14 @@ export default function Dashboard() {
   const [status, setStatus] = useState("");
 
   const fetchSOPs = useCallback(async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const params: Record<string, string> = {};
+      const params: Record<string, string> = { mine: "true" };
       if (query) params.q = query;
       if (domain) params.domain = domain;
       if (status) params.status = status;
@@ -45,7 +52,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, [query, domain, status]);
+  }, [query, domain, status, isAuthenticated]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -56,6 +63,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <AuthBanner />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-kp-heading">{t("dashboard.title")}</h1>

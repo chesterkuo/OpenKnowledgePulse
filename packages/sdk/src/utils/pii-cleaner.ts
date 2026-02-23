@@ -44,8 +44,7 @@ const EMAIL = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
 // Phone numbers — US/NANP format with optional country code
 // Matches: (555) 123-4567, 555-234-5678, +1-555-234-5678, +1 555 234 5678
-const US_PHONE =
-  /(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\s?\d{3}[-.\s]\d{4}\b/g;
+const US_PHONE = /(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\s?\d{3}[-.\s]\d{4}\b/g;
 
 // International phone numbers: + followed by 7-15 digits (no spaces/dashes)
 const INTL_PHONE = /\+[1-9]\d{6,14}\b/g;
@@ -69,28 +68,53 @@ type PatternEntry = {
 
 const PATTERNS: PatternEntry[] = [
   // ── Secrets (order matters: connection strings before generic password) ─
-  { pattern: CONNECTION_STRING, type: "connection_string", replacement: "[REDACTED:connection_string]", category: "secret" },
-  { pattern: BEARER_TOKEN, type: "bearer_token", replacement: "Bearer [REDACTED:bearer_token]",
-    replacer: (_match: string) => `Bearer [REDACTED:bearer_token]`, category: "secret" },
+  {
+    pattern: CONNECTION_STRING,
+    type: "connection_string",
+    replacement: "[REDACTED:connection_string]",
+    category: "secret",
+  },
+  {
+    pattern: BEARER_TOKEN,
+    type: "bearer_token",
+    replacement: "Bearer [REDACTED:bearer_token]",
+    replacer: (_match: string) => "Bearer [REDACTED:bearer_token]",
+    category: "secret",
+  },
   { pattern: OPENAI_KEY, type: "api_key", replacement: "[REDACTED:api_key]", category: "secret" },
   { pattern: GITHUB_TOKEN, type: "api_key", replacement: "[REDACTED:api_key]", category: "secret" },
   { pattern: AWS_KEY, type: "api_key", replacement: "[REDACTED:api_key]", category: "secret" },
   { pattern: KP_KEY, type: "api_key", replacement: "[REDACTED:api_key]", category: "secret" },
   { pattern: SLACK_TOKEN, type: "api_key", replacement: "[REDACTED:api_key]", category: "secret" },
-  { pattern: GENERIC_PASSWORD, type: "password", replacement: "",
+  {
+    pattern: GENERIC_PASSWORD,
+    type: "password",
+    replacement: "",
     replacer: (_match: string, ...args: unknown[]) => {
       // Named groups: key, sep, qchar, qval, uval
       const groups = args[args.length - 1] as Record<string, string>;
       return `${groups.key}${groups.sep}[REDACTED:password]`;
-    }, category: "secret" },
+    },
+    category: "secret",
+  },
 
   // ── Identifiers ─
   { pattern: EMAIL, type: "email", replacement: "[REDACTED:email]", category: "identifier" },
   { pattern: US_PHONE, type: "phone", replacement: "[REDACTED:phone]", category: "identifier" },
   { pattern: INTL_PHONE, type: "phone", replacement: "[REDACTED:phone]", category: "identifier" },
   { pattern: IPV4, type: "ip", replacement: "[REDACTED:ip]", category: "identifier" },
-  { pattern: UNIX_PATH, type: "filepath", replacement: "[REDACTED:filepath]", category: "identifier" },
-  { pattern: WINDOWS_PATH, type: "filepath", replacement: "[REDACTED:filepath]", category: "identifier" },
+  {
+    pattern: UNIX_PATH,
+    type: "filepath",
+    replacement: "[REDACTED:filepath]",
+    category: "identifier",
+  },
+  {
+    pattern: WINDOWS_PATH,
+    type: "filepath",
+    replacement: "[REDACTED:filepath]",
+    category: "identifier",
+  },
 ];
 
 /**

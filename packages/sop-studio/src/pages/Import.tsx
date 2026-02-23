@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import AuthBanner from "../components/AuthBanner";
 import { api } from "../lib/api";
+import { LLM_PROVIDERS, getProvider } from "../lib/llm-providers";
 
 interface LLMConfig {
   provider: string;
@@ -24,10 +25,9 @@ function saveLLMConfig(config: LLMConfig) {
   localStorage.setItem("kp_llm_model", config.model);
 }
 
-const DEFAULT_MODELS: Record<string, string> = {
-  anthropic: "claude-sonnet-4-20250514",
-  openai: "gpt-4o",
-};
+function getDefaultModel(provider: string): string {
+  return getProvider(provider).defaultModel;
+}
 
 interface DecisionTreeStep {
   step: string;
@@ -150,41 +150,13 @@ export default function Import() {
     setExtractedJson("");
 
     try {
-      const model =
-        llmConfig.model || DEFAULT_MODELS[llmConfig.provider] || DEFAULT_MODELS.anthropic;
+      const providerConfig = getProvider(llmConfig.provider);
+      const model = llmConfig.model || providerConfig.defaultModel;
 
       let responseText: string;
 
-      if (llmConfig.provider === "openai") {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${llmConfig.apiKey}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: EXTRACTION_PROMPT },
-              { role: "user", content: documentText },
-            ],
-            temperature: 0.2,
-          }),
-        });
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(
-            (errData as { error?: { message?: string } }).error?.message ||
-              `OpenAI API error: ${res.status}`,
-          );
-        }
-        const data = (await res.json()) as {
-          choices: Array<{ message: { content: string } }>;
-        };
-        responseText = data.choices[0]?.message?.content || "";
-      } else {
-        // Anthropic
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
+      if (providerConfig.format === "anthropic") {
+        const res = await fetch(`${providerConfig.baseUrl}/v1/messages`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -215,6 +187,58 @@ export default function Import() {
         };
         const textBlock = data.content.find((b) => b.type === "text");
         responseText = textBlock?.text || "";
+      } else if (providerConfig.format === "gemini") {
+        const res = await fetch(
+          `${providerConfig.baseUrl}/v1beta/models/${model}:generateContent?key=${llmConfig.apiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: EXTRACTION_PROMPT }] },
+              contents: [{ role: "user", parts: [{ text: documentText }] }],
+              generationConfig: { temperature: 0.2 },
+            }),
+          },
+        );
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(
+            (errData as { error?: { message?: string } }).error?.message ||
+              `Gemini API error: ${res.status}`,
+          );
+        }
+        const data = (await res.json()) as {
+          candidates: Array<{ content: { parts: Array<{ text: string }> } }>;
+        };
+        responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      } else {
+        // OpenAI-compatible: OpenAI, xAI, Kimi, GLM, Qwen
+        const res = await fetch(`${providerConfig.baseUrl}/v1/chat/completions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${llmConfig.apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: EXTRACTION_PROMPT },
+              { role: "user", content: documentText },
+            ],
+            temperature: 0.2,
+          }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(
+            (errData as { error?: { message?: string } }).error?.message ||
+              `${providerConfig.label} API error: ${res.status}`,
+          );
+        }
+        const data = (await res.json()) as {
+          choices: Array<{ message: { content: string } }>;
+        };
+        responseText = data.choices[0]?.message?.content || "";
       }
 
       // Parse the JSON from the response
@@ -418,8 +442,9 @@ export default function Import() {
               onChange={(e) => handleLLMConfigChange("provider", e.target.value)}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal"
             >
-              <option value="anthropic">Anthropic</option>
-              <option value="openai">OpenAI</option>
+              {LLM_PROVIDERS.map((p) => (
+                <option key={p.id} value={p.id}>{p.label}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -431,7 +456,7 @@ export default function Import() {
               type="password"
               value={llmConfig.apiKey}
               onChange={(e) => handleLLMConfigChange("apiKey", e.target.value)}
-              placeholder="sk-..."
+              placeholder={getProvider(llmConfig.provider).keyPlaceholder || "..."}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>
@@ -444,7 +469,7 @@ export default function Import() {
               type="text"
               value={llmConfig.model}
               onChange={(e) => handleLLMConfigChange("model", e.target.value)}
-              placeholder={DEFAULT_MODELS[llmConfig.provider] || ""}
+              placeholder={getDefaultModel(llmConfig.provider)}
               className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
             />
           </div>

@@ -182,7 +182,7 @@ const HIDDEN_INSTRUCTIONS: PatternRule[] = [
     // Individual ZW chars are caught by the sanitizer's invisible-char check
     // before we get here, but we keep this for defense-in-depth in case the
     // classifier is called independently.
-    test: /[\u200B\u200C\u200D\uFEFF]{3,}/,
+    test: /(?:\u200B|\u200C|\u200D|\uFEFF){3,}/,
   },
   {
     name: "excessive-whitespace-encoding",
@@ -224,17 +224,20 @@ const DATA_EXFILTRATION: PatternRule[] = [
         "openknowledgepulse.org",
         "schemas.openknowledgepulse.org",
       ];
-      let block: RegExpExecArray | null;
-      while ((block = codeBlockRe.exec(content)) !== null) {
+      let block: RegExpExecArray | null = codeBlockRe.exec(content);
+      while (block !== null) {
         let urlMatch: RegExpExecArray | null;
         // Reset the URL regex for each block
         urlRe.lastIndex = 0;
-        while ((urlMatch = urlRe.exec(block[0])) !== null) {
+        urlMatch = urlRe.exec(block[0]);
+        while (urlMatch !== null) {
           const host = (urlMatch[1]?.toLowerCase() ?? "").replace(/:\d+$/, "");
           if (!safeHosts.some((safe) => host === safe || host.endsWith(`.${safe}`))) {
             return true;
           }
+          urlMatch = urlRe.exec(block[0]);
         }
+        block = codeBlockRe.exec(content);
       }
       return false;
     },
@@ -267,8 +270,7 @@ export function classifyInjectionRisk(
   const matched: string[] = [];
 
   for (const rule of ALL_RULES) {
-    const hit =
-      typeof rule.test === "function" ? rule.test(content) : rule.test.test(content);
+    const hit = typeof rule.test === "function" ? rule.test(content) : rule.test.test(content);
 
     if (hit) {
       rawScore += rule.weight;

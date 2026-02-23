@@ -6,7 +6,7 @@ export const validateCommand = new Command("validate")
   .description("Validate a SKILL.md file")
   .argument("<file>", "Path to SKILL.md file")
   .action(async (file: string) => {
-    let content: string;
+    let content!: string;
     try {
       content = readFileSync(file, "utf-8");
     } catch {

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
+import AuthBanner from "../components/AuthBanner";
 import MarketplaceCard from "../components/MarketplaceCard";
 import type { MarketplaceListing } from "../components/MarketplaceCard";
 import MarketplaceFilters from "../components/MarketplaceFilters";
@@ -18,6 +19,7 @@ import {
 } from "../components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { api } from "../lib/api";
+import { generateZip } from "../lib/zip";
 
 interface ListingsResponse {
   data: MarketplaceListing[];
@@ -76,6 +78,59 @@ function SkillsTab() {
   const [query, setQuery] = useState("");
   const [domain, setDomain] = useState("");
   const [selected, setSelected] = useState<StoredSkill | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleSelect = useCallback(async (skill: StoredSkill) => {
+    // Fetch full detail (including files) from the detail endpoint
+    try {
+      const res = (await api.getSkill(skill.id)) as { data: StoredSkill };
+      setSelected(res.data);
+    } catch {
+      // Fall back to list data (without files)
+      setSelected(skill);
+    }
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    if (!selected) return;
+    await navigator.clipboard.writeText(selected.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    const fileCount = selected.files ? Object.keys(selected.files).length : 0;
+    if (fileCount > 0) {
+      toast.info(t("marketplace.copyNote", { count: fileCount }));
+    }
+  }, [selected, t]);
+
+  const handleDownload = useCallback(() => {
+    if (!selected) return;
+    const slug = selected.name.replace(/\s+/g, "-").toLowerCase();
+    const hasFiles = selected.files && Object.keys(selected.files).length > 0;
+
+    if (hasFiles) {
+      // Generate ZIP with SKILL.md + all bundled files
+      const entries = [
+        { name: "SKILL.md", content: selected.content },
+        ...Object.entries(selected.files!).map(([name, content]) => ({ name, content })),
+      ];
+      const zipData = generateZip(entries);
+      const blob = new Blob([zipData.buffer as ArrayBuffer], { type: "application/zip" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${slug}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      const blob = new Blob([selected.content], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${slug}.SKILL.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  }, [selected]);
 
   const fetchSkills = useCallback(async () => {
     setLoading(true);
@@ -173,7 +228,7 @@ function SkillsTab() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {skills.map((skill) => (
-            <SkillCard key={skill.id} skill={skill} onClick={setSelected} />
+            <SkillCard key={skill.id} skill={skill} onClick={handleSelect} />
           ))}
         </div>
       )}
@@ -210,6 +265,38 @@ function SkillsTab() {
                   ))}
                 </div>
               )}
+              {/* CLI install hint */}
+              <div className="bg-kp-navy/60 rounded-lg p-3 border border-kp-border">
+                <p className="text-xs text-kp-muted mb-1.5">{t("marketplace.installViaCli")}</p>
+                <code className="text-xs text-kp-teal font-mono select-all">
+                  kp install {selected.id}
+                </code>
+              </div>
+
+              {/* Bundled files list */}
+              {selected.files && Object.keys(selected.files).length > 0 && (
+                <div className="bg-kp-navy/60 rounded-lg p-3 border border-kp-border">
+                  <p className="text-xs font-medium text-kp-text mb-2">
+                    {t("marketplace.skillFiles")}
+                    <span className="ml-2 text-kp-muted font-normal">
+                      ({t("marketplace.skillFilesCount", { count: Object.keys(selected.files).length })})
+                    </span>
+                  </p>
+                  <div className="space-y-1">
+                    {Object.entries(selected.files).map(([path, content]) => (
+                      <div key={path} className="flex items-center justify-between text-xs font-mono">
+                        <span className="text-kp-teal truncate mr-2">{path}</span>
+                        <span className="text-kp-muted whitespace-nowrap">
+                          {content.length < 1024
+                            ? `${content.length} B`
+                            : `${(content.length / 1024).toFixed(1)} KB`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-kp-navy rounded-lg p-4 border border-kp-border">
                 <pre className="text-sm text-kp-text whitespace-pre-wrap font-mono leading-relaxed">
                   {stripFrontmatter(selected.content)}
@@ -217,7 +304,7 @@ function SkillsTab() {
               </div>
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className="flex-row gap-2 sm:justify-between">
             <button
               type="button"
               onClick={() => setSelected(null)}
@@ -225,6 +312,34 @@ function SkillsTab() {
             >
               {t("common.cancel")}
             </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium border border-kp-border text-kp-text rounded-lg hover:bg-kp-panel transition-colors"
+              >
+                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {copied ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  )}
+                </svg>
+                {copied ? t("marketplace.copied") : t("marketplace.copySkill")}
+              </button>
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium bg-kp-teal text-white rounded-lg hover:bg-kp-teal/90 transition-colors"
+              >
+                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {selected?.files && Object.keys(selected.files).length > 0
+                  ? t("marketplace.downloadBundle")
+                  : t("marketplace.downloadSkill")}
+              </button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -251,13 +366,14 @@ function BrowseTab() {
   const [purchasing, setPurchasing] = useState(false);
 
   const fetchBalance = useCallback(async () => {
+    if (!isAuthenticated) return;
     try {
       const res = (await api.getBalance()) as BalanceResponse;
       setBalance(res.balance);
     } catch {
       // balance display is best-effort
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -459,16 +575,20 @@ function MyListingsTab() {
   ];
 
   const fetchMyListings = useCallback(async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
-      const res = (await api.getListings()) as ListingsResponse;
+      const res = (await api.getMyListings()) as ListingsResponse;
       setListings(res.data);
     } catch {
       setListings([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     fetchMyListings();
@@ -517,6 +637,7 @@ function MyListingsTab() {
 
   return (
     <div className="space-y-6">
+      <AuthBanner />
       <div className="flex items-center justify-between">
         <p className="text-sm text-kp-muted">
           {loading ? t("common.loading") : t("marketplace.listings", { count: listings.length })}
@@ -665,10 +786,15 @@ function MyListingsTab() {
 
 function EarningsTab() {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const [earnings, setEarnings] = useState<EarningsResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       try {
         const res = (await api.getEarnings()) as EarningsResponse;
@@ -679,7 +805,7 @@ function EarningsTab() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [isAuthenticated]);
 
   if (loading) {
     return (
@@ -700,6 +826,7 @@ function EarningsTab() {
 
   return (
     <div className="space-y-6">
+      <AuthBanner />
       {/* Total earnings */}
       <div className="bg-kp-navy rounded-lg px-6 py-5 border border-kp-border">
         <p className="text-sm text-kp-muted mb-1">{t("marketplace.totalEarnings")}</p>

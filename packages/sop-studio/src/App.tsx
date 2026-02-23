@@ -79,10 +79,6 @@ export default function App() {
                 <NavLink to="/marketplace" className={navLinkClass}>
                   {t("nav.marketplace")}
                 </NavLink>
-                {/* Test sandbox requires an ID param, e.g. /test/some-id */}
-                <NavLink to="/test/sandbox" className={navLinkClass}>
-                  {t("nav.test")}
-                </NavLink>
                 <NavLink to="/settings" className={navLinkClass}>
                   {t("nav.settings")}
                 </NavLink>
@@ -179,9 +175,6 @@ export default function App() {
               <NavLink to="/marketplace" className={navLinkClass} onClick={() => setMenuOpen(false)}>
                 {t("nav.marketplace")}
               </NavLink>
-              <NavLink to="/test/sandbox" className={navLinkClass} onClick={() => setMenuOpen(false)}>
-                {t("nav.test")}
-              </NavLink>
               <NavLink to="/settings" className={navLinkClass} onClick={() => setMenuOpen(false)}>
                 {t("nav.settings")}
               </NavLink>
@@ -193,7 +186,6 @@ export default function App() {
       <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/editor/new" element={<Editor />} />
           <Route path="/editor/:id" element={<Editor />} />
           <Route path="/import" element={<Import />} />
           <Route path="/marketplace" element={<Marketplace />} />

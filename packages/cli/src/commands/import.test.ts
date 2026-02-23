@@ -24,9 +24,7 @@ describe("import command", () => {
   });
 
   test("defaults llm-provider to anthropic", () => {
-    const providerOpt = importCommand.options.find(
-      (o) => o.long === "--llm-provider",
-    );
+    const providerOpt = importCommand.options.find((o) => o.long === "--llm-provider");
     expect(providerOpt?.defaultValue).toBe("anthropic");
   });
 });

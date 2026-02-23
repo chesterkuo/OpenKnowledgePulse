@@ -67,7 +67,10 @@ export async function parseConfluence(
     throw new Error(`Confluence API error: ${res.status} ${res.statusText}`);
   }
 
-  const data = await res.json() as { body: { atlas_doc_format: { value: string } }; title: string };
+  const data = (await res.json()) as {
+    body: { atlas_doc_format: { value: string } };
+    title: string;
+  };
   const adf = JSON.parse(data.body.atlas_doc_format.value) as AdfNode;
   const result = parseConfluenceAdf(adf);
   (result.metadata as Record<string, unknown>).pageId = pageId;

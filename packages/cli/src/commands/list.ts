@@ -1,8 +1,8 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { Command } from "commander";
 import { parseSkillMd } from "@knowledgepulse/sdk";
+import { Command } from "commander";
 
 const SKILLS_DIR = join(homedir(), ".claude", "skills");
 
@@ -18,7 +18,7 @@ export const listCommand = new Command("list")
       return;
     }
 
-    const files = readdirSync(skillsDir).filter((f) => f.endsWith(".md"));
+    const files = readdirSync(skillsDir).filter((f: string) => f.endsWith(".md"));
 
     if (files.length === 0) {
       console.log("No skills installed. Install skills with: kp install <skill-id>");

@@ -25,10 +25,19 @@ describe("parseConfluenceAdf", () => {
       type: "doc",
       content: [
         { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Checklist" }] },
-        { type: "bulletList", content: [
-          { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Item A" }] }] },
-          { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Item B" }] }] },
-        ]},
+        {
+          type: "bulletList",
+          content: [
+            {
+              type: "listItem",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Item A" }] }],
+            },
+            {
+              type: "listItem",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Item B" }] }],
+            },
+          ],
+        },
       ],
     };
     const result = parseConfluenceAdf(adf);
@@ -41,10 +50,19 @@ describe("parseConfluenceAdf", () => {
       type: "doc",
       content: [
         { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Steps" }] },
-        { type: "orderedList", content: [
-          { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Step 1" }] }] },
-          { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Step 2" }] }] },
-        ]},
+        {
+          type: "orderedList",
+          content: [
+            {
+              type: "listItem",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Step 1" }] }],
+            },
+            {
+              type: "listItem",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Step 2" }] }],
+            },
+          ],
+        },
       ],
     };
     const result = parseConfluenceAdf(adf);
@@ -53,7 +71,10 @@ describe("parseConfluenceAdf", () => {
   });
 
   test("sets format to confluence", () => {
-    const adf = { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello" }] }] };
+    const adf = {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "Hello" }] }],
+    };
     const result = parseConfluenceAdf(adf);
     expect(result.metadata.format).toBe("confluence");
   });
@@ -63,9 +84,10 @@ describe("parseConfluenceAdf", () => {
       type: "doc",
       content: [
         { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Info" }] },
-        { type: "panel", content: [
-          { type: "paragraph", content: [{ type: "text", text: "Panel content" }] },
-        ]},
+        {
+          type: "panel",
+          content: [{ type: "paragraph", content: [{ type: "text", text: "Panel content" }] }],
+        },
       ],
     };
     const result = parseConfluenceAdf(adf);
@@ -88,11 +110,14 @@ describe("parseConfluenceAdf", () => {
     const adf = {
       type: "doc",
       content: [
-        { type: "paragraph", content: [
-          { type: "text", text: "Normal " },
-          { type: "text", text: "bold" },
-          { type: "text", text: " text" },
-        ]},
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Normal " },
+            { type: "text", text: "bold" },
+            { type: "text", text: " text" },
+          ],
+        },
       ],
     };
     const result = parseConfluenceAdf(adf);

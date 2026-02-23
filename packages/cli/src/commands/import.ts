@@ -1,14 +1,14 @@
 import { readFileSync } from "node:fs";
-import { Command } from "commander";
 import {
-  parsePdf,
-  parseDocx,
-  parseNotion,
-  parseConfluence,
-  extractDecisionTree,
   type LLMConfig,
   type ParseResult,
+  extractDecisionTree,
+  parseConfluence,
+  parseDocx,
+  parseNotion,
+  parsePdf,
 } from "@knowledgepulse/sdk";
+import { Command } from "commander";
 
 export const importCommand = new Command("import")
   .description("Import an SOP from PDF, DOCX, Notion, or Confluence")
@@ -21,7 +21,7 @@ export const importCommand = new Command("import")
   .option("--llm-key <key>", "LLM API key (or set ANTHROPIC_API_KEY / OPENAI_API_KEY)")
   .option("--json", "Output as JSON")
   .action(async (opts) => {
-    let parsed: ParseResult;
+    let parsed!: ParseResult;
 
     try {
       switch (opts.source) {
@@ -53,9 +53,7 @@ export const importCommand = new Command("import")
         }
         case "confluence": {
           if (!opts.pageId || !opts.baseUrl || !opts.token) {
-            console.error(
-              "Error: --page-id, --base-url, and --token required for Confluence",
-            );
+            console.error("Error: --page-id, --base-url, and --token required for Confluence");
             process.exit(1);
           }
           parsed = await parseConfluence(opts.pageId, opts.baseUrl, opts.token);
@@ -66,17 +64,14 @@ export const importCommand = new Command("import")
           process.exit(1);
       }
     } catch (e) {
-      console.error(
-        `Parse error: ${e instanceof Error ? e.message : String(e)}`,
-      );
+      console.error(`Parse error: ${e instanceof Error ? e.message : String(e)}`);
       process.exit(1);
     }
 
     console.log(`Parsed ${parsed.sections.length} sections from ${opts.source}`);
 
     // LLM extraction (optional — if API key provided)
-    const apiKey =
-      opts.llmKey ?? process.env.ANTHROPIC_API_KEY ?? process.env.OPENAI_API_KEY;
+    const apiKey = opts.llmKey ?? process.env.ANTHROPIC_API_KEY ?? process.env.OPENAI_API_KEY;
     if (!apiKey) {
       console.log("No LLM API key provided. Showing parsed sections only:");
       for (const s of parsed.sections) {

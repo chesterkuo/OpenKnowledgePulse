@@ -101,6 +101,10 @@ describe("KPCapture", () => {
     });
 
     test("fetch is called with correct URL and headers when apiKey provided", async () => {
+      // Wait for any lingering async contributions from prior tests, then reset the mock
+      await new Promise((r) => setTimeout(r, 100));
+      fetchMock.mockClear();
+
       const capture = new KPCapture({
         domain: "test",
         valueThreshold: 0,
@@ -115,15 +119,18 @@ describe("KPCapture", () => {
       // Wait for the async contribution
       await new Promise((r) => setTimeout(r, 50));
 
-      // fetch should have been called at least once
-      if (fetchMock.mock.calls.length > 0) {
-        const [url, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
-        expect(url).toStartWith("https://my-registry.dev/v1/knowledge");
-        expect(opts.method).toBe("POST");
-        const headers = opts.headers as Record<string, string>;
-        expect(headers.Authorization).toBe("Bearer sk-test-key");
-        expect(headers["Content-Type"]).toBe("application/json");
-      }
+      // Find the call targeting our specific registry URL
+      const matchingCall = fetchMock.mock.calls.find(
+        (call: unknown[]) =>
+          typeof call[0] === "string" && call[0].startsWith("https://my-registry.dev"),
+      );
+      expect(matchingCall).toBeDefined();
+      const [url, opts] = matchingCall as [string, RequestInit];
+      expect(url).toStartWith("https://my-registry.dev/v1/knowledge");
+      expect(opts.method).toBe("POST");
+      const headers = opts.headers as Record<string, string>;
+      expect(headers.Authorization).toBe("Bearer sk-test-key");
+      expect(headers["Content-Type"]).toBe("application/json");
     });
 
     test("skips capture when autoCapture is false", async () => {

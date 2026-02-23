@@ -9,7 +9,7 @@ describe("parseNotionBlocks", () => {
       { type: "heading_2", heading_2: { rich_text: [{ plain_text: "Steps" }] } },
       { type: "paragraph", paragraph: { rich_text: [{ plain_text: "Step 1: Do this." }] } },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.sections).toHaveLength(2);
     expect(result.sections[0].heading).toBe("Overview");
     expect(result.sections[0].content).toBe("This is the overview.");
@@ -20,11 +20,20 @@ describe("parseNotionBlocks", () => {
   test("includes numbered and bulleted list items in content", () => {
     const blocks = [
       { type: "heading_1", heading_1: { rich_text: [{ plain_text: "Procedure" }] } },
-      { type: "numbered_list_item", numbered_list_item: { rich_text: [{ plain_text: "First step" }] } },
-      { type: "numbered_list_item", numbered_list_item: { rich_text: [{ plain_text: "Second step" }] } },
-      { type: "bulleted_list_item", bulleted_list_item: { rich_text: [{ plain_text: "A bullet" }] } },
+      {
+        type: "numbered_list_item",
+        numbered_list_item: { rich_text: [{ plain_text: "First step" }] },
+      },
+      {
+        type: "numbered_list_item",
+        numbered_list_item: { rich_text: [{ plain_text: "Second step" }] },
+      },
+      {
+        type: "bulleted_list_item",
+        bulleted_list_item: { rich_text: [{ plain_text: "A bullet" }] },
+      },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.sections).toHaveLength(1);
     expect(result.text).toContain("First step");
     expect(result.text).toContain("Second step");
@@ -35,7 +44,7 @@ describe("parseNotionBlocks", () => {
     const blocks = [
       { type: "paragraph", paragraph: { rich_text: [{ plain_text: "Hello world" }] } },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.text).toContain("Hello world");
     expect(result.metadata.format).toBe("notion");
   });
@@ -45,7 +54,7 @@ describe("parseNotionBlocks", () => {
       { type: "divider" },
       { type: "paragraph", paragraph: { rich_text: [{ plain_text: "After divider" }] } },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.text).toContain("After divider");
   });
 
@@ -54,7 +63,7 @@ describe("parseNotionBlocks", () => {
       { type: "heading_1", heading_1: { rich_text: [{ plain_text: "FAQ" }] } },
       { type: "toggle", toggle: { rich_text: [{ plain_text: "What is this?" }] } },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.sections[0].content).toContain("What is this?");
   });
 
@@ -63,18 +72,18 @@ describe("parseNotionBlocks", () => {
       { type: "heading_1", heading_1: { rich_text: [{ plain_text: "Example" }] } },
       { type: "code", code: { rich_text: [{ plain_text: "console.log('hello')" }] } },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.text).toContain("console.log('hello')");
   });
 
   test("concatenates multiple rich_text segments", () => {
     const blocks = [
-      { type: "paragraph", paragraph: { rich_text: [
-        { plain_text: "Hello " },
-        { plain_text: "world" },
-      ] } },
+      {
+        type: "paragraph",
+        paragraph: { rich_text: [{ plain_text: "Hello " }, { plain_text: "world" }] },
+      },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.text).toBe("Hello world");
   });
 
@@ -90,7 +99,7 @@ describe("parseNotionBlocks", () => {
       { type: "heading_1", heading_1: { rich_text: [{ plain_text: "Section 1" }] } },
       { type: "paragraph", paragraph: { rich_text: [{ plain_text: "Section content" }] } },
     ];
-    const result = parseNotionBlocks(blocks as any);
+    const result = parseNotionBlocks(blocks as Parameters<typeof parseNotionBlocks>[0]);
     expect(result.text).toContain("Preamble text");
     expect(result.sections).toHaveLength(1);
     expect(result.sections[0].heading).toBe("Section 1");

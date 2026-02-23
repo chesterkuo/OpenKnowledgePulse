@@ -126,7 +126,11 @@ export class KPCapture {
       if (step.input) {
         const inputStr = JSON.stringify(step.input);
         const cleanedInput = cleanPii(inputStr, trace.metadata.privacy_level).cleaned;
-        try { step.input = JSON.parse(cleanedInput); } catch { /* keep original if parse fails */ }
+        try {
+          step.input = JSON.parse(cleanedInput);
+        } catch {
+          /* keep original if parse fails */
+        }
       }
     }
 

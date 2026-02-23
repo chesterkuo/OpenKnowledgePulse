@@ -60,7 +60,7 @@ export class MemorySessionManager implements McpSessionManager {
   private readonly ttlMs: number;
   readonly sessionTtlSeconds: number;
 
-  constructor(ttlSeconds: number = 3600) {
+  constructor(ttlSeconds = 3600) {
     this.ttlMs = ttlSeconds * 1000;
     this.sessionTtlSeconds = ttlSeconds;
   }

@@ -8,6 +8,7 @@ export interface StoredSkill {
   author?: string;
   tags: string[];
   content: string;
+  files?: Record<string, string>;
   visibility: string;
   quality_score: number;
   created_at: string;
