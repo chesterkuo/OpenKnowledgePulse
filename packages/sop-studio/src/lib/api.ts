@@ -46,4 +46,16 @@ export const api = {
   getSkills: (params?: Record<string, string>) =>
     request(`/v1/skills?${new URLSearchParams(params || {})}`),
   getSkill: (id: string) => request(`/v1/skills/${id}`),
+
+  // Import proxy
+  fetchNotion: (pageId: string, token: string) =>
+    request("/v1/import/notion", {
+      method: "POST",
+      body: JSON.stringify({ pageId, token }),
+    }),
+  fetchConfluence: (pageId: string, baseUrl: string, token: string) =>
+    request("/v1/import/confluence", {
+      method: "POST",
+      body: JSON.stringify({ pageId, baseUrl, token }),
+    }),
 };

@@ -68,6 +68,16 @@ export default function Import() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  const [sourceTab, setSourceTab] = useState<"file" | "notion" | "confluence" | "paste">("file");
+  const [notionPageId, setNotionPageId] = useState("");
+  const [notionToken, setNotionToken] = useState(() => localStorage.getItem("kp_notion_token") || "");
+  const [confluencePageId, setConfluencePageId] = useState("");
+  const [confluenceBaseUrl, setConfluenceBaseUrl] = useState(() => localStorage.getItem("kp_confluence_url") || "");
+  const [confluenceToken, setConfluenceToken] = useState(() => localStorage.getItem("kp_confluence_token") || "");
+  const [fetching, setFetching] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [fetchedSource, setFetchedSource] = useState<string | null>(null);
+
   const handleFileRead = useCallback(async (file: File) => {
     setFileError(null);
     setFileName(file.name);
@@ -136,6 +146,55 @@ export default function Import() {
       return next;
     });
   }, []);
+
+  const handleFetchNotion = useCallback(async () => {
+    if (!notionPageId.trim() || !notionToken.trim()) {
+      setFetchError(t("import.notionFieldsRequired"));
+      return;
+    }
+    setFetching(true);
+    setFetchError(null);
+    localStorage.setItem("kp_notion_token", notionToken);
+    try {
+      const result = await api.fetchNotion(notionPageId.trim(), notionToken.trim()) as {
+        text: string;
+        sections: Array<{ heading: string; content: string }>;
+      };
+      setDocumentText(result.text);
+      setFetchedSource(`Notion (${result.sections.length} sections)`);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : t("import.fetchFailed"));
+    } finally {
+      setFetching(false);
+    }
+  }, [notionPageId, notionToken, t]);
+
+  const handleFetchConfluence = useCallback(async () => {
+    if (!confluencePageId.trim() || !confluenceBaseUrl.trim() || !confluenceToken.trim()) {
+      setFetchError(t("import.confluenceFieldsRequired"));
+      return;
+    }
+    setFetching(true);
+    setFetchError(null);
+    localStorage.setItem("kp_confluence_url", confluenceBaseUrl);
+    localStorage.setItem("kp_confluence_token", confluenceToken);
+    try {
+      const result = await api.fetchConfluence(
+        confluencePageId.trim(),
+        confluenceBaseUrl.trim(),
+        confluenceToken.trim(),
+      ) as {
+        text: string;
+        sections: Array<{ heading: string; content: string }>;
+      };
+      setDocumentText(result.text);
+      setFetchedSource(`Confluence (${result.sections.length} sections)`);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : t("import.fetchFailed"));
+    } finally {
+      setFetching(false);
+    }
+  }, [confluencePageId, confluenceBaseUrl, confluenceToken, t]);
 
   const handleExtract = useCallback(async () => {
     if (!documentText.trim()) {
@@ -353,82 +412,210 @@ export default function Import() {
         </div>
       </div>
 
-      {/* File Upload */}
+      {/* Document Source */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
         <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("import.documentSource")}</h2>
 
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragActive ? "border-kp-teal bg-kp-teal/5" : "border-kp-teal/30 bg-kp-navy/50 hover:border-kp-teal/60"
-          }`}
-        >
-          <svg
-            className="mx-auto h-12 w-12 text-kp-muted"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-            />
-          </svg>
-          <p className="mt-2 text-sm text-kp-text">
-            {t("import.dragDrop")}{" "}
+        {/* Tabs */}
+        <div className="flex border-b border-kp-border mb-4">
+          {(["file", "notion", "confluence", "paste"] as const).map((tab) => (
             <button
+              key={tab}
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="text-kp-teal hover:text-kp-cyan font-medium"
+              onClick={() => { setSourceTab(tab); setFetchError(null); }}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                sourceTab === tab
+                  ? "border-kp-teal text-kp-teal"
+                  : "border-transparent text-kp-muted hover:text-kp-text hover:border-kp-border"
+              }`}
             >
-              {t("import.browse")}
+              {t(`import.tab_${tab}`)}
             </button>
-          </p>
-          <p className="mt-1 text-xs text-kp-muted/60">
-            {t("import.fileSupport")}
-          </p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".txt,.docx,.pdf,.md"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
-          {fileName && (
-            <p className="mt-3 text-sm text-kp-text">
-              {t("import.selected")} <span className="font-medium">{fileName}</span>
-            </p>
-          )}
+          ))}
         </div>
 
-        {fileError && (
-          <div className="mt-3 bg-kp-orange/10 border border-kp-orange/30 rounded-md p-3">
-            <p className="text-sm text-kp-orange">{fileError}</p>
+        {/* File Upload Tab */}
+        {sourceTab === "file" && (
+          <>
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                dragActive ? "border-kp-teal bg-kp-teal/5" : "border-kp-teal/30 bg-kp-navy/50 hover:border-kp-teal/60"
+              }`}
+            >
+              <svg className="mx-auto h-12 w-12 text-kp-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p className="mt-2 text-sm text-kp-text">
+                {t("import.dragDrop")}{" "}
+                <button type="button" onClick={() => fileInputRef.current?.click()} className="text-kp-teal hover:text-kp-cyan font-medium">
+                  {t("import.browse")}
+                </button>
+              </p>
+              <p className="mt-1 text-xs text-kp-muted/60">{t("import.fileSupport")}</p>
+              <input ref={fileInputRef} type="file" accept=".txt,.docx,.pdf,.md" onChange={handleFileSelect} className="hidden" />
+              {fileName && (
+                <p className="mt-3 text-sm text-kp-text">
+                  {t("import.selected")} <span className="font-medium">{fileName}</span>
+                </p>
+              )}
+            </div>
+            {fileError && (
+              <div className="mt-3 bg-kp-orange/10 border border-kp-orange/30 rounded-md p-3">
+                <p className="text-sm text-kp-orange">{fileError}</p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Notion Tab */}
+        {sourceTab === "notion" && (
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="notion-page-id" className="block text-sm font-medium text-kp-muted mb-1">
+                {t("import.notionPageId")}
+              </label>
+              <input
+                id="notion-page-id"
+                type="text"
+                value={notionPageId}
+                onChange={(e) => setNotionPageId(e.target.value)}
+                placeholder="e.g., abc123def456..."
+                className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
+              />
+            </div>
+            <div>
+              <label htmlFor="notion-token" className="block text-sm font-medium text-kp-muted mb-1">
+                {t("import.notionToken")}
+              </label>
+              <input
+                id="notion-token"
+                type="password"
+                value={notionToken}
+                onChange={(e) => setNotionToken(e.target.value)}
+                placeholder="ntn_..."
+                className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
+              />
+              <p className="mt-1 text-xs text-kp-muted">{t("import.notionTokenHint")}</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleFetchNotion}
+              disabled={fetching || !notionPageId.trim() || !notionToken.trim()}
+              className="inline-flex items-center px-4 py-2 bg-kp-blue text-white text-sm font-medium rounded-lg hover:bg-kp-blue/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {fetching ? t("import.fetching") : t("import.fetchPage")}
+            </button>
           </div>
         )}
 
-        <div className="mt-4">
-          <label htmlFor="document-text" className="block text-sm font-medium text-kp-muted mb-1">
-            {t("import.documentText")}
-          </label>
-          <textarea
-            id="document-text"
-            value={documentText}
-            onChange={(e) => setDocumentText(e.target.value)}
-            placeholder={t("import.pastePlaceholder")}
-            rows={12}
-            className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text font-mono rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
-          />
+        {/* Confluence Tab */}
+        {sourceTab === "confluence" && (
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="confluence-url" className="block text-sm font-medium text-kp-muted mb-1">
+                {t("import.confluenceBaseUrl")}
+              </label>
+              <input
+                id="confluence-url"
+                type="text"
+                value={confluenceBaseUrl}
+                onChange={(e) => setConfluenceBaseUrl(e.target.value)}
+                placeholder="https://your-domain.atlassian.net"
+                className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
+              />
+            </div>
+            <div>
+              <label htmlFor="confluence-page-id" className="block text-sm font-medium text-kp-muted mb-1">
+                {t("import.confluencePageId")}
+              </label>
+              <input
+                id="confluence-page-id"
+                type="text"
+                value={confluencePageId}
+                onChange={(e) => setConfluencePageId(e.target.value)}
+                placeholder="e.g., 12345678"
+                className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
+              />
+            </div>
+            <div>
+              <label htmlFor="confluence-token" className="block text-sm font-medium text-kp-muted mb-1">
+                {t("import.confluenceToken")}
+              </label>
+              <input
+                id="confluence-token"
+                type="password"
+                value={confluenceToken}
+                onChange={(e) => setConfluenceToken(e.target.value)}
+                placeholder="email@example.com:api_token"
+                className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
+              />
+              <p className="mt-1 text-xs text-kp-muted">{t("import.confluenceTokenHint")}</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleFetchConfluence}
+              disabled={fetching || !confluencePageId.trim() || !confluenceBaseUrl.trim() || !confluenceToken.trim()}
+              className="inline-flex items-center px-4 py-2 bg-kp-blue text-white text-sm font-medium rounded-lg hover:bg-kp-blue/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {fetching ? t("import.fetching") : t("import.fetchPage")}
+            </button>
+          </div>
+        )}
+
+        {/* Paste Tab */}
+        {sourceTab === "paste" && (
+          <div>
+            <textarea
+              value={documentText}
+              onChange={(e) => setDocumentText(e.target.value)}
+              placeholder={t("import.pastePlaceholder")}
+              rows={12}
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text font-mono rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
+            />
+          </div>
+        )}
+
+        {/* Fetch error */}
+        {fetchError && (
+          <div className="mt-3 bg-kp-orange/10 border border-kp-orange/30 rounded-md p-3">
+            <p className="text-sm text-kp-orange">{fetchError}</p>
+          </div>
+        )}
+
+        {/* Document text preview (for non-paste tabs) */}
+        {sourceTab !== "paste" && (
+          <div className="mt-4">
+            <label htmlFor="document-text" className="block text-sm font-medium text-kp-muted mb-1">
+              {t("import.documentText")}
+              {fetchedSource && <span className="ml-2 text-kp-green text-xs">{fetchedSource}</span>}
+            </label>
+            <textarea
+              id="document-text"
+              value={documentText}
+              onChange={(e) => setDocumentText(e.target.value)}
+              placeholder={t("import.pastePlaceholder")}
+              rows={12}
+              className="w-full px-3 py-2 bg-kp-navy border border-kp-border text-kp-text font-mono rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-kp-teal focus:border-kp-teal placeholder:text-kp-muted/50"
+            />
+            <p className="mt-1 text-xs text-kp-muted">
+              {documentText.length > 0
+                ? t("import.characters", { count: documentText.length })
+                : t("import.noTextYet")}
+            </p>
+          </div>
+        )}
+
+        {/* Character count for paste tab */}
+        {sourceTab === "paste" && (
           <p className="mt-1 text-xs text-kp-muted">
             {documentText.length > 0
               ? t("import.characters", { count: documentText.length })
               : t("import.noTextYet")}
           </p>
-        </div>
+        )}
       </div>
 
       {/* LLM Configuration */}
