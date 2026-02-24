@@ -66,7 +66,7 @@ export default function Dashboard() {
       <AuthBanner />
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-kp-heading">{t("dashboard.title")}</h1>
+          <h1 className="text-2xl font-extrabold tracking-kp text-kp-heading">{t("dashboard.title")}</h1>
           <p className="mt-1 text-sm text-kp-muted">
             {loading ? t("dashboard.loadingSOPs") : t("dashboard.sopsFound", { count: total })}
           </p>
@@ -74,7 +74,7 @@ export default function Dashboard() {
         <button
           type="button"
           onClick={() => navigate("/editor/new")}
-          className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-lg hover:bg-kp-teal/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kp-teal transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-bold rounded-lg hover:bg-kp-teal/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kp-teal transition-colors"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -156,7 +156,7 @@ export default function Dashboard() {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-kp-heading">{t("dashboard.noSOPs")}</h3>
+          <h3 className="mt-4 text-lg font-semibold text-kp-heading">{t("dashboard.noSOPs")}</h3>
           <p className="mt-1 text-sm text-kp-muted">
             {query || domain || status
               ? t("dashboard.adjustFilters")
@@ -166,7 +166,7 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => navigate("/editor/new")}
-              className="mt-4 inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-lg hover:bg-kp-teal/90 transition-colors"
+              className="mt-4 inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-bold rounded-lg hover:bg-kp-teal/90 transition-colors"
             >
               {t("dashboard.createSOP")}
             </button>

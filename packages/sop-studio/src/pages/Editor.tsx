@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import "@xyflow/react/dist/style.css";
 
 import AuthBanner from "../components/AuthBanner";
+import DemoVideoDialog from "../components/DemoVideoDialog";
 import PropertyPanel from "../components/PropertyPanel";
 import ConditionNode from "../components/nodes/ConditionNode";
 import StepNode from "../components/nodes/StepNode";
@@ -111,6 +112,7 @@ function EditorInner() {
 
   const [dirty, setDirty] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
 
   // Load SOP from API
   useEffect(() => {
@@ -121,6 +123,9 @@ function EditorInner() {
       setNodes(n);
       setEdges(e);
       setInitialLoaded(true);
+      if (localStorage.getItem("kp_demo_seen") !== "true") {
+        setShowDemo(true);
+      }
       return;
     }
 
@@ -403,6 +408,11 @@ function EditorInner() {
     }
   }, []);
 
+  const handleDemoClose = useCallback(() => {
+    setShowDemo(false);
+    localStorage.setItem("kp_demo_seen", "true");
+  }, []);
+
   // Memoize default viewport
   const defaultViewport = useMemo(() => ({ x: 50, y: 50, zoom: 0.8 }), []);
 
@@ -436,6 +446,7 @@ function EditorInner() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
+      <DemoVideoDialog open={showDemo} onClose={handleDemoClose} />
       <AuthBanner />
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-kp-navy border-b border-kp-border">
@@ -447,7 +458,7 @@ function EditorInner() {
           >
             &larr; {t("common.back")}
           </button>
-          <h1 className="text-lg font-semibold text-kp-heading truncate max-w-md">
+          <h1 className="text-lg font-bold tracking-kp text-kp-heading truncate max-w-md">
             {storedSOP?.sop.name || t("editor.untitledSOP")}
           </h1>
           {dirty && (

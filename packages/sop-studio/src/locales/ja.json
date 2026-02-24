@@ -86,6 +86,12 @@
     "deleteConfirm": "この SOP を削除してもよろしいですか？",
     "nodeDeleted": "ノードが削除されました"
   },
+  "demo": {
+    "title": "SOP Studio へようこそ",
+    "description": "クイックデモを見て、SOP をビジュアルに構築する方法を確認しましょう — ステップ、条件、ツールを追加し、ワークフローに接続します。",
+    "skip": "スキップ",
+    "startBuilding": "構築を開始"
+  },
   "propertyPanel": {
     "selectNode": "ノードを選択してプロパティを編集",
     "properties": "プロパティ",

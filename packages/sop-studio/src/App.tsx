@@ -39,7 +39,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-kp-dark">
-      <nav className="bg-kp-navy border-b border-kp-border">
+      <nav className="bg-kp-navy/95 backdrop-blur-sm border-b border-kp-border">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             {/* Logo + Desktop nav */}
@@ -62,7 +62,7 @@ export default function App() {
                   <path d="M21,22 C22,24 23,26 23.5,28" stroke="#E07A20" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
                   <path d="M24,20 C26,22 27,24 28,26" stroke="#1E7EC8" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
                 </svg>
-                <span className="font-mono text-kp-heading font-bold text-lg">KP</span>
+                <span className="font-mono text-kp-heading font-extrabold text-lg tracking-wider">KP</span>
               </NavLink>
 
               {/* Desktop links */}

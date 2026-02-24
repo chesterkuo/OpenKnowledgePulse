@@ -227,7 +227,7 @@ function SkillsTab() {
           <svg className="mx-auto h-12 w-12 text-kp-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-kp-heading">{t("marketplace.noSkills")}</h3>
+          <h3 className="mt-4 text-lg font-semibold text-kp-heading">{t("marketplace.noSkills")}</h3>
           <p className="mt-1 text-sm text-kp-muted">
             {query || domain ? t("marketplace.adjustFilters") : t("marketplace.noSkillsYet")}
           </p>
@@ -533,7 +533,7 @@ function BrowseTab() {
           <svg className="mx-auto h-12 w-12 text-kp-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-kp-heading">{t("marketplace.noListings")}</h3>
+          <h3 className="mt-4 text-lg font-semibold text-kp-heading">{t("marketplace.noListings")}</h3>
           <p className="mt-1 text-sm text-kp-muted">
             {query || domain || accessModel
               ? t("marketplace.adjustFilters")
@@ -718,7 +718,7 @@ function MyListingsTab() {
           <svg className="mx-auto h-12 w-12 text-kp-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-kp-heading">{t("marketplace.noListingsYet")}</h3>
+          <h3 className="mt-4 text-lg font-semibold text-kp-heading">{t("marketplace.noListingsYet")}</h3>
           <p className="mt-1 text-sm text-kp-muted">{t("marketplace.createFirst")}</p>
         </div>
       ) : (
@@ -891,12 +891,12 @@ function EarningsTab() {
           <svg className="mx-auto h-12 w-12 text-kp-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-kp-heading">{t("marketplace.noEarnings")}</h3>
+          <h3 className="mt-4 text-lg font-semibold text-kp-heading">{t("marketplace.noEarnings")}</h3>
           <p className="mt-1 text-sm text-kp-muted">{t("marketplace.earningsDescription")}</p>
         </div>
       ) : (
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-kp-muted uppercase tracking-wider">{t("marketplace.transactions")}</h3>
+          <h3 className="text-sm font-semibold text-kp-muted uppercase tracking-kp-label">{t("marketplace.transactions")}</h3>
           {earnings.transactions.map((tx) => (
             <div key={tx.id} className="bg-kp-panel rounded-lg border border-kp-border px-4 py-3 flex items-center justify-between">
               <div>
@@ -936,7 +936,7 @@ export default function Marketplace() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-kp-heading">{t("marketplace.title")}</h1>
+        <h1 className="text-2xl font-extrabold tracking-kp text-kp-heading">{t("marketplace.title")}</h1>
         <p className="mt-1 text-sm text-kp-muted">{t("marketplace.subtitle")}</p>
       </div>
 

@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+@source "../src/**/*.tsx";
+@source "../../sop-studio/src/**/*.tsx";
+
 /* Octo Design Tokens */
 @theme {
   --color-kp-blue: #1E7EC8;
@@ -30,15 +33,6 @@
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 22px;
-}
-
-/* Base styles */
-body {
-  background-color: var(--color-kp-dark);
-  color: var(--color-kp-text);
-  font-family: var(--font-display);
-  background-image: radial-gradient(ellipse at 50% 0%, #0C1A28 0%, #050D16 70%);
-  min-height: 100vh;
 }
 
 /* React Flow dark theme overrides */

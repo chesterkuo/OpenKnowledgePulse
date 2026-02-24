@@ -91,7 +91,7 @@ export default function Settings() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-kp-heading">{t("settings.title")}</h1>
+        <h1 className="text-2xl font-extrabold tracking-kp text-kp-heading">{t("settings.title")}</h1>
         <p className="mt-1 text-sm text-kp-muted">
           {t("settings.subtitle")}
         </p>
@@ -99,7 +99,7 @@ export default function Settings() {
 
       {/* Registry Connection */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("settings.registryConnection")}</h2>
+        <h2 className="text-lg font-bold tracking-kp text-kp-heading mb-4">{t("settings.registryConnection")}</h2>
 
         <div className="space-y-4">
           <div>
@@ -143,7 +143,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleRegistrySave}
-              className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-bold rounded-md hover:bg-kp-teal/90 transition-colors"
             >
               {t("common.save")}
             </button>
@@ -237,7 +237,7 @@ export default function Settings() {
 
       {/* LLM Configuration */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("settings.llmConfig")}</h2>
+        <h2 className="text-lg font-bold tracking-kp text-kp-heading mb-4">{t("settings.llmConfig")}</h2>
         <p className="text-sm text-kp-muted mb-4">
           {t("settings.llmConfigDesc")}
         </p>
@@ -294,7 +294,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleLlmSave}
-              className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-kp-teal text-white text-sm font-bold rounded-md hover:bg-kp-teal/90 transition-colors"
             >
               {t("common.save")}
             </button>
@@ -305,7 +305,7 @@ export default function Settings() {
 
       {/* Danger Zone */}
       <div className="bg-kp-panel rounded-lg border border-kp-error/30 p-6">
-        <h2 className="text-lg font-semibold text-kp-error mb-4">{t("settings.dangerZone")}</h2>
+        <h2 className="text-lg font-bold tracking-kp text-kp-error mb-4">{t("settings.dangerZone")}</h2>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-kp-heading">{t("settings.clearAllSettings")}</p>

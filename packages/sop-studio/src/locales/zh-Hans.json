@@ -86,6 +86,12 @@
     "deleteConfirm": "确定要删除此 SOP 吗？",
     "nodeDeleted": "节点已删除"
   },
+  "demo": {
+    "title": "欢迎使用 SOP Studio",
+    "description": "观看快速演示，了解如何可视化构建 SOP — 添加步骤、条件、工具，并将它们连接成工作流。",
+    "skip": "跳过",
+    "startBuilding": "开始构建"
+  },
   "propertyPanel": {
     "selectNode": "选择一个节点以编辑其属性",
     "properties": "属性",

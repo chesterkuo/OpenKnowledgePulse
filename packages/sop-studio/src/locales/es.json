@@ -86,6 +86,12 @@
     "deleteConfirm": "¿Estás seguro de que deseas eliminar este SOP?",
     "nodeDeleted": "Nodo eliminado"
   },
+  "demo": {
+    "title": "Bienvenido a SOP Studio",
+    "description": "Mira una demostración rápida para ver cómo construir SOPs visualmente — agrega pasos, condiciones, herramientas y conéctalos en un flujo de trabajo.",
+    "skip": "Omitir",
+    "startBuilding": "Empezar a construir"
+  },
   "propertyPanel": {
     "selectNode": "Selecciona un nodo para editar sus propiedades",
     "properties": "Propiedades",

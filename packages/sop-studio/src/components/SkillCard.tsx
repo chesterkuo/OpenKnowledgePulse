@@ -39,7 +39,7 @@ export default function SkillCard({ skill, onClick }: SkillCardProps) {
       className="bg-kp-panel rounded-lg border border-kp-border p-5 hover:border-kp-teal/50 hover:-translate-y-0.5 transition-all cursor-pointer text-left w-full"
     >
       <div className="flex items-start justify-between mb-3">
-        <h3 className="text-lg font-semibold text-kp-heading truncate pr-3">
+        <h3 className="text-lg font-bold text-kp-heading truncate pr-3">
           {skill.name}
         </h3>
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap bg-kp-teal/15 text-kp-teal">

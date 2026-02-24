@@ -33,7 +33,8 @@
       "*.json",
       "website/build",
       "website/.docusaurus",
-      "packages/sop-studio"
+      "packages/sop-studio",
+      "packages/video"
     ]
   }
 }

@@ -373,7 +373,7 @@ export default function Import() {
     <div className="space-y-8 max-w-4xl mx-auto">
       <AuthBanner />
       <div>
-        <h1 className="text-2xl font-bold text-kp-heading">{t("import.title")}</h1>
+        <h1 className="text-2xl font-extrabold tracking-kp text-kp-heading">{t("import.title")}</h1>
         <p className="mt-1 text-sm text-kp-muted">
           {t("import.subtitle")}
         </p>
@@ -381,7 +381,7 @@ export default function Import() {
 
       {/* SOP Name and Domain */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("import.sopDetails")}</h2>
+        <h2 className="text-lg font-bold tracking-kp text-kp-heading mb-4">{t("import.sopDetails")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="sop-name" className="block text-sm font-medium text-kp-muted mb-1">
@@ -414,7 +414,7 @@ export default function Import() {
 
       {/* Document Source */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("import.documentSource")}</h2>
+        <h2 className="text-lg font-bold tracking-kp text-kp-heading mb-4">{t("import.documentSource")}</h2>
 
         {/* Tabs */}
         <div className="flex border-b border-kp-border mb-4">
@@ -620,7 +620,7 @@ export default function Import() {
 
       {/* LLM Configuration */}
       <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
-        <h2 className="text-lg font-semibold text-kp-heading mb-4">{t("import.llmConfig")}</h2>
+        <h2 className="text-lg font-bold tracking-kp text-kp-heading mb-4">{t("import.llmConfig")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label htmlFor="llm-provider" className="block text-sm font-medium text-kp-muted mb-1">
@@ -709,7 +709,7 @@ export default function Import() {
       {extractedJson && (
         <div className="bg-kp-panel rounded-lg border border-kp-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-kp-heading">{t("import.extractedTree")}</h2>
+            <h2 className="text-lg font-bold tracking-kp text-kp-heading">{t("import.extractedTree")}</h2>
             <span className="text-sm text-kp-muted">
               {t("import.steps", { count: extractedTree?.length || 0 })}
             </span>

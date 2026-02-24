@@ -22,7 +22,7 @@ export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPa
   return (
     <div className="w-80 border-l border-kp-border bg-kp-navy overflow-y-auto">
       <div className="p-4 border-b border-kp-border">
-        <h3 className="font-semibold text-kp-heading">{t("propertyPanel.properties")}</h3>
+        <h3 className="font-bold tracking-kp text-kp-heading">{t("propertyPanel.properties")}</h3>
         <p className="text-xs text-kp-muted mt-1">ID: {selectedNode.id}</p>
       </div>
       <div className="p-4">

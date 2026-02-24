@@ -157,7 +157,7 @@ export default function TestSandbox() {
           >
             &larr; {t("common.backToDashboard")}
           </button>
-          <h1 className="text-2xl font-bold text-kp-heading">{t("test.title")}</h1>
+          <h1 className="text-2xl font-extrabold tracking-kp text-kp-heading">{t("test.title")}</h1>
           <p className="text-sm text-kp-muted">
             {sop.sop.name} — {t("import.steps", { count: decisionTree.length })}
           </p>
@@ -183,7 +183,7 @@ export default function TestSandbox() {
         {/* Steps Overview (sidebar) */}
         <div className="lg:col-span-1">
           <div className="bg-kp-panel rounded-lg border border-kp-border p-4">
-            <h2 className="text-sm font-semibold text-kp-heading uppercase tracking-wider mb-3">
+            <h2 className="text-sm font-bold text-kp-heading uppercase tracking-kp-label mb-3">
               {t("test.steps")}
             </h2>
             <div className="space-y-1">
@@ -235,7 +235,7 @@ export default function TestSandbox() {
 
             {/* Test case status */}
             <div className="mt-4 pt-4 border-t border-kp-border">
-              <h3 className="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-2">
+              <h3 className="text-xs font-bold text-kp-muted uppercase tracking-kp-label mb-2">
                 {t("test.coverage")}
               </h3>
               <div className="flex items-center gap-2">
@@ -272,7 +272,7 @@ export default function TestSandbox() {
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <h2 className="mt-4 text-xl font-bold text-kp-heading">{t("test.testComplete")}</h2>
+              <h2 className="mt-4 text-xl font-extrabold tracking-kp text-kp-heading">{t("test.testComplete")}</h2>
               <p className="mt-2 text-kp-muted">
                 {t("test.visitedSteps", {
                   visited: visitedSteps.size,
@@ -286,7 +286,7 @@ export default function TestSandbox() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="px-4 py-2 bg-kp-teal text-white text-sm font-medium rounded-md hover:bg-kp-teal/90"
+                  className="px-4 py-2 bg-kp-teal text-white text-sm font-bold rounded-md hover:bg-kp-teal/90"
                 >
                   {t("test.runAgain")}
                 </button>
@@ -308,7 +308,7 @@ export default function TestSandbox() {
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-kp-blue/15 text-kp-blue mb-2">
                       {t("test.stepOf", { current: currentStepIndex + 1, total: decisionTree.length })}
                     </span>
-                    <h2 className="text-xl font-bold text-kp-heading">{currentStep.step}</h2>
+                    <h2 className="text-xl font-extrabold tracking-kp text-kp-heading">{currentStep.step}</h2>
                   </div>
                 </div>
 
@@ -394,7 +394,7 @@ export default function TestSandbox() {
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="inline-flex items-center px-5 py-2.5 bg-kp-teal text-white text-sm font-medium rounded-lg hover:bg-kp-teal/90 transition-colors"
+                      className="inline-flex items-center px-5 py-2.5 bg-kp-teal text-white text-sm font-bold rounded-lg hover:bg-kp-teal/90 transition-colors"
                     >
                       {currentStepIndex >= decisionTree.length - 1 ? t("test.finish") : t("test.nextStep")}
                       <svg

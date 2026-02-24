@@ -7,6 +7,7 @@
     "packages/cli",
     "packages/sop-studio",
     "packages/ui",
+    "packages/video",
     "registry"
   ],
   "scripts": {

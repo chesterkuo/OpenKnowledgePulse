@@ -86,6 +86,12 @@
     "deleteConfirm": "이 SOP를 삭제하시겠습니까?",
     "nodeDeleted": "노드가 삭제되었습니다"
   },
+  "demo": {
+    "title": "SOP Studio에 오신 것을 환영합니다",
+    "description": "빠른 데모를 시청하고 SOP를 시각적으로 구축하는 방법을 알아보세요 — 단계, 조건, 도구를 추가하고 워크플로로 연결합니다.",
+    "skip": "건너뛰기",
+    "startBuilding": "구축 시작"
+  },
   "propertyPanel": {
     "selectNode": "노드를 선택하여 속성을 편집하세요",
     "properties": "속성",

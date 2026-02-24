@@ -40,7 +40,7 @@ export default function MarketplaceCard({ listing, onClick }: MarketplaceCardPro
       className="bg-kp-panel rounded-lg border border-kp-border p-5 hover:border-kp-teal/50 hover:-translate-y-0.5 transition-all cursor-pointer text-left w-full"
     >
       <div className="flex items-start justify-between mb-3">
-        <h3 className="text-lg font-semibold text-kp-heading truncate pr-3">
+        <h3 className="text-lg font-bold text-kp-heading truncate pr-3">
           {listing.title}
         </h3>
         <span
