@@ -119,7 +119,7 @@
     "documentSource": "Document Source",
     "dragDrop": "Drag and drop a file here, or",
     "browse": "browse",
-    "fileSupport": "Supports .txt files directly. For .docx and .pdf, paste content below.",
+    "fileSupport": "Supports .txt, .md, .docx, and .pdf files",
     "selected": "Selected:",
     "documentText": "Document Text",
     "pastePlaceholder": "Paste your document text here...",

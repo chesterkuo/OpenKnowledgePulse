@@ -68,33 +68,36 @@ export default function Import() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const handleFileRead = useCallback((file: File) => {
+  const handleFileRead = useCallback(async (file: File) => {
     setFileError(null);
     setFileName(file.name);
 
-    if (file.name.endsWith(".txt")) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setDocumentText(e.target?.result as string);
-      };
-      reader.onerror = () => {
-        setFileError(t("import.readFailed"));
-      };
-      reader.readAsText(file);
-    } else if (file.name.endsWith(".docx") || file.name.endsWith(".pdf")) {
+    try {
+      if (file.name.endsWith(".docx")) {
+        const buffer = await file.arrayBuffer();
+        const { parseDocxBrowser } = await import("../lib/document-parsers");
+        const text = await parseDocxBrowser(buffer);
+        setDocumentText(text);
+      } else if (file.name.endsWith(".pdf")) {
+        const buffer = await file.arrayBuffer();
+        const { parsePdfBrowser } = await import("../lib/document-parsers");
+        const text = await parsePdfBrowser(buffer);
+        setDocumentText(text);
+      } else {
+        // .txt, .md, and other text files
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setDocumentText(e.target?.result as string);
+        };
+        reader.onerror = () => {
+          setFileError(t("import.readFailed"));
+        };
+        reader.readAsText(file);
+      }
+    } catch (err) {
       setFileError(
-        t("import.docxWarning", { ext: file.name.split(".").pop() }),
+        err instanceof Error ? err.message : t("import.readFailed"),
       );
-    } else {
-      // Try reading as text for other file types
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setDocumentText(e.target?.result as string);
-      };
-      reader.onerror = () => {
-        setFileError(t("import.readFailedAlt"));
-      };
-      reader.readAsText(file);
     }
   }, [t]);
 

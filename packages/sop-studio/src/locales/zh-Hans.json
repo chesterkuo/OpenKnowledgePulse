@@ -119,7 +119,7 @@
     "documentSource": "文档来源",
     "dragDrop": "将文件拖放到此处，或",
     "browse": "浏览",
-    "fileSupport": "直接支持 .txt 文件。.docx 和 .pdf 请粘贴内容到下方。",
+    "fileSupport": "支持 .txt、.md、.docx 和 .pdf 文件",
     "selected": "已选择：",
     "documentText": "文档文本",
     "pastePlaceholder": "在此粘贴文档文本...",

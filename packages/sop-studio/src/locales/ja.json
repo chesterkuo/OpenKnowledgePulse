@@ -119,7 +119,7 @@
     "documentSource": "ドキュメントソース",
     "dragDrop": "ここにファイルをドラッグ＆ドロップ、または",
     "browse": "参照",
-    "fileSupport": ".txt ファイルを直接サポートしています。.docx や .pdf の場合は、以下にコンテンツを貼り付けてください。",
+    "fileSupport": ".txt、.md、.docx、.pdf ファイルに対応",
     "selected": "選択済み:",
     "documentText": "ドキュメントテキスト",
     "pastePlaceholder": "ここにドキュメントテキストを貼り付けてください...",

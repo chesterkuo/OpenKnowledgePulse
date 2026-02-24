@@ -119,7 +119,7 @@
     "documentSource": "Origen del documento",
     "dragDrop": "Arrastra y suelta un archivo aquí, o",
     "browse": "examinar",
-    "fileSupport": "Soporta archivos .txt directamente. Para .docx y .pdf, pega el contenido abajo.",
+    "fileSupport": "Soporta archivos .txt, .md, .docx y .pdf",
     "selected": "Seleccionado:",
     "documentText": "Texto del documento",
     "pastePlaceholder": "Pega el texto de tu documento aquí...",
