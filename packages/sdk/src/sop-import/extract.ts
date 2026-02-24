@@ -56,7 +56,26 @@ export async function extractDecisionTree(
       content: Array<{ text: string }>;
     };
     responseText = data.content[0]?.text ?? "";
+  } else if (config.provider === "gemini") {
+    const baseUrl = config.baseUrl ?? "https://generativelanguage.googleapis.com";
+    const model = config.model ?? "gemini-2.5-flash";
+    const res = await fetch(
+      `${baseUrl}/v1beta/models/${model}:generateContent?key=${config.apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.2 },
+        }),
+      },
+    );
+    const data = (await res.json()) as {
+      candidates: Array<{ content: { parts: Array<{ text: string }> } }>;
+    };
+    responseText = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   } else {
+    // OpenAI-compatible: openai, xai, kimi, glm, qwen, etc.
     const baseUrl = config.baseUrl ?? "https://api.openai.com";
     const model = config.model ?? "gpt-4o";
     const res = await fetch(`${baseUrl}/v1/chat/completions`, {

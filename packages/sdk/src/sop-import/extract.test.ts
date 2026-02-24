@@ -358,3 +358,91 @@ describe("extractDecisionTree — custom configuration", () => {
     expect(messageContent).toContain("Raw document text content here");
   });
 });
+
+function makeGeminiConfig(overrides: Partial<LLMConfig> = {}): LLMConfig {
+  return {
+    provider: "gemini",
+    apiKey: "test-gemini-key",
+    ...overrides,
+  };
+}
+
+describe("extractDecisionTree — Gemini provider", () => {
+  test("calls Gemini API and returns parsed result", async () => {
+    const calls: { url: string }[] = [];
+    globalThis.fetch = async (input) => {
+      const url = typeof input === "string" ? input : (input as Request).url;
+      calls.push({ url });
+      return createMockResponse({
+        candidates: [
+          { content: { parts: [{ text: JSON.stringify(MOCK_EXTRACTION) }] } },
+        ],
+      });
+    };
+
+    const result = await extractDecisionTree(makeMockParseResult(), makeGeminiConfig());
+
+    expect(calls.length).toBe(1);
+    expect(calls[0]!.url).toContain("generativelanguage.googleapis.com");
+    expect(calls[0]!.url).toContain("key=test-gemini-key");
+    expect(result.name).toBe("Customer Escalation SOP");
+    expect(result.decision_tree).toHaveLength(2);
+  });
+
+  test("uses default model gemini-2.5-flash", async () => {
+    let capturedUrl = "";
+    globalThis.fetch = async (input) => {
+      capturedUrl = typeof input === "string" ? input : (input as Request).url;
+      return createMockResponse({
+        candidates: [
+          { content: { parts: [{ text: JSON.stringify(MOCK_EXTRACTION) }] } },
+        ],
+      });
+    };
+
+    await extractDecisionTree(makeMockParseResult(), makeGeminiConfig());
+
+    expect(capturedUrl).toContain("gemini-2.5-flash");
+  });
+
+  test("uses custom model when provided", async () => {
+    let capturedUrl = "";
+    globalThis.fetch = async (input) => {
+      capturedUrl = typeof input === "string" ? input : (input as Request).url;
+      return createMockResponse({
+        candidates: [
+          { content: { parts: [{ text: JSON.stringify(MOCK_EXTRACTION) }] } },
+        ],
+      });
+    };
+
+    await extractDecisionTree(
+      makeMockParseResult(),
+      makeGeminiConfig({ model: "gemini-2.0-pro" }),
+    );
+
+    expect(capturedUrl).toContain("gemini-2.0-pro");
+  });
+});
+
+describe("extractDecisionTree — custom OpenAI-compatible provider", () => {
+  test("falls through to OpenAI path for unknown providers", async () => {
+    const calls: { url: string }[] = [];
+    globalThis.fetch = async (input) => {
+      const url = typeof input === "string" ? input : (input as Request).url;
+      calls.push({ url });
+      return createMockResponse({
+        choices: [{ message: { content: JSON.stringify(MOCK_EXTRACTION) } }],
+      });
+    };
+
+    const result = await extractDecisionTree(makeMockParseResult(), {
+      provider: "xai",
+      apiKey: "xai-key",
+      baseUrl: "https://api.x.ai",
+    });
+
+    expect(calls[0]!.url).toContain("api.x.ai/v1/chat/completions");
+    expect(result.name).toBe("Customer Escalation SOP");
+  });
+});

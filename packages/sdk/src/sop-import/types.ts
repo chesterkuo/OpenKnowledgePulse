@@ -1,7 +1,7 @@
 import type { ExpertSOP } from "../types/knowledge-unit.js";
 
 export interface LLMConfig {
-  provider: "anthropic" | "openai";
+  provider: "anthropic" | "openai" | "gemini" | (string & {});
   apiKey: string;
   model?: string;
   baseUrl?: string;
