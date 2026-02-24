@@ -1,6 +1,6 @@
 {
   "name": "@knowledgepulse/cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "KnowledgePulse CLI — search, install, validate, and contribute AI knowledge",
   "type": "module",
   "bin": {
