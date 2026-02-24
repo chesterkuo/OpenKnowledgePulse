@@ -20,6 +20,9 @@ export const importCommand = new Command("import")
   .option("--llm-provider <provider>", "LLM provider: anthropic or openai", "anthropic")
   .option("--llm-key <key>", "LLM API key (or set ANTHROPIC_API_KEY / OPENAI_API_KEY)")
   .option("--json", "Output as JSON")
+  .option("--save", "Save extracted SOP to registry")
+  .option("--registry-url <url>", "Registry URL (or KP_REGISTRY_URL env var)")
+  .option("--api-key <key>", "Registry API key (or KP_API_KEY env var)")
   .action(async (opts) => {
     let parsed!: ParseResult;
 
@@ -94,6 +97,59 @@ export const importCommand = new Command("import")
       console.log(`Steps: ${result.decision_tree.length}`);
       for (const step of result.decision_tree) {
         console.log(`  ${step.step}: ${step.instruction.slice(0, 80)}`);
+      }
+    }
+
+    // Save to registry if --save flag provided
+    if (opts.save) {
+      const registryUrl = opts.registryUrl ?? process.env.KP_REGISTRY_URL;
+      const registryKey = opts.apiKey ?? process.env.KP_API_KEY;
+
+      if (!registryUrl || !registryKey) {
+        console.error("Error: --registry-url and --api-key (or KP_REGISTRY_URL and KP_API_KEY env vars) required with --save");
+        process.exit(1);
+      }
+
+      const sopData = {
+        "@context": "https://openknowledgepulse.org/schema/v1",
+        "@type": "ExpertSOP",
+        name: result.name,
+        domain: result.domain,
+        metadata: {
+          version: "1.0.0",
+          created: new Date().toISOString(),
+          tags: [],
+          quality_score: 0,
+          usage: { success_rate: 0, uses: 0 },
+        },
+        source: {
+          type: "document_import",
+          expert_id: "",
+          credentials: [],
+        },
+        decision_tree: result.decision_tree,
+      };
+
+      try {
+        const res = await fetch(`${registryUrl}/v1/sop`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${registryKey}`,
+          },
+          body: JSON.stringify(sopData),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: res.statusText }));
+          throw new Error((err as { error: string }).error || `HTTP ${res.status}`);
+        }
+
+        const created = (await res.json()) as { data: { id: string } };
+        console.log(`\nSaved to registry: ${created.data.id}`);
+      } catch (err) {
+        console.error(`\nFailed to save to registry: ${err instanceof Error ? err.message : String(err)}`);
+        process.exit(1);
       }
     }
   });

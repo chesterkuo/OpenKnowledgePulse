@@ -27,4 +27,11 @@ describe("import command", () => {
     const providerOpt = importCommand.options.find((o) => o.long === "--llm-provider");
     expect(providerOpt?.defaultValue).toBe("anthropic");
   });
+
+  test("has --save and --registry-url and --api-key options", () => {
+    const opts = importCommand.options.map((o) => o.long);
+    expect(opts).toContain("--save");
+    expect(opts).toContain("--registry-url");
+    expect(opts).toContain("--api-key");
+  });
 });
