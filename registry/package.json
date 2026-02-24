@@ -10,6 +10,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
     "@knowledgepulse/sdk": "workspace:*",
+    "@notionhq/client": "^5.9.0",
     "@types/pg": "^8.16.0",
     "@zvec/zvec": "^0.2.0",
     "hono": "^4.4.0",

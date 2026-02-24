@@ -73,7 +73,9 @@ export {
   parseDocx,
   parsePdf,
   parseNotion,
+  parseNotionBlocks,
   parseConfluence,
+  parseConfluenceAdf,
   extractDecisionTree,
   getExtractionPrompt,
 } from "./sop-import/index.js";

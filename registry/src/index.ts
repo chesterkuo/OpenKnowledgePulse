@@ -14,6 +14,7 @@ import { providerRoutes } from "./routes/providers.js";
 import { adminQuarantineRoutes, quarantineRoutes } from "./routes/quarantine.js";
 import { reputationRoutes } from "./routes/reputation.js";
 import { skillRoutes } from "./routes/skills.js";
+import { importProxyRoutes } from "./routes/import-proxy.js";
 import { sopRoutes } from "./routes/sop.js";
 import {
   collaborationManager,
@@ -67,6 +68,7 @@ app.route("/v1/export", exportRoutes(stores));
 app.route("/v1/auth", authRoutes(stores));
 app.route("/v1/sop", sopRoutes(stores));
 app.route("/v1/sop", wsCollaborateRoutes(collaborationManager));
+app.route("/v1/import", importProxyRoutes());
 app.route("/v1/marketplace", marketplaceRoutes(stores));
 app.route("/v1/providers", providerRoutes(stores));
 app.route("/v1/knowledge", quarantineRoutes(stores));
